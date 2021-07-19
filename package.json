@@ -1,0 +1,17 @@
+{
+  "name": "daily",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "xiaoooyooo <xiaoooyooo@gmail.com>",
+  "license": "MIT",
+  "workspaces": {
+    "packages": [
+      "app",
+      "server"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^7.31.0"
+  }
+}
