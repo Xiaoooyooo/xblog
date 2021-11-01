@@ -1,0 +1,15 @@
+:root {
+  font-size: 16px;
+}
+html, body {
+  height: 100%;
+  overflow-y: auto;
+}
+* {
+  line-height: 1;
+  box-sizing: border-box;
+}
+:global(#root) {
+  height: 100%;
+  background: url(assets/images/wallhaven.jpg) no-repeat center/cover;
+}

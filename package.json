@@ -11,7 +11,13 @@
       "server"
     ]
   },
-  "devDependencies": {
-    "eslint": "^7.31.0"
-  }
+  "scripts": {
+    "start:app": "yarn workspace app start",
+    "start:server": "yarn workspace server start",
+    "app": "yarn workspace app",
+    "server": "yarn workspace server",
+    "build:app": "yarn workspace app build",
+    "lint:app": "eslint app/src/**/*.tsx"
+  },
+  "devDependencies": {}
 }

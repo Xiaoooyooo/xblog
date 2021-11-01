@@ -1,0 +1,41 @@
+.container {
+  height: 100%;
+  width: 100%;
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .loginContainer {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 1rem;
+    display: flex;
+    overflow: hidden;
+    .cover {
+      width: 20em;
+      flex: 0 0 auto;
+      background: url(assets/images/window.jpg) no-repeat center/cover;
+    }
+    .form{
+      padding: 2rem;
+      .formItem {
+        display: block;
+        margin: 1.5rem 0;
+        span {
+          font-size: 1.2rem;
+        }
+        .inputBox {
+          margin-top: 0.3rem;
+          width: 15rem;
+          height: 2rem;
+        }
+      }
+      .actions {
+        .signup {
+          margin-right: 1em;
+        }
+        .signin {
+        }
+      }
+    }
+  }
+}

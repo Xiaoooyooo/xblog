@@ -2,8 +2,9 @@ import React from "react";
 import ReactDom from "react-dom";
 
 import "reset-css";
-import App from "routes/router";
+import "assets/styles/common.scss";
+import App from "routes";
 
 ReactDom.render(<App />, document.getElementById("root"), () => {
-	console.log("APP Mounted!")
-})
+  console.log("APP Mounted!");
+});
