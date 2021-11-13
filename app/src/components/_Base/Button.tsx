@@ -4,15 +4,15 @@ import styles from "./Button.module.scss";
 type ButtonProps = ComponentPropsWithoutRef<"button">;
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (props: ButtonProps, ref) => {
-    const { className, ...rest } = props;
+    const { className, children, ...rest } = props;
+    const classes = `${styles.btnDefault} ${className}`;
     return (
       <button
-        onClick={props.onClick}
-        className={`${styles.btnDefault} ${className}`}
+        className={classes}
         {...rest}
         ref={ref}
       >
-        {props.children}
+        {children}
       </button>
     );
   });

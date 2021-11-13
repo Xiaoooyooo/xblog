@@ -4,6 +4,7 @@
     "es2021": true,
     "node": true
   },
+  "root": true,
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
@@ -35,7 +36,8 @@
       "error",
       {
         "code": 80,
-        "ignoreComments": true
+        "ignoreComments": true,
+        "ignoreStrings": true
       }
     ],
     "indent": [
