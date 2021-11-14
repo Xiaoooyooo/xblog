@@ -4,9 +4,11 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { Configuration } from "webpack";
 import "webpack-dev-server";
 
+import { isProd as envIsProd } from "./src/config/env";
+
 type Mode = "development" | "production";
 function config(mode: Mode) {
-  const isProd = process.env.NODE_ENV === "production" || mode === "production";
+  const isProd = envIsProd || mode === "production";
   console.log("isProduction?", isProd);
   // 需要安装 ts-node 以使用 ts 配置文件
   const config: Configuration = {
@@ -39,7 +41,7 @@ function config(mode: Mode) {
     module: {
       rules: [
         {
-          test: /\.tsx$/,
+          test: /\.tsx?$/,
           use: "babel-loader"
         },
         {

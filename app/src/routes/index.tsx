@@ -23,7 +23,7 @@ export default class App extends React.Component {
             <Route exact path="/home/:page(\d+)?">
               <Home />
             </Route>
-            <Route exact path="/blog/:blogName">
+            <Route exact path="/blog/:blogId">
               <Blog />
             </Route>
             <Route exact path="/about">

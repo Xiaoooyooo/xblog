@@ -1,11 +1,17 @@
 import Router from "koa-router";
 
-import account from "./account";
+import blog from "./blog";
 
 const api = new Router({
   prefix: "/api"
 });
 
-api.use(account.routes(), account.allowedMethods());
+api.use("/", blog.routes());
+
+api.get("(.*)", async ctx => {
+  ctx.body = {
+    message: "invalid api"
+  };
+});
 
 export default api;
