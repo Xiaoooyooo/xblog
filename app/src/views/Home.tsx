@@ -5,9 +5,8 @@ import Pane from "components/Pane";
 import BlogList from "components/Blogs/BlogList";
 import Pagination from "components/Pagination";
 import styles from "./Home.module.scss";
-import { RouteComponentProps, withRouter } from "react-router-dom";
 
-type HomeProps = RouteComponentProps & React.ComponentProps<"div">;
+type HomeProps = React.ComponentProps<"div">;
 type HomeState = {
   blogs: Blog[];
 };
@@ -56,7 +55,6 @@ class HomeScence extends React.Component<HomeProps, HomeState> {
     console.log("Home Updated!");
   }
   componentDidMount() {
-    const { location, history, match } = this.props;
     // console.log(this.props);
   }
   render() {
@@ -73,4 +71,4 @@ class HomeScence extends React.Component<HomeProps, HomeState> {
   }
 }
 
-export default withRouter(HomeScence);
+export default HomeScence;

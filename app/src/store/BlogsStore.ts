@@ -1,21 +1,22 @@
 import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "store";
 
 import request from "utils/request";
 
-export interface BlogStore {
-  data: Blog[]
+interface BlogStore {
+  status: "idle" | "loading" | "succeeded" | "error";
+  data: Blog[];
 }
 const initailBlogState: BlogStore = {
+  status: "idle",
   data: [],
 };
 
 // async actions
 export const fetchBlogById = createAsyncThunk(
-  "blog/setBlog",
+  "blog/fetchBlog",
   async (blogId: string) => {
     const blog = await request(`blog.info?blogId=${blogId}`);
-    console.log(blog);
+    console.log("fecth blog res:", blog);
     return blog;
   }
 );
@@ -29,18 +30,22 @@ const blog = createSlice({
     }
   },
   extraReducers: {
-    [fetchBlogById.fulfilled as any]: function(
+    [fetchBlogById.pending.toString()]: (state) => {
+      state.status = "loading";
+    },
+    [fetchBlogById.fulfilled.toString()]: function(
       state,
       action: PayloadAction<Blog>
     ) {
       const { payload } = action;
+      state.status = "succeeded";
       state.data.push(payload);
     },
+    [fetchBlogById.rejected.toString()]: (state) => {
+      state.status = "error";
+    }
   }
 });
-
-export const getBlogById = (state: BlogStore, blogId: string) =>
-  state.data.find(blog => blog.id === blogId);
 
 export const { removeBlog } = blog.actions;
 

@@ -2,7 +2,6 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { connect, ConnectedProps, DefaultRootState } from "react-redux";
 
 import blogsReducer, {
-  BlogStore,
   removeBlog,
   fetchBlogById
 } from "./BlogsStore";
@@ -19,12 +18,13 @@ store.subscribe(() => {
   console.log("Update Store");
 });
 
+//typing hooks
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
 // typing connect
-export interface RootState extends DefaultRootState {
-  blogStore: BlogStore
-}
 const mapState = (state: RootState) => ({
-  blogStore: state.blogStore
+  ...state
 });
 const mapDispatch = {
   removeBlog,

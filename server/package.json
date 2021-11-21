@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf ../build/* && babel -d ../build ./src -x .ts",
-    "dev": "rm -rf ../build/* && babel -D -d ../build ./src -x .ts -w"
+    "dev": "rm -rf ../build/* && babel -D -d ../build ./src -x .ts -w",
+    "start": "node ../build/main.js"
   },
   "keywords": [],
   "author": "",

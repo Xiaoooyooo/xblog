@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 import {
   BrowserRouter as Router,
-  Switch,
+  Routes,
   Route,
-  Redirect,
   // Link
+  Navigate
 } from "react-router-dom";
 
 import BaseLayout from "layouts";
@@ -18,25 +18,14 @@ export default class App extends React.Component {
     return (
       <Router basename="/">
         <BaseLayout>
-          <Switch>
-            <Redirect exact from="/" to="/home" />
-            <Route exact path="/home/:page(\d+)?">
-              <Home />
+          <Routes>
+            <Route path="home" element={<Home />}>
+              <Route path=":page" element={<Home />}></Route>
             </Route>
-            <Route exact path="/blog/:blogId">
-              <Blog />
-            </Route>
-            <Route exact path="/about">
-              <About />
-            </Route>
-            {/* <Redirect exact from="/" to="/login" />
-              <Route path="/login">
-                <Login />
-              </Route>
-              <Route path="/login/:id">
-                <div>this is another route.{''}</div>
-              </Route> */}
-          </Switch>
+            <Route path="blog/:blogId" element={<Blog />} />
+            <Route path="about" element={<About />} />
+            <Route path="*" element={<Navigate to="home" replace />} />
+          </Routes>
         </BaseLayout>
       </Router>
     );
