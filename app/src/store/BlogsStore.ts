@@ -1,4 +1,8 @@
-import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createSlice,
+  createAsyncThunk,
+} from "@reduxjs/toolkit";
 
 import request from "utils/request";
 
@@ -15,9 +19,10 @@ const initailBlogState: BlogStore = {
 export const fetchBlogById = createAsyncThunk(
   "blog/fetchBlog",
   async (blogId: string) => {
-    const blog = await request(`blog.info?blogId=${blogId}`);
+    const blog: XhrResponse<Blog> =
+      await request(`blog.info?blogId=${blogId}`);
     console.log("fecth blog res:", blog);
-    return blog;
+    return blog.data;
   }
 );
 
@@ -25,8 +30,13 @@ const blog = createSlice({
   name: "blog",
   initialState: initailBlogState,
   reducers: {
+    addBlog: (state, action: PayloadAction<Blog>) => {
+      const { payload } = action;
+      state.data.push(payload);
+    },
     removeBlog: function(state, action: PayloadAction<string>) {
-      state.data.filter(blog => blog.id !== action.payload);
+      state.data =
+        state.data.filter(blog => blog.id !== action.payload);
     }
   },
   extraReducers: {
@@ -41,12 +51,16 @@ const blog = createSlice({
       state.status = "succeeded";
       state.data.push(payload);
     },
-    [fetchBlogById.rejected.toString()]: (state) => {
+    [fetchBlogById.rejected.toString()]: (
+      state,
+      action: PayloadAction<XhrResponse>
+    ) => {
       state.status = "error";
+      console.log(action);
     }
   }
 });
 
-export const { removeBlog } = blog.actions;
+export const { addBlog, removeBlog } = blog.actions;
 
 export default blog.reducer;

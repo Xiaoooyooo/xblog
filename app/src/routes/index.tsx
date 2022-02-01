@@ -19,12 +19,12 @@ export default class App extends React.Component {
       <Router basename="/">
         <BaseLayout>
           <Routes>
-            <Route path="home" element={<Home />}>
-              <Route path=":page" element={<Home />}></Route>
+            <Route path="" element={<Home />}>
+              <Route path="page/:page" element={<Home />}></Route>
             </Route>
             <Route path="blog/:blogId" element={<Blog />} />
             <Route path="about" element={<About />} />
-            <Route path="*" element={<Navigate to="home" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BaseLayout>
       </Router>

@@ -16,21 +16,33 @@ type BlogScenceProps =
   & React.ComponentPropsWithoutRef<"div">;
 
 const BlogScence: React.FunctionComponent<BlogScenceProps> = (props) => {
-
   const { blogId } = useParams<keyof BlogParams>();
   const blog = useAppSelector(state =>
     state.blogStore.data.find(el => el.id === blogId)
   );
-  console.log(blog);
+  const [isLoading, changeLoadingStatus] = React.useState(!blog);
+  console.log("isLoading", isLoading);
+  console.log("BlogScence blog data:", blog);
   const dispatch = useAppDispatch();
-  if (!blog) {
-    dispatch(fetchBlogById(blogId as string));
-  }
+  React.useEffect(() => {
+    if (!blog) {
+      dispatch(fetchBlogById(blogId as string))
+        .then(res => {
+          console.log("blog fetch done.", res);
+          changeLoadingStatus(false);
+        });
+    }
+  }, []);
+
   return (
     <Content className={styles.blogScence}>
       <ContentBackground className={styles.blogBackground} />
-      <Pane className={styles.mainContent}>
-        <MarkdownParser text={blog?.text} />
+      <Pane className={styles.mainContent} loading={isLoading}>
+        {
+          blog
+            ? <MarkdownParser text={blog.text} />
+            : !isLoading && <p>No Content</p>
+        }
       </Pane>
     </Content>
   );

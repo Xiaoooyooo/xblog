@@ -1,18 +1,12 @@
 import Koa from "koa";
+import body from "koa-body";
 
 import errorHandling from "./middleware/errorHandling";
 import router from "./routes";
-import { isProd } from "./env";
 
 const app = new Koa();
 
-if (!isProd) {
-  app.use(async (ctx, next) => {
-    ctx.set("access-control-allow-origin", "*");
-    return next();
-  });
-}
-
+app.use(body());
 app.use(errorHandling());
 app.use(router.routes());
 

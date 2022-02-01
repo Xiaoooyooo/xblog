@@ -32,7 +32,7 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     this.state = {
       showBg: false,
     };
-  } 
+  }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleScroll = (e: Event) => {
     if (window.scrollY === 0) {

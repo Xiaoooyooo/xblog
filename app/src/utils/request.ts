@@ -1,9 +1,7 @@
 import axios from "axios";
 
-import { BASE_URL } from "config/env";
-
 const request = axios.create({
-  baseURL: `${BASE_URL}/api`,
+  baseURL: `/api`,
   validateStatus: function (status) {
     return status >= 200 && status < 300;
   }

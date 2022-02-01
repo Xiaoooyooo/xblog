@@ -13,20 +13,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "core-js": "^3.19.0",
+    "core-js": "^3.20.3",
     "koa": "^2.13.4",
+    "koa-body": "^4.2.0",
     "koa-router": "^10.1.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
-    "@babel/preset-typescript": "^7.16.0",
+    "@babel/cli": "^7.16.8",
+    "@babel/core": "^7.16.12",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
     "@types/koa": "^2.13.4",
     "@types/koa-router": "^7.4.4",
-    "@typescript-eslint/eslint-plugin": "^5.2.0",
-    "@typescript-eslint/parser": "^5.2.0",
-    "eslint": "^8.1.0",
-    "typescript": "^4.4.4"
+    "@typescript-eslint/eslint-plugin": "^5.10.2",
+    "@typescript-eslint/parser": "^5.10.2",
+    "eslint": "^8.8.0",
+    "typescript": "^4.5.5"
   }
 }

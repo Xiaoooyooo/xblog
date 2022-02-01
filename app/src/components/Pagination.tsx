@@ -5,10 +5,10 @@ import styles from "./Pagination.module.scss";
 
 type PaginationProps = React.ComponentProps<"div">
   & {
-    total: number;
-    pageSize: number; // 每页
+    total: number; // 数据总量
+    pageSize: number; // 每页数据量大小
     pageBtnNumber?: number; // 最多显示的分页按钮
-    onPageChange?: () => void;
+    onPageChange?: (currentPage: number, pageSize: number) => void;
   };
 
 type PaginationParams = {
@@ -17,13 +17,17 @@ type PaginationParams = {
 const Pagination: React.FunctionComponent<
   PaginationProps
 > = function (props) {
-  const maxPageCountRef = React.useRef(Math.ceil(props.total / props.pageSize));
+  const { total, pageSize, pageBtnNumber = 7, onPageChange } = props;
+  const isFirstRender = React.useRef<boolean>(true);
+  const maxPageCountRef = React.useRef(Math.ceil(total / pageSize));
   const maxPageCount = maxPageCountRef.current;
 
-  const { page: currentPage } = useParams<keyof PaginationParams>();
+  const { page: currentPage = 1 } = useParams<keyof PaginationParams>();
   const page = Number(currentPage);
-  const { pageBtnNumber = 7 } = props;
 
+  const getHref = React.useCallback((page: number) => {
+    return `/page/${page}`;
+  }, []);
   const pageBtns = [];
   for (let i = 1; i <= maxPageCount; i++) {
     if (i === 1) {
@@ -32,7 +36,7 @@ const Pagination: React.FunctionComponent<
           key={i}
           index={i}
           className={page === i ? styles.currentPage : ""}
-          href={`/home/${i}`} />
+          href={getHref(i)} />
       );
       continue;
     }
@@ -42,7 +46,7 @@ const Pagination: React.FunctionComponent<
           key={i}
           index={i}
           className={page === i ? styles.currentPage : ""}
-          href={`/home/${i}`} />
+          href={getHref(i)} />
       );
       continue;
     }
@@ -59,7 +63,7 @@ const Pagination: React.FunctionComponent<
             key={i}
             index={i}
             className={page === i ? styles.currentPage : ""}
-            href={`/home/${i}`}
+            href={getHref(i)}
           />
         );
         continue;
@@ -76,10 +80,19 @@ const Pagination: React.FunctionComponent<
           key={i}
           index={i}
           className={page === i ? styles.currentPage : ""}
-          href={`/home/${i}`} />
+          href={getHref(i)} />
       );
     }
   }
+
+  React.useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    onPageChange && onPageChange(page, pageSize);
+  }, [page, pageSize]);
+
   return (
     <div className={styles.pagination}>
       {pageBtns}

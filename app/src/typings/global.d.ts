@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface XhrResponse<T = any> {
+  status: number;
+  data: T
+}
+
 interface Blog {
   id: string;
   title: string;
