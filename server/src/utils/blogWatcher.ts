@@ -1,46 +1,44 @@
 import fs from "fs";
-import { FILES_INFO } from "../env";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const filesInfo = require(FILES_INFO);
+import { BLOGS_INFO } from "../env";
+
 /**
  * 更新 json 文件
  */
-interface BlogInfo {
-  title: string;
-  img?: string;
-  createdAt: string;
-  updatedAt: string;
-}
 class BlogWatcher {
-  blogsInfo: {
-    blogs: BlogInfo[],
-    about: any;
-  };
-  constructor() {
-    this.blogsInfo = filesInfo;
-  }
   /** add a blog */
-  add(fileInfo: BlogInfo) {
-    console.log("add file", fileInfo);
-    this.blogsInfo.blogs.push(fileInfo);
-    console.log(this.blogsInfo);
-    this.saveFile();
+  add(blogInfo: BlogInfo) {
+    const blogsInfo: BlogsInfo = JSON.parse(
+      fs.readFileSync(BLOGS_INFO, "utf8")
+    );
+    if (this.check(blogsInfo, blogInfo.title)) {
+      blogsInfo.blogs = blogsInfo.blogs.map(el => {
+        if (el.title === blogInfo.title) {
+          return blogInfo;
+        }
+        return el;
+      });
+    } else {
+      blogsInfo.blogs.push(blogInfo);
+    }
+    this.saveFile(blogsInfo);
   }
   /** delete a blog */
   delete(title: string) {
-    this.blogsInfo.blogs =
-      this.blogsInfo.blogs.filter(blog => blog.title !== title);
-    this.saveFile();
+    const blogsInfo: BlogsInfo = JSON.parse(
+      fs.readFileSync(BLOGS_INFO, "utf8")
+    );
+    blogsInfo.blogs =
+      blogsInfo.blogs.filter(blog => blog.title !== title);
+    this.saveFile(blogsInfo);
   }
   /** check the blog whether is already exits */
-  check(title: string) {
-    return this.blogsInfo.blogs.some(blog => blog.title === title);
+  check(blogsInfo: BlogsInfo, title: string) {
+    return blogsInfo.blogs.some(blog => blog.title === title);
   }
-  saveFile() {
-    console.log("saveFile");
+  saveFile(blogsInfo: BlogsInfo) {
     fs.writeFileSync(
-      FILES_INFO,
-      JSON.stringify(this.blogsInfo, null, 2),
+      BLOGS_INFO,
+      JSON.stringify(blogsInfo),
       "utf-8"
     );
   }

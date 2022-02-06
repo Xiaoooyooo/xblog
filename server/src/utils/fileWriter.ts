@@ -8,12 +8,7 @@ class Writer extends stream.Writable {
   private fileInfo: FileJSON | null = null;
   private writer: fs.WriteStream | null = null;
   private parser = new fileParser;
-  public blogInfo: {
-    header?: {
-      [key: string]: string
-    };
-    text?: string;
-  } = {};
+  public blogInfo: Blog = {} as Blog;
   constructor() {
     super();
   }
@@ -43,8 +38,8 @@ class Writer extends stream.Writable {
     console.log("recieve end");
     this.parser.end(() => {
       this.blogInfo = {
-        header: matter(this.parser.header.text as string).data,
-        text: this.parser.text.text
+        header: matter(this.parser.header.text as string).data as BlogInfo,
+        content: this.parser.text.text as string
       };
     });
     this.writer.end(callback);

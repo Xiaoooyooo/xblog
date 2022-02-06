@@ -6,14 +6,17 @@ import formidale from "formidable";
 import blogWatcher from "../utils/blogWatcher";
 import Writer from "../utils/fileWriter";
 import { BLOGS_DIR } from "../env";
+import findBlogs from "../utils/findBlogs";
 
 const blog = new Router();
 
 blog.get("blog.list", async (ctx) => {
   const { page = 1, size = 10 } = ctx.query;
   ctx.set("content-type", "application/json");
+  const blogs = (await findBlogs()).blogs;
+  const data = blogs.slice();
   ctx.body = {
-    list: [],
+    list: data,
     page,
     size,
     total: 100,
@@ -21,7 +24,7 @@ blog.get("blog.list", async (ctx) => {
 });
 
 blog.post("blog.upload", async (ctx, next) => {
-  const data = await new Promise<any>((resolve, reject) => {
+  const data = await new Promise<Blog>((resolve, reject) => {
     const writerhandler = new Writer;
     formidale({
       uploadDir: BLOGS_DIR,
@@ -47,6 +50,8 @@ blog.post("blog.upload", async (ctx, next) => {
         resolve(writerhandler.blogInfo);
       });
   });
+  console.log("parse", data);
+  blogWatcher.add(data.header);
   ctx.set("content-type", "application/json");
   ctx.body = data;
 });

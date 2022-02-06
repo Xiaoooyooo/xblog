@@ -19,7 +19,7 @@ const STATES = {
 };
 
 class Parser extends stream.Transform {
-  header = new Part();
+  header = new Part(true);
   text = new Part;
   yamlBoundary = Buffer.from("\r\n---");
   index = 0;
@@ -73,19 +73,18 @@ class Parser extends stream.Transform {
           return;
         }
         case STATES.START: {
-          if (c === yamlBoundary[i + 2]) {
+          if (c === yamlBoundary[i + index + 2]) {
+            index++;
             break;
           }
-          if (i === yamlBoundary.length - 2) {
-            if (c === CR && chunk[i + 1] === LF) {
-              state = STATES.HEADER_START;
-            }
+          if (c === CR && chunk[i + 1] === LF) {
+            state = STATES.HEADER_START;
           } else {
-            return;
+            break;
           }
         }
         case STATES.HEADER_START: {
-          this.setHeaderMarker(i - (yamlBoundary.length - 2)); // equals zero.
+          this.setHeaderMarker(i);
           i++;
           state = STATES.HEADER;
         }
@@ -170,9 +169,12 @@ class Parser extends stream.Transform {
 class Part extends EventEmitter {
   buffer: Buffer;
   text: string | undefined;
-  constructor() {
+  constructor(isHeader = false) {
     super();
-    this.buffer = Buffer.alloc(0);
+    this.buffer =
+      isHeader
+        ? Buffer.from("---\r\n") // yaml 部分 buffer 不在同一段 chunk
+        : Buffer.alloc(0);
     this.init();
   }
   init() {
