@@ -19,9 +19,9 @@ const STATES = {
 };
 
 class Parser extends stream.Transform {
-  header = new Part(true);
+  header = new Part();
   text = new Part;
-  yamlBoundary = Buffer.from("---\r\n");
+  yamlBoundary = Buffer.from("\r\n---");
   index = 0;
   state = STATES.UNINITIALIZE;
   headerMarker: number | undefined = undefined;
@@ -73,17 +73,20 @@ class Parser extends stream.Transform {
           return;
         }
         case STATES.START: {
-          if (c === yamlBoundary[i]) {
+          if (c === yamlBoundary[i + 2]) {
             break;
           }
-          if (i === yamlBoundary.length) {
-            state = STATES.HEADER_START;
+          if (i === yamlBoundary.length - 2) {
+            if (c === CR && chunk[i + 1] === LF) {
+              state = STATES.HEADER_START;
+            }
           } else {
             return;
           }
         }
         case STATES.HEADER_START: {
-          this.setHeaderMarker(i);
+          this.setHeaderMarker(i - (yamlBoundary.length - 2)); // equals zero.
+          i++;
           state = STATES.HEADER;
         }
         case STATES.HEADER: {
@@ -108,8 +111,8 @@ class Parser extends stream.Transform {
               if (c === HYPHEN) {
                 index = 0;
                 flag = 1;
-                while (chunk[i + index] && yamlBoundary[index]) {
-                  if (chunk[i + index] !== yamlBoundary[index]) {
+                while (chunk[i - 2 + index] && yamlBoundary[index]) {
+                  if (chunk[i - 2 + index] !== yamlBoundary[index]) {
                     flag = 0;
                     index = 0;
                     break;
@@ -166,12 +169,10 @@ class Parser extends stream.Transform {
 
 class Part extends EventEmitter {
   buffer: Buffer;
-  isHeader: boolean;
   text: string | undefined;
-  constructor(isHeader = false) {
+  constructor() {
     super();
     this.buffer = Buffer.alloc(0);
-    this.isHeader = isHeader;
     this.init();
   }
   init() {
@@ -179,9 +180,6 @@ class Part extends EventEmitter {
       this.buffer = Buffer.concat([this.buffer, chunk]);
     });
     this.on("end", () => {
-      if (this.isHeader) {
-        this.buffer = this.buffer.slice(0, -7);
-      }
       this.text = this.buffer.toString();
       // console.log(this.text);
     });
