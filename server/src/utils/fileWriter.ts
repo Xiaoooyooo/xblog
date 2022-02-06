@@ -1,6 +1,7 @@
 import stream from "stream";
 import fs from "fs";
 import { FileJSON } from "formidable";
+import matter from "gray-matter";
 import fileParser from "./fileParser";
 
 class Writer extends stream.Writable {
@@ -8,7 +9,9 @@ class Writer extends stream.Writable {
   private writer: fs.WriteStream | null = null;
   private parser = new fileParser;
   public blogInfo: {
-    header?: string;
+    header?: {
+      [key: string]: string
+    };
     text?: string;
   } = {};
   constructor() {
@@ -40,7 +43,7 @@ class Writer extends stream.Writable {
     console.log("recieve end");
     this.parser.end(() => {
       this.blogInfo = {
-        header: this.parser.header.text,
+        header: matter(this.parser.header.text as string).data,
         text: this.parser.text.text
       };
     });

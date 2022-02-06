@@ -27,7 +27,8 @@ blog.post("blog.upload", async (ctx, next) => {
       uploadDir: BLOGS_DIR,
       keepExtensions: true,
       filename: (name, ext) => `${name}${ext}`,
-      fileWriteStreamHandler: function(fileInfo) {
+      // todo: wait the definition fileupdate
+      fileWriteStreamHandler: function(fileInfo: formidale.FileJSON) {
         return writerhandler.initWithFileInfo(fileInfo);
       },
       filter: (part) => {
