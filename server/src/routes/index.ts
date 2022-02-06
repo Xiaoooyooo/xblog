@@ -1,13 +1,15 @@
 import Router from "koa-router";
 
-import api from "./api";
+import blog from "./blog";
 
-const router = new Router();
+const api = new Router({
+  prefix: "/api"
+});
 
-router.get("/", async ctx => {
+api.get("/aa", async ctx => {
   ctx.body = "hello world!";
 });
 
-router.use(api.routes());
+api.use("/", blog.routes());
 
-export default router;
+export default api;
