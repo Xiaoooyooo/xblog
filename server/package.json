@@ -18,7 +18,8 @@
     "gray-matter": "^4.0.3",
     "koa": "^2.13.4",
     "koa-router": "^10.1.1",
-    "mime": "^3.0.0"
+    "mime": "^3.0.0",
+    "remove-markdown": "^0.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.8",
@@ -28,6 +29,7 @@
     "@types/formidable": "^2.0.4",
     "@types/koa": "^2.13.4",
     "@types/koa-router": "^7.4.4",
+    "@types/remove-markdown": "^0.3.1",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "eslint": "^8.8.0",

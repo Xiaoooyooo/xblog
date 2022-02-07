@@ -1,6 +1,7 @@
 import stream from "stream";
 import fs from "fs";
 import { FileJSON } from "formidable";
+import removeMd from "remove-markdown";
 import matter from "gray-matter";
 import fileParser from "./fileParser";
 
@@ -37,9 +38,13 @@ class Writer extends stream.Writable {
     }
     console.log("recieve end");
     this.parser.end(() => {
+      const header = matter(this.parser.header.text as string).data as BlogInfo;
+      const content = this.parser.text.text as string;
+      header.excerpt = removeMd(content, { useImgAltText: false })
+        .substring(0, 200);
       this.blogInfo = {
-        header: matter(this.parser.header.text as string).data as BlogInfo,
-        content: this.parser.text.text as string
+        header,
+        content
       };
     });
     this.writer.end(callback);

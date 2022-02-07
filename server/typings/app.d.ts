@@ -7,6 +7,7 @@ interface BlogInfo {
   tags: string[];
   categories: string[];
   index_img?: string;
+  excerpt: string;
 }
 
 /**
