@@ -1,7 +1,7 @@
 import React from "react";
 
-import marked from "utils/marked";
-import "assets/styles/markdown.css";
+import marked from "@/utils/marked";
+import "@/assets/styles/markdown.css";
 
 interface MarkdownParserProps extends React.ComponentPropsWithoutRef<"div"> {
   text: string | undefined;

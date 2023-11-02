@@ -1,15 +1,15 @@
 import React from "react";
 
-import request from "utils/request";
-import withRouter, { WithRouterProps } from "HOC/withRouter";
-import { Content, ContentBackground } from "layouts";
-import Pane from "components/Pane";
-import BlogList from "components/Blogs/BlogList";
-import Pagination from "components/Pagination";
+import request from "@/utils/request";
+import withRouter, { WithRouterProps } from "@/HOC/withRouter";
+import { Content, ContentBackground } from "@/layouts";
+import Pane from "@/components/Pane";
+import BlogList from "@/components/Blogs/BlogList";
+import Pagination from "@/components/Pagination";
 import styles from "./Home.module.scss";
 
-type HomeProps = React.ComponentProps<"div">
-  & WithRouterProps<{ page: string }>;
+type HomeProps = React.ComponentProps<"div"> &
+  WithRouterProps<{ page: string }>;
 type HomeState = {
   loading: boolean;
   blogs: Blog[];
@@ -57,7 +57,7 @@ class HomeScence extends React.Component<HomeProps, HomeState> {
           tags: ["aaa", "bbb"],
           createdAt: "2021-11-09T14:05:31.000Z",
           url: "/blog/four",
-        }
+        },
       ],
       pageSize: 6,
     };
@@ -67,11 +67,12 @@ class HomeScence extends React.Component<HomeProps, HomeState> {
     if (!loading) {
       this.setState({ loading: true });
     }
-    request.post("blog.list", {
-      data: {
-        page,
-      }
-    })
+    request
+      .post("blog.list", {
+        data: {
+          page,
+        },
+      })
       .then((res: XhrResponse) => {
         console.log(res);
       })
@@ -90,7 +91,9 @@ class HomeScence extends React.Component<HomeProps, HomeState> {
     }
   }
   componentDidMount() {
-    const { params: { page } } = this.props;
+    const {
+      params: { page },
+    } = this.props;
     const currentPage = Number(page) || 1;
     this.fetchBlogList(currentPage);
   }

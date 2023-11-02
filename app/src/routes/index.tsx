@@ -4,14 +4,14 @@ import {
   Routes,
   Route,
   // Link
-  Navigate
+  Navigate,
 } from "react-router-dom";
 
-import BaseLayout from "layouts";
+import BaseLayout from "@/layouts";
 // import Login from "views/Login";
-import Home from "views/Home";
-import Blog from "views/Blog";
-import About from "views/About";
+import Home from "@/views/Home";
+import Blog from "@/views/Blog";
+import About from "@/views/About";
 
 export default class App extends React.Component {
   render(): ReactNode {

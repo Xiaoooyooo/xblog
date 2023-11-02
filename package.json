@@ -17,7 +17,9 @@
     "app": "yarn workspace app",
     "server": "yarn workspace server",
     "build:app": "yarn workspace app build",
-    "lint:app": "eslint app/src/**/*.tsx"
+    "lint:app": "eslint app/src/**/*.tsx",
+    "upgrade:app": "node upgrade-dependencies.js app",
+    "upgrade:server": "node upgrade-dependencies.js server"
   },
   "devDependencies": {}
 }

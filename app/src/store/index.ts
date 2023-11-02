@@ -1,13 +1,10 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { connect, ConnectedProps, DefaultRootState } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 
-import blogsReducer, {
-  removeBlog,
-  fetchBlogById
-} from "./BlogsStore";
+import blogsReducer, { removeBlog, fetchBlogById } from "./BlogsStore";
 
 const rootReducer = combineReducers({
-  blogStore: blogsReducer
+  blogStore: blogsReducer,
 });
 
 const store = configureStore({
@@ -24,11 +21,11 @@ export type AppDispatch = typeof store.dispatch;
 
 // typing connect
 const mapState = (state: RootState) => ({
-  ...state
+  ...state,
 });
 const mapDispatch = {
   removeBlog,
-  fetchBlogById
+  fetchBlogById,
 };
 const connector = connect(mapState, mapDispatch);
 export type PropsFromRedux = ConnectedProps<typeof connector>;

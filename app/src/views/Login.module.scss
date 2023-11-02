@@ -13,9 +13,9 @@
     .cover {
       width: 20em;
       flex: 0 0 auto;
-      background: url(assets/images/window.jpg) no-repeat center/cover;
+      background: url(@/assets/images/window.jpg) no-repeat center/cover;
     }
-    .form{
+    .form {
       padding: 2rem;
       .formItem {
         display: block;

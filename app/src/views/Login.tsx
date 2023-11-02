@@ -1,8 +1,8 @@
 import React, { ReactNode } from "react";
 
 import styles from "./Login.module.scss";
-import Button from "components/_Base/Button";
-import Input from "components/_Base/Input";
+import Button from "@/components/_Base/Button";
+import Input from "@/components/_Base/Input";
 
 class LoginComponent extends React.Component {
   signup(): void {
