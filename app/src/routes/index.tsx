@@ -5,6 +5,7 @@ import {
   Route,
   // Link
   Navigate,
+  createBrowserRouter,
 } from "react-router-dom";
 
 import BaseLayout from "@/layouts";
@@ -13,21 +14,30 @@ import Home from "@/views/Home";
 import Blog from "@/views/Blog";
 import About from "@/views/About";
 
-export default class App extends React.Component {
-  render(): ReactNode {
-    return (
-      <Router basename="/">
-        <BaseLayout>
-          <Routes>
-            <Route path="" element={<Home />}>
-              <Route path="page/:page" element={<Home />}></Route>
-            </Route>
-            <Route path="blog/:blogId" element={<Blog />} />
-            <Route path="about" element={<About />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BaseLayout>
-      </Router>
-    );
-  }
-}
+export default createBrowserRouter(
+  [
+    {
+      element: <BaseLayout />,
+      children: [
+        {
+          path: "",
+          index: true,
+          element: <Home />,
+        },
+      ],
+    },
+    {
+      path: "blog/:blogId",
+      element: <Blog />,
+    },
+    {
+      path: "about",
+      element: <About />,
+    },
+    {
+      path: "*",
+      element: <h2>Not Found</h2>,
+    },
+  ],
+  { basename: "/" }
+);

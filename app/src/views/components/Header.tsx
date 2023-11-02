@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import styles from "./Header.module.scss";
@@ -9,11 +9,9 @@ interface NavLink {
   assets?: string;
 }
 type HeaderProps = React.ComponentProps<"header">;
-interface HeaderState {
-  showBg: boolean;
-}
-class Header extends React.Component<HeaderProps, HeaderState> {
-  links: NavLink[] = [
+
+function Header(props: HeaderProps) {
+  const links: NavLink[] = [
     {
       name: "",
       path: "/home",
@@ -25,54 +23,37 @@ class Header extends React.Component<HeaderProps, HeaderState> {
     {
       name: "关于我",
       path: "/about",
-    }
+    },
   ];
-  constructor(props: HeaderProps) {
-    super(props);
-    this.state = {
-      showBg: false,
-    };
-  }
+  const [showBg, setShowBg] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handleScroll = (e: Event) => {
+  const handleScroll = useCallback((e: Event) => {
     if (window.scrollY === 0) {
-      this.setState({
-        showBg: false,
-      });
+      setShowBg(false);
     } else {
-      this.setState({
-        showBg: true,
-      });
+      setShowBg(true);
     }
-  };
-  componentDidMount() {
-    window.addEventListener("scroll", this.handleScroll);
-  }
-  componentWillUnmount() {
-    window.removeEventListener("scroll", this.handleScroll);
-  }
-  render() {
-    const links = this.links.map((el, index) => {
-      return (
-        <Link
-          key={index}
-          to={el.path}
-          className={styles.link}
-        >
-          {el.name}
-        </Link>
-      );
-    });
-    const { showBg } = this.state;
-    const classes = `${styles.header} ${showBg ? styles.headerBg : ""}`;
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+  const _links = links.map((el, index) => {
     return (
-      <header className={classes}>
-        <nav className={styles.nav}>
-          {links}
-        </nav>
-      </header>
+      <Link key={index} to={el.path} className={styles.link}>
+        {el.name}
+      </Link>
     );
-  }
+  });
+  const classes = `${styles.header} ${showBg ? styles.headerBg : ""}`;
+  return (
+    <header className={classes}>
+      <nav className={styles.nav}>{_links}</nav>
+    </header>
+  );
 }
 
 export default Header;

@@ -15,14 +15,14 @@ export function ContentBackground(props: ContentBackgroundProps) {
   );
 }
 
-class MainContent extends React.Component<MainContentProps> {
-  render () {
-    const { children, className, ...rest } = this.props;
-    const classes = `${className} ${styles.mainContent}`;
-    return (
-      <div className={classes} {...rest}>{children}</div>
-    );
-  }
+function MainContent(props: MainContentProps) {
+  const { children, className, ...rest } = props;
+  const classes = `${className} ${styles.mainContent}`;
+  return (
+    <div className={classes} {...rest}>
+      {children}
+    </div>
+  );
 }
 
 export default MainContent;

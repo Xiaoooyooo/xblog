@@ -13,49 +13,47 @@ interface BlogItemProps extends React.ComponentProps<"div"> {
   blog: Blog;
 }
 
-class BlogItem extends React.Component<BlogItemProps> {
-  render() {
-    const {
-      blog: { title, text, url, category, tags, createdAt },
-      className,
-    } = this.props;
-    const classes = `${styles.blogItem} ${className}`;
-    return (
-      <article className={classes}>
-        <section className={styles.blogCover}>{/* TODO: 封面图片 */}</section>
-        <section className={styles.blogContent}>
-          <Link to={url}>
-            <h1 className={styles.blogTitle}>{title}</h1>
-            <p className={styles.blogText}>{text}</p>
-          </Link>
-          <div className={styles.blogMeta}>
-            <span>
-              <IconWrapper style={{ marginTop: "-3px" }}>
-                <BsCalendar3 />
-              </IconWrapper>
-              <span style={{ padding: "5px" }}>
-                {moment(createdAt).calendar()}
-              </span>
+function BlogItem(props: BlogItemProps) {
+  const {
+    blog: { title, text, url, category, tags, createdAt },
+    className,
+  } = props;
+  const classes = `${styles.blogItem} ${className}`;
+  return (
+    <article className={classes}>
+      <section className={styles.blogCover}>{/* TODO: 封面图片 */}</section>
+      <section className={styles.blogContent}>
+        <Link to={url}>
+          <h1 className={styles.blogTitle}>{title}</h1>
+          <p className={styles.blogText}>{text}</p>
+        </Link>
+        <div className={styles.blogMeta}>
+          <span>
+            <IconWrapper style={{ marginTop: "-3px" }}>
+              <BsCalendar3 />
+            </IconWrapper>
+            <span style={{ padding: "5px" }}>
+              {moment(createdAt).calendar()}
             </span>
-            <span>
-              <IconWrapper style={{ marginTop: "-3px", fontSize: "20px" }}>
-                <BiCategory />
-              </IconWrapper>
-              <Meta>{category}</Meta>
-            </span>
-            <span>
-              <IconWrapper>
-                <AiOutlineTags />
-              </IconWrapper>
-              {tags.map((el) => (
-                <Meta key={el}>{el}</Meta>
-              ))}
-            </span>
-          </div>
-        </section>
-      </article>
-    );
-  }
+          </span>
+          <span>
+            <IconWrapper style={{ marginTop: "-3px", fontSize: "20px" }}>
+              <BiCategory />
+            </IconWrapper>
+            <Meta>{category}</Meta>
+          </span>
+          <span>
+            <IconWrapper>
+              <AiOutlineTags />
+            </IconWrapper>
+            {tags.map((el) => (
+              <Meta key={el}>{el}</Meta>
+            ))}
+          </span>
+        </div>
+      </section>
+    </article>
+  );
 }
 
 export default BlogItem;
