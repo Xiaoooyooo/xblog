@@ -1,21 +1,27 @@
-import React from "react";
+import { MouseEvent, PropsWithChildren, useCallback } from "react";
 
-type MetaProps = React.ComponentProps<"span">;
+type MetaProps = PropsWithChildren & {
+  className?: string;
+  onClick?: (event: MouseEvent) => void;
+};
 
 import styles from "./Meta.module.scss";
 
 function Meta(props: MetaProps) {
   const { children, className, onClick, ...rest } = props;
   const classes = `${styles.meta} ${className}`;
-  const handleClick = React.useCallback(
-    (e: React.MouseEvent<HTMLSpanElement>) => {
+  const handleClick = useCallback(
+    (e: MouseEvent<HTMLSpanElement>) => {
       e.preventDefault();
       console.log(e);
       onClick && onClick(e);
-    }, [onClick]
+    },
+    [onClick],
   );
   return (
-    <span onClick={handleClick} className={classes} {...rest}>{children}</span>
+    <span onClick={handleClick} className={classes} {...rest}>
+      {children}
+    </span>
   );
 }
 

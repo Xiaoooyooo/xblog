@@ -1,21 +1,31 @@
-import React, { ComponentPropsWithoutRef } from "react";
-import styles from "./Button.module.scss";
+import { forwardRef, PropsWithChildren, MouseEvent } from "react";
+import classNames from "classnames";
 
-type ButtonProps = ComponentPropsWithoutRef<"button">;
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+type ButtonProps = PropsWithChildren & {
+  className?: string;
+  onClick?: (e: MouseEvent) => void;
+};
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (props: ButtonProps, ref) => {
-    const { className, children, ...rest } = props;
-    const classes = `${styles.btnDefault} ${className}`;
+    const { children, onClick, className } = props;
     return (
       <button
-        className={classes}
-        {...rest}
+        className={classNames(
+          "border-none bg-none outline-none",
+          "py-2 px-4",
+          "cursor-pointer",
+          "transition-all duration-300",
+          "rounded",
+          className,
+        )}
+        onClick={onClick}
         ref={ref}
       >
         {children}
       </button>
     );
-  });
+  },
+);
 
 Button.displayName = "Button";
 

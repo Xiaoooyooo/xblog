@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
+const webpack = require("webpack");
 const HtmlPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const isProd = process.env.NODE_ENV === "production";
-console.log(__dirname);
+
 /** @type {import("webpack").Configuration} */
 const config = {
   mode: isProd ? "production" : "development",
@@ -30,30 +32,42 @@ const config = {
         use: "babel-loader",
       },
       {
-        test: /\.s?css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
+        oneOf: [
           {
-            loader: "css-loader",
-            options: {
-              modules: {
-                localIdentName: `${
-                  isProd ? "[hash:base64:5]" : "[name]_[local]"
-                }`,
+            test: /\.scss$/,
+            use: [
+              MiniCssExtractPlugin.loader,
+              {
+                loader: "css-loader",
+                options: {
+                  modules: {
+                    localIdentName: `${
+                      isProd ? "[hash:base64:5]" : "[name]_[local]"
+                    }`,
+                  },
+                },
               },
-            },
+              {
+                loader: "postcss-loader",
+                options: {
+                  // execute: true,
+                  postcssOptions: {
+                    config: true,
+                  },
+                },
+              },
+              "sass-loader",
+            ],
           },
           {
-            loader: "postcss-loader",
-            options: {
-              // execute: true,
-              postcssOptions: {
-                config: true,
-              },
-            },
+            test: /\.css$/,
+            use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
           },
-          "sass-loader",
         ],
+      },
+      {
+        test: /\.svg$/,
+        use: "@svgr/webpack",
       },
       {
         test: /\.(jpg|png)$/i,
@@ -72,6 +86,9 @@ const config = {
       title: "React",
       template: "./public/index.html",
       filename: "index.html",
+    }),
+    new webpack.DefinePlugin({
+      __DEV__: !isProd,
     }),
   ],
 };

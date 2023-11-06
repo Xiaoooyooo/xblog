@@ -1,14 +1,14 @@
 import { Outlet } from "react-router-dom";
 
-import Header from "@/views/components/Header";
-import Footer from "@/views/components/Footer";
-import styles from "./BaseLayout.module.scss";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import classNames from "classnames";
 
 export default function BaseLayout() {
   return (
     <>
       <Header />
-      <main className={styles.main}>
+      <main>
         <Outlet />
       </main>
       <Footer />

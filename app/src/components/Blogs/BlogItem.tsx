@@ -1,58 +1,92 @@
-import React from "react";
+import { MouseEvent } from "react";
 import { Link } from "react-router-dom";
-import { AiOutlineTags } from "react-icons/ai";
-import { BsCalendar3 } from "react-icons/bs";
-import { BiCategory } from "react-icons/bi";
-
-import IconWrapper from "@/components/IconWrapper";
-import Meta from "@/components/Meta";
+import classNames from "classnames";
 import moment from "@/utils/moment";
-import styles from "./BlogItem.module.scss";
+import CalendarIcon from "@/assets/icons/calendar.svg";
+import TagIcon from "@/assets/icons/tag.svg";
+import CategoryIcon from "@/assets/icons/category.svg";
 
-interface BlogItemProps extends React.ComponentProps<"div"> {
+type BlogItemProps = {
   blog: Blog;
-}
+  onMouseEnter?: (e: HTMLDivElement) => void;
+  onMouseLeave?: (e: HTMLDivElement) => void;
+};
 
 function BlogItem(props: BlogItemProps) {
   const {
     blog: { title, text, url, category, tags, createdAt },
-    className,
+    onMouseEnter,
+    onMouseLeave,
   } = props;
-  const classes = `${styles.blogItem} ${className}`;
+  const handleMouseEnter = function (e: MouseEvent) {
+    if (!onMouseEnter) return;
+    onMouseEnter((e.target as HTMLDivElement).closest(".blog-item")!);
+  };
+  const handleMouseLeave = function (e: MouseEvent) {
+    if (!onMouseLeave) return;
+    onMouseLeave((e.target as HTMLDivElement).closest(".blog-item")!);
+  };
   return (
-    <article className={classes}>
-      <section className={styles.blogCover}>{/* TODO: 封面图片 */}</section>
-      <section className={styles.blogContent}>
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={classNames(
+        "blog-item",
+        "flex",
+        "mb-4",
+        "p-4",
+        "rounded",
+        "transition-all",
+        "relative",
+        "z-20",
+      )}
+    >
+      <section>{/* TODO: 封面图片 */}</section>
+      <section
+        className={classNames("flex-auto", "flex", "flex-col", "min-w-0")}
+      >
         <Link to={url}>
-          <h1 className={styles.blogTitle}>{title}</h1>
-          <p className={styles.blogText}>{text}</p>
+          <h1 className={classNames("text-2xl", "font-bold", "mb-4")}>
+            {title}
+          </h1>
+          <p
+            className={classNames(
+              "text-lg",
+              "leading-5",
+              "break-all",
+              "text-ellipsis",
+              "overflow-hidden",
+              "my-4",
+              "[display:-webkit-box]",
+              "[-webkit-line-clamp:2]",
+              "[-webkit-box-orient:vertical]",
+            )}
+          >
+            {text}
+          </p>
         </Link>
-        <div className={styles.blogMeta}>
-          <span>
-            <IconWrapper style={{ marginTop: "-3px" }}>
-              <BsCalendar3 />
-            </IconWrapper>
-            <span style={{ padding: "5px" }}>
+        <div className={classNames("flex", "gap-4")}>
+          <span className={classNames("flex", "items-center")}>
+            <CalendarIcon />
+            <span className={classNames("ml-1", "text-sm")}>
               {moment(createdAt).calendar()}
             </span>
           </span>
-          <span>
-            <IconWrapper style={{ marginTop: "-3px", fontSize: "20px" }}>
-              <BiCategory />
-            </IconWrapper>
-            <Meta>{category}</Meta>
+          <span className={classNames("flex", "items-center")}>
+            <CategoryIcon />
+            <span className="ml-1 text-sm">{category}</span>
           </span>
-          <span>
-            <IconWrapper>
-              <AiOutlineTags />
-            </IconWrapper>
+          <span className={classNames("flex", "items-center")}>
+            <TagIcon />
             {tags.map((el) => (
-              <Meta key={el}>{el}</Meta>
+              <span className="ml-1 text-sm" key={el}>
+                {el}
+              </span>
             ))}
           </span>
         </div>
       </section>
-    </article>
+    </div>
   );
 }
 

@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 module.exports = (api) => {
   // `api.file` - 文件路径
   // `api.mode` - webpack 的 `mode` 属性值，请查阅 https://webpack.js.org/configuration/mode/
@@ -8,11 +9,11 @@ module.exports = (api) => {
   // console.log(api.file);
   // console.log("~~~~~~~~~~~~~~~~~~~~~~");
   return {
-    plugins: [
-      [
-        "postcss-preset-env",
-        {}
-      ]
-    ]
+    plugins: {
+      "tailwindcss/nesting": {},
+      tailwindcss: {},
+      autoprefixer: {},
+      // "postcss-preset-env": {},
+    },
   };
 };

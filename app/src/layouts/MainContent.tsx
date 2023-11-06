@@ -1,9 +1,10 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 
 import styles from "./MainContent.module.scss";
 
-type MainContentProps = React.ComponentProps<"div">;
-type ContentBackgroundProps = React.ComponentProps<"div">;
+type ContentBackgroundProps = {
+  className: string;
+};
 
 export function ContentBackground(props: ContentBackgroundProps) {
   const { className, ...rest } = props;
@@ -15,6 +16,7 @@ export function ContentBackground(props: ContentBackgroundProps) {
   );
 }
 
+type MainContentProps = PropsWithChildren & { className: string };
 function MainContent(props: MainContentProps) {
   const { children, className, ...rest } = props;
   const classes = `${className} ${styles.mainContent}`;

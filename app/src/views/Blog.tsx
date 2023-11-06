@@ -1,47 +1,34 @@
-import React from "react";
 import { useParams } from "react-router-dom";
 
 import { Content, ContentBackground } from "@/layouts";
 import MarkdownParser from "@/components/MarkdownParser";
 
-import { useAppDispatch, useAppSelector } from "@/hooks/store";
-import { fetchBlogById } from "@/store/BlogsStore";
-import Pane from "@/components/Pane";
+import Panel from "@/components/Panel";
 import styles from "./Blog.module.scss";
+import useBlogWithId from "@/hooks/useBlogWithId";
 
 type BlogParams = {
   blogId: string;
 };
 type BlogScenceProps = React.ComponentPropsWithoutRef<"div">;
 
-const BlogScence: React.FunctionComponent<BlogScenceProps> = (props) => {
+const BlogScence = (props: BlogScenceProps) => {
   const { blogId } = useParams<keyof BlogParams>();
-  const blog = useAppSelector((state) =>
-    state.blogStore.data.find((el: any) => el.id === blogId)
-  );
-  const [isLoading, changeLoadingStatus] = React.useState(!blog);
-  console.log("isLoading", isLoading);
-  console.log("BlogScence blog data:", blog);
-  const dispatch = useAppDispatch();
-  React.useEffect(() => {
-    if (!blog) {
-      dispatch(fetchBlogById(blogId as string)).then((res: any) => {
-        console.log("blog fetch done.", res);
-        changeLoadingStatus(false);
-      });
-    }
-  }, []);
-
+  const { error, loading, data } = useBlogWithId(blogId as string);
+  __DEV__ && console.log("isLoading", loading);
+  __DEV__ && console.log("BlogScence blog data:", data);
   return (
     <Content className={styles.blogScence}>
       <ContentBackground className={styles.blogBackground} />
-      <Pane className={styles.mainContent} loading={isLoading}>
-        {blog ? (
-          <MarkdownParser text={blog.text} />
+      <Panel>
+        {error ? (
+          <p>fetch error</p>
+        ) : data ? (
+          <MarkdownParser text={data.text} />
         ) : (
-          !isLoading && <p>No Content</p>
+          !loading && <p>No Content</p>
         )}
-      </Pane>
+      </Panel>
     </Content>
   );
 };
