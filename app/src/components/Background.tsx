@@ -3,9 +3,12 @@ import classNames from "classnames";
 
 type BackgroundProps = PropsWithChildren & {
   imageUrl: string;
+  shift?: boolean;
+  backgroundFixed?: boolean;
 };
+
 export default function Background(props: BackgroundProps) {
-  const { imageUrl } = props;
+  const { imageUrl, shift, backgroundFixed, children } = props;
   return (
     <div
       style={{ backgroundImage: `url(${imageUrl})` }}
@@ -13,10 +16,12 @@ export default function Background(props: BackgroundProps) {
         "h-[40vh]",
         "bg-cover",
         "bg-center",
-        "-mb-24",
-        "bg-fixed",
         "relative",
+        shift && "-mb-24",
+        backgroundFixed && "bg-fixed",
       )}
-    ></div>
+    >
+      {children}
+    </div>
   );
 }

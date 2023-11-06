@@ -2,7 +2,7 @@ import useBlogsWithPage from "@/hooks/useBlogsWithPage";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Panel from "./Panel";
-import Skeleton from "./Skeleton";
+import { SkeletonItem } from "./Skeleton";
 import Button from "./_Base/Button";
 import BlogList from "./Blogs/BlogList";
 import Pagination from "./Pagination";
@@ -38,11 +38,12 @@ export default function HomeBlogList() {
   // 骨架加载图
   const skeletonView = Array(10)
     .fill(0)
-    .map((el, i) => <Skeleton key={i} />);
+    .map((el, i) => <BlogSkeleton key={i} />);
 
   return (
     <>
       <Panel shadow rounded>
+        {/* {skeletonView} */}
         {loading ? (
           skeletonView
         ) : error ? (
@@ -67,5 +68,20 @@ export default function HomeBlogList() {
         onPaginationChange={handlePageChange}
       />
     </>
+  );
+}
+
+function BlogSkeleton() {
+  return (
+    <div className="mt-12">
+      <SkeletonItem animated height="24px" width="100px" />
+      <SkeletonItem animated />
+      <SkeletonItem animated />
+      <div className="flex gap-4">
+        <SkeletonItem animated width="60px" />
+        <SkeletonItem animated width="60px" />
+        <SkeletonItem animated width="60px" />
+      </div>
+    </div>
   );
 }

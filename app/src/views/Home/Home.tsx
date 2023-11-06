@@ -6,7 +6,7 @@ import HomeBlogList from "@/components/HomeBlogList";
 export default function HomeScence() {
   return (
     <>
-      <Background imageUrl={homeImage} />
+      <Background imageUrl={homeImage} shift backgroundFixed />
       <ContentContainer>
         <HomeBlogList />
       </ContentContainer>

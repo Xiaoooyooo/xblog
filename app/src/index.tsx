@@ -5,8 +5,8 @@ import { RouterProvider } from "react-router-dom";
 
 // import "@/assets/styles/reset.css";
 import "normalize.css";
-import "@/assets/styles/common.scss";
 import "@/assets/styles/tailwind.css";
+import "@/assets/styles/index.css";
 import router from "@/routes";
 import store from "@/redux";
 
