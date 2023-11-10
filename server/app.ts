@@ -10,6 +10,7 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 app.use((ctx) => {
   if (ctx.status === 404) {
+    ctx.status = 404;
     ctx.body = "<h1>Not Found</h1>";
   }
 });

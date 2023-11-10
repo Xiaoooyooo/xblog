@@ -9,10 +9,13 @@ import "@/assets/styles/tailwind.css";
 import "@/assets/styles/index.css";
 import router from "@/routes";
 import store from "@/redux";
+import { init } from "@/redux/actions/user";
 
 if (__DEV__) {
   require("@/mock");
 }
+
+store.dispatch(init());
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

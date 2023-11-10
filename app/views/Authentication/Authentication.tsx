@@ -14,7 +14,7 @@ export default function Authentication() {
   const dispatch = useDispatch();
 
   const handleLogin = function () {
-    if (!authState.password || authState.username) return;
+    if (!authState.password || !authState.username) return;
     setIsPending(true);
     dispatch(login(authState))
       .then((res) => {

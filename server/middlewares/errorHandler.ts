@@ -7,15 +7,17 @@ export default function errorHandler() {
       await next();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       console.log("catch err:", err);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let _error: any;
       if (typeof err.status !== "number") {
+        // native errors
         _error = InternalServerError(err.message);
       } else if (err instanceof Error) {
+        // http-errors
         _error = err;
       } else {
+        // unknown errors
         _error = InternalServerError(
           typeof err === "string" ? err : JSON.stringify(err),
         );

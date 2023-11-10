@@ -3,6 +3,11 @@ import request from "@/utils/request";
 import { UserInfo } from "@/types";
 
 export const setUserInfo = createAction("user/setUesrInfo");
+
+export const init = createAsyncThunk<UserInfo>("user/init", () => {
+  return request("/api/auth");
+});
+
 export const login = createAsyncThunk<
   UserInfo,
   { username: string; password: string }

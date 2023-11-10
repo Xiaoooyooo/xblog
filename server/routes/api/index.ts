@@ -2,7 +2,7 @@ import Router from "koa-router";
 import bodyParser from "koa-body";
 import { prisma } from "~/database";
 import { AppState } from "~/types";
-import auth from "./authentication";
+import auth from "./auth";
 import apiResponse from "./middlewares/apiResponse";
 
 const api = new Router<AppState>({
