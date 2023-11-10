@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES5",
+    "lib": ["ESNext"],
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["server/*"]
+    },
+    "esModuleInterop": true
+  }
+}

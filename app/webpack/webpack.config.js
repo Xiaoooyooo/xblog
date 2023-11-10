@@ -5,13 +5,14 @@ const HtmlPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const isProd = process.env.NODE_ENV === "production";
+const cwd = process.cwd();
 
 /** @type {import("webpack").Configuration} */
 const config = {
   mode: isProd ? "production" : "development",
-  entry: "./src/index.tsx",
+  entry: path.resolve(cwd, "app/index.tsx"),
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(cwd, "build/app"),
     filename: `assets/js/${isProd ? "[contenthash]" : "bundle.[name]"}.js`,
     publicPath: "/",
     // assetModuleFilename: "assets/" // css-loader => 定义全局 asset 资源输出路径
@@ -19,10 +20,9 @@ const config = {
   },
   devtool: isProd ? false : "inline-source-map",
   resolve: {
-    modules: [path.resolve(__dirname, "src"), "node_modules"],
     extensions: [".js", ".ts", ".tsx"],
     alias: {
-      "@": path.resolve(__dirname, "../src"),
+      "@": path.resolve(cwd, "app"),
     },
   },
   module: {
@@ -67,7 +67,23 @@ const config = {
       },
       {
         test: /\.svg$/,
-        use: "@svgr/webpack",
+        loader: "@svgr/webpack",
+        options: {
+          svgoConfig: {
+            plugins: [
+              {
+                name: "preset-default",
+                params: {
+                  overrides: {
+                    // viewBox is required to resize SVGs with CSS.
+                    // @see https://github.com/svg/svgo/issues/1128
+                    removeViewBox: false,
+                  },
+                },
+              },
+            ],
+          },
+        },
       },
       {
         test: /\.(jpg|png)$/i,
@@ -84,7 +100,7 @@ const config = {
     }),
     new HtmlPlugin({
       title: "React",
-      template: "./public/index.html",
+      template: path.resolve(cwd, "app/public/index.html"),
       filename: "index.html",
     }),
     new webpack.DefinePlugin({

@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires*/
+process.env.NODE_ENV = "development";
+
 const webpack = require("webpack");
 
 const config = require("../webpack/webpack.config");
@@ -6,8 +8,6 @@ const config = require("../webpack/webpack.config");
 const Serve = require("webpack-dev-server");
 
 const complier = webpack(config);
-
-process.env.NODE_ENV = "development";
 
 const server = new Serve(
   {

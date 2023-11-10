@@ -1,4 +1,5 @@
 #!/usr/env/bin node
+/* eslint-disable */
 
 /**
  * 更新 package.json 依赖
@@ -6,12 +7,9 @@
 const path = require("path");
 const fs = require("fs");
 const cp = require("child_process");
-const args = process.argv.slice(2);
 const cwd = process.cwd();
 
-const [package] = args;
-
-const fullPath = path.resolve(cwd, package, "package.json");
+const fullPath = path.resolve(cwd, "package.json");
 
 if (!fs.existsSync(fullPath)) {
   console.log(`file: ${fullPath} is not exists.`);

@@ -1,4 +1,6 @@
-// eslint-disable-next-line
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const path = require("path");
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 module.exports = (api) => {
   // `api.file` - 文件路径
   // `api.mode` - webpack 的 `mode` 属性值，请查阅 https://webpack.js.org/configuration/mode/
@@ -11,7 +13,9 @@ module.exports = (api) => {
   return {
     plugins: {
       "tailwindcss/nesting": {},
-      tailwindcss: {},
+      tailwindcss: {
+        config: path.resolve(process.cwd(), "app/tailwind.config.js"),
+      },
       autoprefixer: {},
       // "postcss-preset-env": {},
     },

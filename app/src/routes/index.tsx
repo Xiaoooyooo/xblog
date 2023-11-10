@@ -1,33 +1,43 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 import BaseLayout from "@/layouts";
 // import Login from "views/Login";
-import Home from "@/views/Home/Home";
-import Blog from "@/views/Blog";
-import About from "@/views/About";
+const HomeScence = lazy(() => import("@/views/Home/Home"));
+const BlogScence = lazy(() => import("@/views/Blog"));
+const EditScence = lazy(() => import("@/views/Edit/Edit"));
+const AboutScence = lazy(() => import("@/views/About"));
 
 export default createBrowserRouter(
   [
     {
-      element: <BaseLayout />,
+      element: (
+        <Suspense fallback={<p>loading...</p>}>
+          <BaseLayout />
+        </Suspense>
+      ),
       children: [
         {
           path: "",
           index: true,
-          element: <Home />,
+          element: <HomeScence />,
         },
         {
           path: "page/:pageIndex",
           index: true,
-          element: <Home />,
+          element: <HomeScence />,
         },
         {
           path: "blog/:blogId",
-          element: <Blog />,
+          element: <BlogScence />,
+        },
+        {
+          path: "edit/?:blogId",
+          element: <EditScence />,
         },
         {
           path: "about",
-          element: <About />,
+          element: <AboutScence />,
         },
         {
           path: "*",
