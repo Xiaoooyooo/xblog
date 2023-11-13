@@ -47,7 +47,7 @@ function Header() {
         key={index}
         to={el.path}
         className={classNames(
-          "leading-[60px]",
+          "leading-[--header-height]",
           "px-5",
           "decoration-[none]",
           "text-white",

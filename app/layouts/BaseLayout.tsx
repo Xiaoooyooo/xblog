@@ -2,8 +2,11 @@ import { Outlet } from "react-router-dom";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Tools from "@/components/Tools/Tools";
+import { useSelector } from "@/hooks/redux";
 
 export default function BaseLayout() {
+  const isLogin = useSelector((state) => state.user.isLogin);
   return (
     <div className="flex flex-col min-h-full">
       <Header />
@@ -11,6 +14,7 @@ export default function BaseLayout() {
         <Outlet />
       </main>
       <Footer />
+      {isLogin && <Tools />}
     </div>
   );
 }

@@ -2,16 +2,18 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 import BaseLayout from "@/layouts";
+import Progress from "@/components/Progress";
 const Home = lazy(() => import("@/views/Home"));
 const Blog = lazy(() => import("@/views/Blog"));
 const About = lazy(() => import("@/views/About"));
 const Authentication = lazy(() => import("@/views/Authentication"));
+const Edit = lazy(() => import("@/views/Edit"));
 
 export default createBrowserRouter(
   [
     {
       element: (
-        <Suspense fallback={<p>loading...</p>}>
+        <Suspense fallback={<Progress />}>
           <BaseLayout />
         </Suspense>
       ),
@@ -29,6 +31,10 @@ export default createBrowserRouter(
         {
           path: "blog/:blogId",
           element: <Blog />,
+        },
+        {
+          path: "create",
+          element: <Edit />,
         },
         {
           path: "about",

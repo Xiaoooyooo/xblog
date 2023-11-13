@@ -1,8 +1,10 @@
 import Router from "koa-router";
 
-const blog = new Router();
+const blog = new Router({
+  prefix: "/blog",
+});
 
-blog.get("blog.list", async (ctx) => {
+blog.get("/list", async (ctx) => {
   const { page = 1, size = 10 } = ctx.query;
   ctx.set("content-type", "application/json");
   ctx.body = {
@@ -13,7 +15,7 @@ blog.get("blog.list", async (ctx) => {
   };
 });
 
-blog.get("blog.info", async (ctx, next) => {
+blog.get("/detail", async (ctx, next) => {
   const { title } = ctx.query;
   ctx.set("content-type", "application/json");
   console.log(title);
@@ -25,5 +27,7 @@ blog.get("blog.info", async (ctx, next) => {
     text: "",
   };
 });
+
+blog.post("/create", async (ctx) => {});
 
 export default blog;

@@ -1,3 +1,3 @@
 export default function EditScence() {
-  return <div>edit</div>;
+  return <div className="mt-[--header-height]">editor</div>;
 }
