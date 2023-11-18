@@ -5,6 +5,7 @@ import moment from "@/utils/moment";
 import CalendarIcon from "@/assets/icons/calendar.svg";
 import TagIcon from "@/assets/icons/tag.svg";
 import CategoryIcon from "@/assets/icons/category.svg";
+import { Blog } from "@/types";
 
 type BlogItemProps = {
   blog: Blog;
@@ -14,7 +15,7 @@ type BlogItemProps = {
 
 function BlogItem(props: BlogItemProps) {
   const {
-    blog: { title, text, url, category, tags, createdAt },
+    blog: { id, title, content, createdAt },
     onMouseEnter,
     onMouseLeave,
   } = props;
@@ -45,7 +46,7 @@ function BlogItem(props: BlogItemProps) {
       <section
         className={classNames("flex-auto", "flex", "flex-col", "min-w-0")}
       >
-        <Link to={url}>
+        <Link to={{ pathname: `/blog/${id}` }}>
           <h1 className={classNames("text-2xl", "font-bold", "mb-4")}>
             {title}
           </h1>
@@ -62,7 +63,7 @@ function BlogItem(props: BlogItemProps) {
               "[-webkit-box-orient:vertical]",
             )}
           >
-            {text}
+            {content}
           </p>
         </Link>
         <div className={classNames("flex", "gap-4")}>
@@ -74,15 +75,15 @@ function BlogItem(props: BlogItemProps) {
           </span>
           <span className={classNames("flex", "items-center")}>
             <CategoryIcon />
-            <span className="ml-1 text-sm">{category}</span>
+            {/* <span className="ml-1 text-sm">{category}</span> */}
           </span>
           <span className={classNames("flex", "items-center")}>
             <TagIcon />
-            {tags.map((el) => (
+            {/* {tags.map((el) => (
               <span className="ml-1 text-sm" key={el}>
                 {el}
               </span>
-            ))}
+            ))} */}
           </span>
         </div>
       </section>

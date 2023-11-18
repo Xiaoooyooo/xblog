@@ -1,8 +1,13 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { UserInfo } from "@/types";
+import { User } from "@/types";
 import { init, login } from "../actions/user";
 
-const initialUserState: UserInfo = {
+export type UserState = User & {
+  isLogin: boolean;
+  token: string;
+};
+
+const initialUserState: UserState = {
   id: "",
   username: "",
   displayName: "",

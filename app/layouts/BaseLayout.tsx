@@ -10,7 +10,7 @@ export default function BaseLayout() {
   return (
     <div className="flex flex-col min-h-full">
       <Header />
-      <main className="flex-auto">
+      <main className="flex-auto mt-[--header-height] flex flex-col">
         <Outlet />
       </main>
       <Footer />

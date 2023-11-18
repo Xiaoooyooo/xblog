@@ -61,7 +61,7 @@ function Header() {
   return (
     <header
       className={classNames(
-        "h-16",
+        "h-[--header-height]",
         "px-16",
         "backdrop-blur-sm",
         "fixed",

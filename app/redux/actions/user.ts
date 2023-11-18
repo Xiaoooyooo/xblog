@@ -1,15 +1,15 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import request from "@/utils/request";
-import { UserInfo } from "@/types";
+import { UserState } from "../reducers/user";
 
 export const setUserInfo = createAction("user/setUesrInfo");
 
-export const init = createAsyncThunk<UserInfo>("user/init", () => {
+export const init = createAsyncThunk<UserState>("user/init", () => {
   return request("/api/auth");
 });
 
 export const login = createAsyncThunk<
-  UserInfo,
+  UserState,
   { username: string; password: string }
 >("user/login", (args, thunk) => {
   /**

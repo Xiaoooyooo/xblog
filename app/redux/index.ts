@@ -5,6 +5,7 @@ const store = configureStore({
   reducer: {
     user,
   },
+  middleware: (getDefault) => getDefault(),
 });
 
 //typing hooks

@@ -1,5 +1,6 @@
 type RequestOptions = Omit<RequestInit, "url" | "body"> & {
   data?: string | Record<string, unknown>;
+  search?: Record<string, string | number>;
 };
 
 // type Response<T = unknown> = {
@@ -18,14 +19,22 @@ class RequestHandler {
     url: string,
     options: RequestOptions = {},
   ): Promise<T> {
-    const { data, ...rest } = options;
+    const { data, search, ...rest } = options;
     let body: BodyInit | null = null;
     if (typeof data === "string") {
       body = data;
     } else if (data) {
       body = JSON.stringify(data);
     }
-    return fetch(url, { ...rest, body })
+    let _url = url;
+    if (search) {
+      const s = new URLSearchParams();
+      for (const key in search) {
+        s.append(key, search[key] as string);
+      }
+      _url += `?${s.toString()}`;
+    }
+    return fetch(_url, { ...rest, body })
       .then(
         async (response) => {
           const isJson = /json/.test(

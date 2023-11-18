@@ -1,11 +1,11 @@
-import useBlogsWithPage from "@/hooks/useBlogsWithPage";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Panel from "./Panel";
-import { SkeletonItem } from "./Skeleton";
-import Button from "./Button";
-import BlogList from "./Blogs/BlogList";
-import Pagination from "./Pagination";
+import Panel from "../../components/Panel";
+import { SkeletonItem } from "../../components/Skeleton";
+import Button from "../../components/Button";
+import BlogList from "../../components/Blogs/BlogList";
+import Pagination from "../../components/Pagination";
+import { useBlogList } from "@/services/blog";
 import RefreshIcon from "@/assets/icons/refresh.svg";
 
 export default function HomeBlogList() {
@@ -19,7 +19,7 @@ export default function HomeBlogList() {
     console.log("pagination:", pageIndex, pageSize);
     setPagination((p) => ({ ...p, pageIndex, pageSize }));
   }
-  const { error, loading, data, reload } = useBlogsWithPage(
+  const { error, loading, data, reload } = useBlogList(
     pagination.pageIndex,
     pagination.pageSize,
   );
@@ -58,7 +58,7 @@ export default function HomeBlogList() {
             </Button>
           </div>
         ) : (
-          data && <BlogList blogs={data.blogs} />
+          data && <BlogList blogs={data.list} />
         )}
       </Panel>
       <Pagination

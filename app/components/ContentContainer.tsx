@@ -1,9 +1,11 @@
 import classNames from "classnames";
 import { PropsWithChildren } from "react";
 
-type ContentContainerProps = PropsWithChildren;
+type ContentContainerProps = PropsWithChildren & {
+  className?: string;
+};
 export default function ContentContainer(props: ContentContainerProps) {
-  const { children } = props;
+  const { children, className } = props;
 
   return (
     <div
@@ -12,6 +14,7 @@ export default function ContentContainer(props: ContentContainerProps) {
         "md:w-[900px]",
         "lg:w-[1100px]",
         "m-auto",
+        className,
       )}
     >
       {children}

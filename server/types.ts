@@ -8,6 +8,5 @@ export type AppState = {
 export type User = {
   id: string;
   username: string;
-  displayName: string;
   isAdmin: boolean;
 };

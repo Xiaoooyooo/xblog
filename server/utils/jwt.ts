@@ -1,40 +1,45 @@
 import jwt from "jsonwebtoken";
 import env from "~/env";
-import { User } from "~/types";
 
-function sign(
-  user: Pick<User, "id" | "username">,
-  secret: string,
-  options: jwt.SignOptions,
-) {
+type TokenPayload = {
+  id: string;
+  username: string;
+};
+
+type VerifyResult<T> =
+  | {
+      isError: true;
+      isSuccess: false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      error: any;
+    }
+  | {
+      isError: false;
+      isSuccess: true;
+      payload: T;
+    };
+
+function sign(user: TokenPayload, secret: string, options: jwt.SignOptions) {
   const { id, username } = user;
   return jwt.sign({ id, username }, secret, options);
 }
 
-type VerifyResult = {
-  isError: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: any;
-  isSuccess: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload: any;
-};
-
-function verify(token: string, secret: string) {
-  return new Promise<VerifyResult>((resolve) => {
+function verify<T>(token: string, secret: string) {
+  return new Promise<VerifyResult<T>>((resolve) => {
     jwt.verify(token, secret, (err, payload) => {
-      const result: VerifyResult = {
-        isError: false,
-        error: null,
-        isSuccess: false,
-        payload: null,
-      };
+      let result: VerifyResult<T>;
       if (err) {
-        result.isError = true;
-        result.error = err;
+        result = {
+          isError: true,
+          isSuccess: false,
+          error: err,
+        };
       } else {
-        result.isSuccess = true;
-        result.payload = payload;
+        result = {
+          isError: false,
+          isSuccess: true,
+          payload: payload as T,
+        };
       }
       resolve(result);
     });
@@ -45,18 +50,25 @@ export function decode(token: string) {
   return jwt.decode(token);
 }
 
-export function signRefreshToken(user: Pick<User, "id" | "username">) {
-  return sign(user, env.refreshTokenSecret, { expiresIn: "7d" });
+export function signRefreshToken(user: TokenPayload) {
+  console.log({ env });
+  return sign(
+    { id: user.id, username: user.username },
+    env.refreshTokenSecret,
+    { expiresIn: "7d" },
+  );
 }
 
-export function signAccessToken(user: Pick<User, "id" | "username">) {
-  return sign(user, env.accessTokenSecret, { expiresIn: "10m" });
+export function signAccessToken(user: TokenPayload) {
+  return sign({ id: user.id, username: user.username }, env.accessTokenSecret, {
+    expiresIn: "10m",
+  });
 }
 
 export function verifyRefreshToken(token: string) {
-  return verify(token, env.refreshTokenSecret);
+  return verify<TokenPayload>(token, env.refreshTokenSecret);
 }
 
 export function verifyAccessToken(token: string) {
-  return verify(token, env.accessTokenSecret);
+  return verify<TokenPayload>(token, env.accessTokenSecret);
 }

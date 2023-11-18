@@ -17,6 +17,7 @@ export default function Background(props: BackgroundProps) {
         "bg-cover",
         "bg-center",
         "relative",
+        "-mt-[--header-height]",
         shift && "-mb-24",
         backgroundFixed && "bg-fixed",
       )}

@@ -16,9 +16,10 @@ model User {
   displayName String?
   password    String
   isAdmin     Boolean?
-  profile     UserProfile[]
   createdAt   DateTime      @default(now())
-  UserToken   UserToken[]
+  profile     UserProfile[]
+  tokens      UserToken[]
+  documents   Document[]
 }
 
 model UserToken {
@@ -34,4 +35,15 @@ model UserProfile {
   userId  String
   user    User   @relation(fields: [userId], references: [id])
   content String
+}
+
+model Document {
+  id        String    @id @unique @default(uuid())
+  title     String
+  content   String
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  isDraft   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 }

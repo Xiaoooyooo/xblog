@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 
 import MarkdownParser from "@/components/MarkdownParser";
 import Panel from "@/components/Panel";
-import useBlogWithId from "@/hooks/useBlogWithId";
+import { useBlogDetail } from "@/services/blog";
 import Background from "@/components/Background";
 import ContentContainer from "@/components/ContentContainer";
 import BlogImage from "@/assets/images/window.jpg";
@@ -17,8 +17,8 @@ type BlogParams = {
 
 const BlogScence = () => {
   const { blogId } = useParams<keyof BlogParams>();
-  const { error, loading, data, reload } = useBlogWithId(blogId as string);
-  const { title, text, createdAt, category, tags } = data || ({} as Blog);
+  const { error, loading, data, reload } = useBlogDetail(blogId as string);
+  const { title, content, createdAt } = data || ({} as Blog);
   __DEV__ && console.log("isLoading", loading);
   __DEV__ && console.log("BlogScence blog data:", data);
   return (
@@ -43,7 +43,7 @@ const BlogScence = () => {
           ) : loading ? (
             <Skeleton />
           ) : data ? (
-            <MarkdownParser text={text} />
+            <MarkdownParser text={content} />
           ) : (
             !loading && <p>No Content</p>
           )}
