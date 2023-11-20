@@ -3,7 +3,7 @@ import React from "react";
 import marked from "@/utils/marked";
 import "@/assets/styles/markdown.css";
 
-interface MarkdownParserProps extends React.ComponentPropsWithoutRef<"div"> {
+interface MarkdownParserProps {
   text: string | undefined;
 }
 

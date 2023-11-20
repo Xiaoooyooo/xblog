@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { RouterProvider } from "react-router-dom";
 
-// import "@/assets/styles/reset.css";
 import "@/assets/styles/variables.css";
 import "normalize.css";
 import "@/assets/styles/tailwind.css";

@@ -9,6 +9,7 @@ export type Blog = {
   title: string;
   content: string;
   user: User;
+  isDraft: boolean;
   // category: string;
   // tags: string[];
   createdAt: number;

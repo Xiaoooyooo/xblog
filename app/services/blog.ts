@@ -7,6 +7,7 @@ import { Blog } from "@/types";
 type CreateBlogOption = {
   title: string;
   content: string;
+  isDraft?: boolean;
 };
 
 export function useCreateBlog() {

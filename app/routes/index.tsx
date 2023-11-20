@@ -4,10 +4,11 @@ import { createBrowserRouter } from "react-router-dom";
 import BaseLayout from "@/layouts";
 import Progress from "@/components/Progress";
 const Authentication = lazy(() => import("@/views/Authentication"));
-const Home = lazy(() => import("@/views/Home"));
-const Blog = lazy(() => import("@/views/Blog"));
-const About = lazy(() => import("@/views/About"));
-const Edit = lazy(() => import("@/views/Edit"));
+const HomeScene = lazy(() => import("@/views/Home"));
+const BlogScene = lazy(() => import("@/views/Blog"));
+const AboutScene = lazy(() => import("@/views/About"));
+const CreateScene = lazy(() => import("@/views/Create"));
+const EditScene = lazy(() => import("@/views/Edit"));
 
 export default createBrowserRouter(
   [
@@ -21,28 +22,28 @@ export default createBrowserRouter(
         {
           path: "",
           index: true,
-          element: <Home />,
+          element: <HomeScene />,
         },
         {
           path: "page/:pageIndex",
           index: true,
-          element: <Home />,
+          element: <HomeScene />,
         },
         {
           path: "blog/:blogId",
-          element: <Blog />,
+          element: <BlogScene />,
         },
         {
-          path: "edit",
-          element: <Edit />,
+          path: "new",
+          element: <CreateScene />,
         },
         {
           path: "edit/:blogId",
-          element: <Edit />,
+          element: <EditScene />,
         },
         {
           path: "about",
-          element: <About />,
+          element: <AboutScene />,
         },
       ],
     },

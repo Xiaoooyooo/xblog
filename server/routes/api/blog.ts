@@ -52,12 +52,12 @@ blog.get("/detail", async (ctx) => {
 blog.post("/create", authentication({ force: true }), async (ctx) => {
   const database = ctx.state.database;
   const user = ctx.state.user!;
-  const { title, content } = ctx.state.body;
+  const { title, content, isDraft } = ctx.state.body;
   if (!title) {
     throw BadRequestError("Blog title is required!");
   }
   const blog = await database.document.create({
-    data: { title, content, userId: user.id },
+    data: { title, content, userId: user.id, isDraft },
   });
   ctx.body = { id: blog.id };
 });
@@ -65,7 +65,7 @@ blog.post("/create", authentication({ force: true }), async (ctx) => {
 blog.post("/update", authentication({ force: true }), async (ctx) => {
   const { body, database } = ctx.state;
   const user = ctx.state.user!;
-  const { id, title, content } = body;
+  const { id, title, content, isDraft } = body;
   if (!id || !title || !content) {
     throw BadRequestError();
   }
@@ -76,9 +76,12 @@ blog.post("/update", authentication({ force: true }), async (ctx) => {
   if (blog.userId !== user.id && !user.isAdmin) {
     throw ForbiddenError();
   }
+  if (!blog.isDraft && isDraft) {
+    throw ForbiddenError("Cannot unpublish a published blog");
+  }
   await database.document.update({
     where: { id },
-    data: { title, content, updatedAt: new Date() },
+    data: { title, content, updatedAt: new Date(), isDraft },
   });
   ctx.body = { id };
 });

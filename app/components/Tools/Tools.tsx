@@ -38,7 +38,7 @@ export default function Tools(props: ToolProps) {
         ),
         onClick: function () {
           console.log("create");
-          navigate({ pathname: "/edit" });
+          navigate({ pathname: "/new" });
         },
       },
       {
