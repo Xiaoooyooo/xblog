@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import Panel from "../../components/Panel";
-import { SkeletonItem } from "../../components/Skeleton";
-import Button from "../../components/Button";
-import BlogList from "../../components/Blogs/BlogList";
-import Pagination from "../../components/Pagination";
+import Panel from "@/components/Panel";
+import { SkeletonItem } from "@/components/Skeleton";
+import Button from "@/components/Button";
+import BlogList from "@/components/Blogs/BlogList";
+import Pagination from "@/components/Pagination";
 import { useBlogList } from "@/services/blog";
 import RefreshIcon from "@/assets/icons/refresh.svg";
 
@@ -19,32 +19,36 @@ export default function HomeBlogList() {
     console.log("pagination:", pageIndex, pageSize);
     setPagination((p) => ({ ...p, pageIndex, pageSize }));
   }
-  const { error, loading, data, reload } = useBlogList(
+  const { isError, error, isLoading, isSuccess, result, reload } = useBlogList(
     pagination.pageIndex,
     pagination.pageSize,
   );
-  console.log({ error, loading, data });
+  __DEV__ && console.log({ isError, error, isLoading, isSuccess, result });
 
   useEffect(() => {
-    if (data?.total) {
-      setPagination((p) => ({ ...p, total: data.total }));
+    if (isSuccess && result) {
+      setPagination((p) => ({ ...p, total: result.total }));
     }
-  }, [data?.total]);
+  }, [isSuccess, result]);
 
   useEffect(() => {
     setPagination((p) => ({ ...p, pageIndex: Number(params.pageIndex || 1) }));
   }, [params.pageIndex]);
 
   // 骨架加载图
-  const skeletonView = Array(10)
-    .fill(0)
-    .map((el, i) => <BlogSkeleton key={i} />);
+  const skeletonView = useMemo(
+    () =>
+      Array(10)
+        .fill(0)
+        .map((el, i) => <BlogSkeleton key={i} />),
+    [],
+  );
 
   return (
     <>
       <Panel shadow rounded>
         {/* {skeletonView} */}
-        {loading ? (
+        {isLoading ? (
           skeletonView
         ) : error ? (
           <div className="h-[500px] pt-[200px] text-center">
@@ -58,7 +62,7 @@ export default function HomeBlogList() {
             </Button>
           </div>
         ) : (
-          data && <BlogList blogs={data.list} />
+          result && <BlogList blogs={result.list} />
         )}
       </Panel>
       <Pagination

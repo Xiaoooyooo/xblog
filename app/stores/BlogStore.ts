@@ -1,5 +1,5 @@
 import BaseStore from "./base";
-import request from "@/utils/request";
+import request from "@/services/request";
 
 class BlogStore extends BaseStore<Blog> {
   fetch(id: string) {

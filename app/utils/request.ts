@@ -1,4 +1,6 @@
-type RequestOptions = Omit<RequestInit, "url" | "body"> & {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export type RequestOption = Omit<RequestInit, "url" | "body"> & {
   data?: string | Record<string, unknown>;
   search?: Record<string, string | number>;
 };
@@ -9,17 +11,17 @@ type RequestOptions = Omit<RequestInit, "url" | "body"> & {
 //   data: T;
 // };
 
-class RequestHandler {
+export default class RequestHandler {
   private interceptors: [
     onFullfilled: (data: unknown) => unknown,
     onRejected?: (error: unknown) => unknown,
   ][] = [];
-  /* mockjs 只重写了 xhr 对于 fetch 不起作用 */
   private _requestWithFetch<T = unknown>(
     url: string,
-    options: RequestOptions = {},
+    option: RequestOption = {},
+    extraOption: Record<string, any>,
   ): Promise<T> {
-    const { data, search, ...rest } = options;
+    const { data, search, ...rest } = option;
     let body: BodyInit | null = null;
     if (typeof data === "string") {
       body = data;
@@ -49,66 +51,26 @@ class RequestHandler {
         },
         (networkError) => {
           __DEV__ && console.log("network error", networkError);
-          throw networkError;
+          throw { config: { url, option }, error: networkError, extraOption };
         },
       )
       .catch(async (error) => {
         __DEV__ && console.log("request error", error);
-        throw error;
+        throw { config: { url, option }, error, extraOption };
       });
   }
 
-  private _requestWithXHR<T = unknown>(
+  async request<T>(
     url: string,
-    options: RequestOptions = {},
+    options: RequestOption = {},
+    extraOption: Record<string, any> = {},
   ) {
-    const { data, method = "get", headers } = options;
-    return new Promise<T>((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open(method, url, true);
-      if (headers) {
-        const _h = new Headers(headers);
-        _h.forEach((value, key) => {
-          xhr.setRequestHeader(key, value);
-        });
-      }
-      let _data: XMLHttpRequestBodyInit | null = null;
-      if (typeof data === "string") {
-        _data = data;
-      } else if (data) {
-        _data = JSON.stringify(data);
-      }
-
-      xhr.onload = function () {
-        let result;
-        try {
-          result = JSON.parse(this.response);
-        } catch (err) {
-          result = this.response;
-        }
-        if (this.status >= 200 && this.status < 300) {
-          resolve(result);
-        } else {
-          reject(result);
-        }
-      };
-      xhr.ontimeout = function (error) {
-        reject(error);
-      };
-      xhr.onerror = function (error) {
-        reject(error);
-      };
-      xhr.onabort = function (error) {
-        reject(error);
-      };
-
-      xhr.send(_data);
-    });
-  }
-
-  async request<T>(url: string, options: RequestOptions = {}) {
     const len = this.interceptors.length;
-    let promise: Promise<unknown> = this._requestWithFetch<T>(url, options);
+    let promise: Promise<unknown> = this._requestWithFetch<T>(
+      url,
+      options,
+      extraOption,
+    );
     for (let i = 0; i < len; i++) {
       const [onFullfilled, onRejected] = this.interceptors[i];
       promise = promise.then(onFullfilled, onRejected);
@@ -117,21 +79,9 @@ class RequestHandler {
   }
 
   useInterceptor(
-    onFullfilled: (data: unknown) => unknown,
-    onRejected?: (error: unknown) => unknown,
+    onFullfilled: (data: any) => any,
+    onRejected?: (error: any) => any,
   ) {
     this.interceptors.push([onFullfilled, onRejected]);
   }
 }
-
-const requestHandler = new RequestHandler();
-
-requestHandler.useInterceptor(
-  // eslint-disable-next-line
-  (response: any) => {
-    if (response.code === 0) return response.data;
-    throw response;
-  },
-);
-
-export default requestHandler.request.bind(requestHandler);

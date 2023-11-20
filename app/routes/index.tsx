@@ -3,10 +3,10 @@ import { createBrowserRouter } from "react-router-dom";
 
 import BaseLayout from "@/layouts";
 import Progress from "@/components/Progress";
+const Authentication = lazy(() => import("@/views/Authentication"));
 const Home = lazy(() => import("@/views/Home"));
 const Blog = lazy(() => import("@/views/Blog"));
 const About = lazy(() => import("@/views/About"));
-const Authentication = lazy(() => import("@/views/Authentication"));
 const Edit = lazy(() => import("@/views/Edit"));
 
 export default createBrowserRouter(
@@ -33,7 +33,11 @@ export default createBrowserRouter(
           element: <Blog />,
         },
         {
-          path: "create",
+          path: "edit",
+          element: <Edit />,
+        },
+        {
+          path: "edit/:blogId",
           element: <Edit />,
         },
         {

@@ -13,7 +13,7 @@ export default function ContentContainer(props: ContentContainerProps) {
         "sm:w-[600px]",
         "md:w-[900px]",
         "lg:w-[1100px]",
-        "m-auto",
+        "mx-auto",
         className,
       )}
     >

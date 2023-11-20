@@ -59,27 +59,28 @@ blog.post("/create", authentication({ force: true }), async (ctx) => {
   const blog = await database.document.create({
     data: { title, content, userId: user.id },
   });
-  ctx.body = { blog };
+  ctx.body = { id: blog.id };
 });
 
-blog.patch("/update", authentication({ force: true }), async (ctx) => {
+blog.post("/update", authentication({ force: true }), async (ctx) => {
   const { body, database } = ctx.state;
   const user = ctx.state.user!;
   const { id, title, content } = body;
+  if (!id || !title || !content) {
+    throw BadRequestError();
+  }
   const blog = await database.document.findUnique({ where: { id } });
   if (!blog) {
     throw NotFoundError("The blog you are trying to update does not exist");
   }
-  if (!user.isAdmin && blog.userId !== user.id) {
+  if (blog.userId !== user.id && !user.isAdmin) {
     throw ForbiddenError();
   }
   await database.document.update({
     where: { id },
     data: { title, content, updatedAt: new Date() },
   });
-  ctx.body = {
-    data: "OK",
-  };
+  ctx.body = { id };
 });
 
 export default blog;

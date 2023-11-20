@@ -1,6 +1,6 @@
 import { createReducer } from "@reduxjs/toolkit";
 import { User } from "@/types";
-import { init, login } from "../actions/user";
+import { init, login, setUserInfo } from "../actions/user";
 
 export type UserState = User & {
   isLogin: boolean;
@@ -17,6 +17,14 @@ const initialUserState: UserState = {
 
 const user = createReducer(initialUserState, (builder) => {
   builder
+    .addCase(setUserInfo, (state, action) => {
+      const { payload } = action;
+      payload.displayName && (state.displayName = payload.displayName);
+      payload.id && (state.id = payload.id);
+      payload.username && (state.username = payload.username);
+      payload.token && (state.token = payload.token);
+      payload.isLogin && (state.isLogin = payload.isLogin);
+    })
     .addCase(init.fulfilled, (state, action) => {
       if (action.payload.isLogin) {
         state.id = action.payload.id;

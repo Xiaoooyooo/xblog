@@ -11,25 +11,48 @@ export default function useFetchState<T = unknown, P = unknown>(
   deps: any[],
 ) {
   const [fetchState, setFetchState] = useState<{
-    error: boolean;
-    loading: boolean;
-    data: T | null;
+    isError: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    error: any;
+    isSuccess: boolean;
+    result: T | null;
+    isLoading: boolean;
   }>({
-    error: false,
-    loading: false,
-    data: option.initialData || null,
+    isError: false,
+    error: null,
+    isSuccess: false,
+    result: option.initialData || null,
+    isLoading: false,
   });
 
   const fetchFn = useCallback(
     (args: P) => {
-      setFetchState({ error: false, data: null, loading: true });
+      setFetchState({
+        isError: false,
+        error: null,
+        isSuccess: false,
+        result: null,
+        isLoading: true,
+      });
       option
         .fetchFn(args)
         .then((res) => {
-          setFetchState({ error: false, data: res, loading: false });
+          setFetchState({
+            isError: false,
+            error: null,
+            isSuccess: true,
+            result: res,
+            isLoading: false,
+          });
         })
         .catch((error) => {
-          setFetchState({ error: error, data: null, loading: false });
+          setFetchState({
+            isError: true,
+            error: error,
+            isSuccess: false,
+            result: null,
+            isLoading: false,
+          });
         });
     },
     [deps],

@@ -1,14 +1,16 @@
 import React from "react";
 import {} from "react-router-dom";
 
-import { Content, ContentBackground } from "@/layouts";
-import styles from "./About.module.scss";
+import Background from "@/components/Background";
+import ContentContainer from "@/components/ContentContainer";
+import image from "@/assets/images/mountain.jpg";
 
 function AboutScence() {
   return (
-    <Content>
-      <ContentBackground className={styles.aboutBackground} />
-    </Content>
+    <>
+      <Background imageUrl={image} />
+      <ContentContainer>hey</ContentContainer>
+    </>
   );
 }
 

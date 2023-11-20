@@ -1,4 +1,4 @@
-import request from "@/utils/request";
+import request from "./request";
 import { useEffect } from "react";
 import useFetchState from "./useFetchState";
 import { useSelector } from "@/hooks/redux";
@@ -12,10 +12,33 @@ type CreateBlogOption = {
 export function useCreateBlog() {
   const token = useSelector((state) => state.user.token);
 
-  const [state, fetchFn] = useFetchState<unknown, CreateBlogOption>(
+  const [state, fetchFn] = useFetchState<{ id: string }, CreateBlogOption>(
     {
       fetchFn: (data) =>
         request("/api/blog/create", {
+          method: "post",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          data,
+        }),
+    },
+    [token],
+  );
+  return { ...state, fetchFn };
+}
+
+export function useUpdateBlog() {
+  const token = useSelector((state) => state.user.token);
+
+  const [state, fetchFn] = useFetchState<
+    { id: string },
+    CreateBlogOption & { id: string }
+  >(
+    {
+      fetchFn: (data) =>
+        request("/api/blog/update", {
           method: "post",
           headers: {
             "content-type": "application/json",
@@ -59,7 +82,7 @@ export function useBlogList(pageIndex: number, pageSize: number) {
   };
 }
 
-export function useBlogDetail(id: string) {
+export function useBlogDetail(id?: string) {
   const [fetchState, fetchFn] = useFetchState<Blog, string>(
     {
       fetchFn: (id) =>
@@ -72,7 +95,8 @@ export function useBlogDetail(id: string) {
   );
 
   useEffect(() => {
-    fetchFn(id);
+    id && fetchFn(id);
   }, [id]);
-  return { ...fetchState, reload: () => fetchFn(id) };
+
+  return { ...fetchState, reload: () => id && fetchFn(id) };
 }

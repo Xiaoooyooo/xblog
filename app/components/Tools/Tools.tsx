@@ -1,5 +1,10 @@
 import { useRef, useState, ReactNode, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+  useMatch,
+  useParams,
+} from "react-router-dom";
 import classNames from "classnames";
 import { Transition } from "../Transition";
 import EditIcon from "@/assets/icons/edit.svg";
@@ -9,26 +14,31 @@ type ToolItem = {
   id: string;
   element: ReactNode;
   onClick?: () => void;
+  visible?: boolean | (() => boolean);
 };
 
-type ToolProps = {};
+type ToolProps = {
+  //
+};
 
 export default function Tools(props: ToolProps) {
   const actionListElRef = useRef<HTMLDivElement>(null);
   const [isShowTools, setIsShowTools] = useState(false);
   const navigate = useNavigate();
+  const matchBlogDetailPage = useMatch("/blog/:id");
+  const params = useParams();
   const items = useMemo<ToolItem[]>(() => {
     return [
       {
-        id: "new",
+        id: "create",
         element: (
           <button className="h-full w-full flex justify-center items-center">
             <CreateIcon className="h-7 w-7" />
           </button>
         ),
         onClick: function () {
-          console.log("new");
-          navigate({ pathname: "/create" });
+          console.log("create");
+          navigate({ pathname: "/edit" });
         },
       },
       {
@@ -39,11 +49,14 @@ export default function Tools(props: ToolProps) {
           </button>
         ),
         onClick: function () {
-          console.log("edit");
+          console.log("edit", params);
+          navigate({ pathname: `/edit/${params.blogId}` });
         },
+        visible: () => !!matchBlogDetailPage,
       },
     ];
-  }, []);
+  }, [matchBlogDetailPage, params]);
+
   useEffect(() => {
     function onDocumentClick(e: MouseEvent) {
       const target = e.target as HTMLElement;
@@ -65,30 +78,40 @@ export default function Tools(props: ToolProps) {
       </div>
 
       <div className="absolute bottom-full" ref={actionListElRef}>
-        {items.map(({ id, element, onClick }) => (
-          <Transition
-            key={id}
-            show={isShowTools}
-            duration={200}
-            beforeEnterClassName="opacity-0 scale-75"
-            enterActiveClassName="transition-all duration-200"
-            enterDoneClassName=""
-            beforeLeaveClassName="opacity-100"
-            leaveActiveClassName="transition-all duration-200"
-            leaveDoneClassName="opacity-0 scale-75"
-            unmountOnHide
-          >
-            <div
-              onClick={() => {
-                setIsShowTools(false);
-                onClick?.();
-              }}
-              className="h-[50px] w-[50px] rounded-full shadow-lg mb-3"
+        {items
+          .filter((item) => {
+            if (typeof item.visible === "undefined") {
+              return true;
+            }
+            if (typeof item.visible === "function") {
+              return item.visible();
+            }
+            return item.visible;
+          })
+          .map(({ id, element, onClick }) => (
+            <Transition
+              key={id}
+              show={isShowTools}
+              duration={200}
+              beforeEnterClassName="opacity-0 scale-75"
+              enterActiveClassName="transition-all duration-200"
+              enterDoneClassName=""
+              beforeLeaveClassName="opacity-100"
+              leaveActiveClassName="transition-all duration-200"
+              leaveDoneClassName="opacity-0 scale-75"
+              unmountOnHide
             >
-              {element}
-            </div>
-          </Transition>
-        ))}
+              <div
+                onClick={() => {
+                  setIsShowTools(false);
+                  onClick?.();
+                }}
+                className="h-[50px] w-[50px] rounded-full shadow-lg mb-3"
+              >
+                {element}
+              </div>
+            </Transition>
+          ))}
       </div>
     </div>
   );

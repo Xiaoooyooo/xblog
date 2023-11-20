@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Blog } from "@/types";
-import request from "@/utils/request";
+import request from "@/services/request";
 
 export type CreateBlogOption = {
   title: string;
