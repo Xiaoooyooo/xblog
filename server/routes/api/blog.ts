@@ -20,12 +20,15 @@ blog.get("/list", async (ctx) => {
   }
   const _page = Number(page),
     _size = Number(size);
-  const total = await database.document.count();
+  const total = await database.document.count({ where: { deletedAt: null } });
   const data = await database.document.findMany({
     skip: (_page - 1) * _size,
     take: _size,
     orderBy: {
       [orderBy]: order,
+    },
+    where: {
+      deletedAt: null,
     },
   });
   ctx.body = {
@@ -84,6 +87,27 @@ blog.post("/update", authentication({ force: true }), async (ctx) => {
     data: { title, content, updatedAt: new Date(), isDraft },
   });
   ctx.body = { id };
+});
+
+blog.delete("/delete", authentication({ force: true }), async (ctx) => {
+  const { id } = ctx.query;
+  if (typeof id !== "string") {
+    throw BadRequestError();
+  }
+  const user = ctx.state.user!;
+  const { database } = ctx.state;
+  const blog = await database.document.findUnique({ where: { id } });
+  if (!blog) {
+    throw NotFoundError();
+  }
+  if (blog.userId !== user.id && !user.isAdmin) {
+    throw ForbiddenError();
+  }
+  await database.document.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  });
+  ctx.body = true;
 });
 
 export default blog;

@@ -10,7 +10,7 @@ export default function ContentContainer(props: ContentContainerProps) {
   return (
     <div
       className={classNames(
-        "w-full",
+        "w-10/12",
         "sm:w-[600px]",
         "md:w-[900px]",
         "lg:w-[1100px]",

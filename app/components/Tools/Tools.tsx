@@ -1,19 +1,20 @@
-import { useRef, useState, ReactNode, useMemo, useEffect } from "react";
-import {
-  useNavigate,
-  useLocation,
-  useMatch,
-  useParams,
-} from "react-router-dom";
+import { useState, useEffect, memo } from "react";
+import { useNavigate, useMatch, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { Transition } from "../Transition";
 import EditIcon from "@/assets/icons/edit.svg";
 import CreateIcon from "@/assets/icons/add.svg";
+import DeleteIcon from "@/assets/icons/delete.svg";
+import LoadingIcon from "@/assets/icons/circle-loading.svg";
+import { deleteBlog } from "@/services/functions/blog";
 
 type ToolItem = {
   id: string;
-  element: ReactNode;
-  onClick?: () => void;
+  element: JSX.Element | ((isPending: boolean) => JSX.Element);
+  onClick: (
+    isPending: boolean,
+    setIsPending: (value: boolean) => void,
+  ) => boolean;
   visible?: boolean | (() => boolean);
 };
 
@@ -22,40 +23,69 @@ type ToolProps = {
 };
 
 export default function Tools(props: ToolProps) {
-  const actionListElRef = useRef<HTMLDivElement>(null);
   const [isShowTools, setIsShowTools] = useState(false);
   const navigate = useNavigate();
   const matchBlogDetailPage = useMatch("/blog/:id");
   const params = useParams();
-  const items = useMemo<ToolItem[]>(() => {
-    return [
+
+  const items = (
+    [
       {
-        id: "create",
-        element: (
-          <button className="h-full w-full flex justify-center items-center">
-            <CreateIcon className="h-7 w-7" />
-          </button>
-        ),
+        id: "new",
+        element: <CreateIcon className="h-7 w-7" />,
         onClick: function () {
-          console.log("create");
           navigate({ pathname: "/new" });
         },
       },
       {
         id: "edit",
-        element: (
-          <button className="h-full w-full flex justify-center items-center">
-            <EditIcon className="h-7 w-7" />
-          </button>
-        ),
+        element: <EditIcon className="h-7 w-7" />,
         onClick: function () {
-          console.log("edit", params);
+          __DEV__ && console.log("edit", params);
           navigate({ pathname: `/edit/${params.blogId}` });
         },
         visible: () => !!matchBlogDetailPage,
       },
-    ];
-  }, [matchBlogDetailPage, params]);
+      {
+        id: "delete",
+        element: (isPending) =>
+          isPending ? (
+            <LoadingIcon height={22} width={22} />
+          ) : (
+            <DeleteIcon className="h-7 w-7" />
+          ),
+        onClick: function (isPending, setIsPending) {
+          __DEV__ && console.log("delete", params);
+          if (isPending) return;
+          setIsPending(true);
+          deleteBlog(params.blogId!)
+            .then((res) => {
+              if (res) {
+                setIsShowTools(false);
+                setTimeout(() => {
+                  navigate({ pathname: "/" });
+                }, 100);
+              } else {
+                __DEV__ && console.log("delete failed", res);
+              }
+            })
+            .finally(() => {
+              setIsPending(false);
+            });
+          return false;
+        },
+        visible: () => !!matchBlogDetailPage,
+      },
+    ] as ToolItem[]
+  ).filter((item) => {
+    if (typeof item.visible === "undefined") {
+      return true;
+    }
+    if (typeof item.visible === "function") {
+      return item.visible();
+    }
+    return item.visible;
+  });
 
   useEffect(() => {
     function onDocumentClick(e: MouseEvent) {
@@ -69,7 +99,7 @@ export default function Tools(props: ToolProps) {
   }, []);
 
   return (
-    <div id="tools" className="fixed right-[60px] bottom-[60px] ">
+    <div id="tools" className="fixed right-[60px] bottom-[60px]">
       <div>
         <ToolButton
           onClick={() => setIsShowTools(!isShowTools)}
@@ -77,41 +107,31 @@ export default function Tools(props: ToolProps) {
         />
       </div>
 
-      <div className="absolute bottom-full" ref={actionListElRef}>
-        {items
-          .filter((item) => {
-            if (typeof item.visible === "undefined") {
-              return true;
-            }
-            if (typeof item.visible === "function") {
-              return item.visible();
-            }
-            return item.visible;
-          })
-          .map(({ id, element, onClick }) => (
-            <Transition
-              key={id}
-              show={isShowTools}
-              duration={200}
-              beforeEnterClassName="opacity-0 scale-75"
-              enterActiveClassName="transition-all duration-200"
-              enterDoneClassName=""
-              beforeLeaveClassName="opacity-100"
-              leaveActiveClassName="transition-all duration-200"
-              leaveDoneClassName="opacity-0 scale-75"
-              unmountOnHide
-            >
-              <div
-                onClick={() => {
+      <div className="absolute bottom-full">
+        {items.map(({ id, element, onClick }) => (
+          <Transition
+            key={id}
+            show={isShowTools}
+            duration={200}
+            beforeEnterClassName="opacity-0 scale-75"
+            enterActiveClassName="transition-all duration-200 ease-[cubic-bezier(.8,.36,0,2.01)]"
+            enterDoneClassName=""
+            beforeLeaveClassName="opacity-100"
+            leaveActiveClassName="transition-all duration-200 ease-[cubic-bezier(.8,.36,0,2.01)]"
+            leaveDoneClassName="opacity-0 scale-75"
+            unmountOnHide
+          >
+            <ToolItem
+              element={element}
+              onClick={(...args) => {
+                const isClose = onClick?.(...args);
+                if (typeof isClose !== "undefined" && isClose !== false) {
                   setIsShowTools(false);
-                  onClick?.();
-                }}
-                className="h-[50px] w-[50px] rounded-full shadow-lg mb-3"
-              >
-                {element}
-              </div>
-            </Transition>
-          ))}
+                }
+              }}
+            />
+          </Transition>
+        ))}
       </div>
     </div>
   );
@@ -121,6 +141,7 @@ type ToolButtonProps = {
   onClick: () => void;
   open: boolean;
 };
+
 function ToolButton(props: ToolButtonProps) {
   const { onClick, open } = props;
   return (
@@ -153,3 +174,30 @@ function ToolButton(props: ToolButtonProps) {
     </button>
   );
 }
+
+type ToolItemProps = {
+  element: JSX.Element | ((isActionPending: boolean) => JSX.Element);
+  onClick: (
+    isActionPending: boolean,
+    setIsActionPending: (value: boolean) => void,
+  ) => void;
+  className?: string;
+};
+
+const ToolItem = memo(function ToolItem(props: ToolItemProps) {
+  const { element, onClick, className } = props;
+  const [isActionPending, setIsActionPending] = useState(false);
+  return (
+    <div
+      onClick={() => onClick(isActionPending, setIsActionPending)}
+      className={classNames(
+        "h-[50px] w-[50px] rounded-full shadow-lg mb-3 cursor-pointer",
+        className,
+      )}
+    >
+      <button className="h-full w-full flex justify-center items-center pointer-events-none">
+        {typeof element === "function" ? element(isActionPending) : element}
+      </button>
+    </div>
+  );
+});

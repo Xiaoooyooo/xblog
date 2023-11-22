@@ -20,7 +20,7 @@ const BlogScence = () => {
   const { isError, error, isSuccess, result, isLoading, reload } =
     useBlogDetail(blogId as string);
   const { title, content, createdAt } = result || ({} as Blog);
-  __DEV__ && console.log({ isError, error, isSuccess, result, isLoading });
+
   return (
     <>
       <Background imageUrl={BlogImage}>

@@ -51,25 +51,39 @@ export default function Transition(props: TransitionProps) {
       isMountRef.current = true;
       return;
     }
-    if (timerRef.current) clearTimeout(timerRef.current);
-    if (show) {
-      setStage("before-enter");
+
+    if (show && stage.startsWith("leave-")) {
+      if (stage === "leave-done") {
+        setStage("before-enter");
+      }
       requestAnimationFrame(() => {
         setStage("enter-active");
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+          timerRef.current = undefined;
+        }
         timerRef.current = setTimeout(() => {
           setStage("enter-done");
+          timerRef.current = undefined;
         }, duration);
       });
-    } else {
-      setStage("before-leave");
+    } else if (!show && stage.startsWith("enter-")) {
+      if (stage === "enter-done") {
+        setStage("before-leave");
+      }
       requestAnimationFrame(() => {
         setStage("leave-active");
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+          timerRef.current = undefined;
+        }
         timerRef.current = setTimeout(() => {
           setStage("leave-done");
+          timerRef.current = undefined;
         }, duration);
       });
     }
-  }, [show, duration]);
+  }, [show, duration, stage]);
 
   if (unmountOnHide && stage === "leave-done") return null;
   return cloneElement(children, {

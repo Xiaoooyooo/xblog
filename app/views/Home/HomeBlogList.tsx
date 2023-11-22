@@ -23,7 +23,6 @@ export default function HomeBlogList() {
     pagination.pageIndex,
     pagination.pageSize,
   );
-  __DEV__ && console.log({ isError, error, isLoading, isSuccess, result });
 
   useEffect(() => {
     if (isSuccess && result) {

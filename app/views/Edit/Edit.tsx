@@ -5,6 +5,8 @@ import ContentContainer from "@/components/ContentContainer";
 import Button from "@/components/Button";
 // import Input from "@/components/Input";
 import { useBlogDetail, useUpdateBlog } from "@/services/blog";
+import Background from "@/components/Background";
+import image from "@/assets/images/aurora.jpg";
 
 export default function EditScence() {
   const [title, setTitle] = useState("");
@@ -63,9 +65,10 @@ export default function EditScence() {
   }
 
   return (
-    <div className="flex-auto pt-8 flex flex-col">
-      <ContentContainer className="flex-auto flex flex-col">
-        <div className="flex gap-x-2 justify-end py-1 z-10 bg-white sticky top-[--header-height]">
+    <div className="flex-auto flex flex-col">
+      <Background imageUrl={image} />
+      <ContentContainer className="pt-8 flex-auto flex flex-col">
+        <div className="flex gap-x-4 justify-end py-1 z-10 sticky top-[--header-height]">
           <Button
             loading={action === "save" && isUpdateBlogLoading}
             onClick={() => handleSave()}

@@ -34,25 +34,29 @@ export default function useFetchState<T = unknown, P = unknown>(
         result: null,
         isLoading: true,
       });
-      option
+      return option
         .fetchFn(args)
         .then((res) => {
-          setFetchState({
+          const state = {
             isError: false,
             error: null,
             isSuccess: true,
             result: res,
             isLoading: false,
-          });
+          } as const;
+          setFetchState(state);
+          return state;
         })
         .catch((error) => {
-          setFetchState({
+          const state = {
             isError: true,
             error: error,
             isSuccess: false,
             result: null,
             isLoading: false,
-          });
+          } as const;
+          setFetchState(state);
+          return state;
         });
     },
     [deps],

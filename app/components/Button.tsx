@@ -42,7 +42,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={handleClick}
         ref={ref}
       >
-        {loading && <LoadingIcon height="24" width="24" className="mr-2" />}
+        {loading && <LoadingIcon height="20" width="20" className="mr-2" />}
         {children}
       </button>
     );
