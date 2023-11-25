@@ -1,16 +1,20 @@
-import { useState, useCallback, useEffect, useLayoutEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
 import Button from "@/components/Button";
 // import Input from "@/components/Input";
-import { useBlogDetail, useUpdateBlog } from "@/services/blog";
 import Background from "@/components/Background";
+import { useBlogDetail, useUpdateBlog } from "@/services/blog";
+import CategorySelect from "../../components/CategorySelect";
 import image from "@/assets/images/aurora.jpg";
 
 export default function EditScence() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+  const [categories, setCategories] = useState<
+    { label: string; value: string; isCreated?: boolean }[]
+  >([]);
   const [isReadyEdit, setIsReadyEdit] = useState(false);
   const [action, setAction] = useState<"save" | "publish">();
   const { blogId } = useParams();
@@ -35,15 +39,38 @@ export default function EditScence() {
   const handleSave = useCallback(
     (isDraft?: false) => {
       setAction(isDraft === false ? "publish" : "save");
-      updateBlogFn({ title, content: text, id: blogId!, isDraft });
+      console.log({ categories });
+      const categoriesId: string[] = [];
+      const createdCategories: string[] = [];
+      categories.forEach((item) => {
+        if (item.isCreated) {
+          createdCategories.push(item.value);
+        } else {
+          categoriesId.push(item.value);
+        }
+      });
+      updateBlogFn({
+        title,
+        content: text,
+        id: blogId!,
+        isDraft,
+        categoriesId,
+        createdCategories,
+      });
     },
-    [text, title, blogId],
+    [text, title, categories, blogId],
   );
 
   useEffect(() => {
     if (isGetDetailSuccess && blogDetailResult) {
       setTitle(blogDetailResult.title);
       setText(blogDetailResult.content);
+      setCategories(
+        blogDetailResult.categories.map((item) => ({
+          label: item.name,
+          value: item.id,
+        })),
+      );
       setIsReadyEdit(true);
     }
   }, [isGetDetailSuccess, blogDetailResult]);
@@ -84,6 +111,10 @@ export default function EditScence() {
             </Button>
           )}
         </div>
+        <CategorySelect
+          categories={categories}
+          onCategoriesChange={setCategories}
+        />
         <BlogEditor
           title={title}
           text={text}

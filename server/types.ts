@@ -1,4 +1,6 @@
-import { Database } from "./database";
+import { Database, Prisma } from "./database";
+
+export type { Prisma };
 
 export type AppState = {
   database: Database;

@@ -20,19 +20,26 @@ blog.get("/list", async (ctx) => {
   }
   const _page = Number(page),
     _size = Number(size);
-  const total = await database.document.count({ where: { deletedAt: null } });
+  const total = await database.document.count({
+    where: { deletedAt: null },
+  });
   const data = await database.document.findMany({
     skip: (_page - 1) * _size,
     take: _size,
-    orderBy: {
-      [orderBy]: order,
-    },
-    where: {
-      deletedAt: null,
+    orderBy: { [orderBy]: order },
+    where: { deletedAt: null },
+    include: {
+      categories: {
+        select: { category: { select: { id: true, name: true } } },
+        where: { category: { is: { deletedAt: null } } },
+      },
     },
   });
   ctx.body = {
-    list: data,
+    list: data.map((item) => ({
+      ...item,
+      categories: item.categories.map((el) => el.category),
+    })),
     page: _page,
     size: _size,
     total,
@@ -45,22 +52,56 @@ blog.get("/detail", async (ctx) => {
     throw BadRequestError("bad blog id parameter");
   }
   const database = ctx.state.database;
-  const blog = await database.document.findUnique({ where: { id } });
+  const blog = await database.document.findUnique({
+    where: { id },
+    include: {
+      categories: {
+        select: { category: { select: { id: true, name: true } } },
+        where: { category: { is: { deletedAt: null } } },
+      },
+    },
+  });
   if (!blog) {
     throw NotFoundError();
   }
-  ctx.body = blog;
+  ctx.body = {
+    ...blog,
+    categories: blog.categories.map((item) => item.category),
+  };
 });
 
 blog.post("/create", authentication({ force: true }), async (ctx) => {
   const database = ctx.state.database;
   const user = ctx.state.user!;
-  const { title, content, isDraft } = ctx.state.body;
+  const { title, content, isDraft, categoriesId, createdCategories } =
+    ctx.state.body;
   if (!title) {
     throw BadRequestError("Blog title is required!");
   }
+  if (!Array.isArray(categoriesId) || !Array.isArray(createdCategories)) {
+    throw BadRequestError("Wrong category type!");
+  }
   const blog = await database.document.create({
-    data: { title, content, userId: user.id, isDraft },
+    data: {
+      title,
+      content,
+      userId: user.id,
+      isDraft,
+      categories: {
+        create: [
+          ...createdCategories.map((item: string) => ({
+            category: {
+              create: { name: item, createdBy: { connect: { id: user.id } } },
+            },
+          })),
+          ...categoriesId.map((item: string) => ({
+            category: {
+              connect: { id: item },
+            },
+          })),
+        ],
+      },
+    },
   });
   ctx.body = { id: blog.id };
 });
@@ -68,11 +109,20 @@ blog.post("/create", authentication({ force: true }), async (ctx) => {
 blog.post("/update", authentication({ force: true }), async (ctx) => {
   const { body, database } = ctx.state;
   const user = ctx.state.user!;
-  const { id, title, content, isDraft } = body;
-  if (!id || !title || !content) {
+  const { id, title, content, isDraft, categoriesId, createdCategories } = body;
+  if (
+    !id ||
+    !title ||
+    !content ||
+    !Array.isArray(categoriesId) ||
+    !Array.isArray(createdCategories)
+  ) {
     throw BadRequestError();
   }
-  const blog = await database.document.findUnique({ where: { id } });
+  const blog = await database.document.findUnique({
+    where: { id },
+    include: { categories: { include: { category: true } } },
+  });
   if (!blog) {
     throw NotFoundError("The blog you are trying to update does not exist");
   }
@@ -82,9 +132,41 @@ blog.post("/update", authentication({ force: true }), async (ctx) => {
   if (!blog.isDraft && isDraft) {
     throw ForbiddenError("Cannot unpublish a published blog");
   }
+
+  const prevCategories = blog.categories.map((item) => item.category.id);
+  const prevCategoriesSet = new Set(prevCategories);
+  const newUsedCategories: string[] = [];
+  categoriesId.forEach((id) => {
+    if (!prevCategoriesSet.has(id)) {
+      newUsedCategories.push(id);
+    } else {
+      prevCategoriesSet.delete(id);
+    }
+  });
+  const deletedCategories = Array.from(prevCategoriesSet.values());
+
   await database.document.update({
     where: { id },
-    data: { title, content, updatedAt: new Date(), isDraft },
+    data: {
+      title,
+      content,
+      isDraft,
+      categories: {
+        create: [
+          ...createdCategories.map((item: string) => ({
+            category: {
+              create: { name: item, createdBy: { connect: { id: user.id } } },
+            },
+          })),
+          ...newUsedCategories.map((item: string) => ({
+            category: {
+              connect: { id: item },
+            },
+          })),
+        ],
+        deleteMany: deletedCategories.map((item) => ({ categoryId: item })),
+      },
+    },
   });
   ctx.body = { id };
 });

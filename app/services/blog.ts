@@ -8,6 +8,8 @@ type CreateBlogOption = {
   title: string;
   content: string;
   isDraft?: boolean;
+  categoriesId?: string[];
+  createdCategories?: string[];
 };
 
 export function useCreateBlog() {

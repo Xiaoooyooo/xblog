@@ -11,15 +11,16 @@ datasource db {
 }
 
 model User {
-  id          String        @id @unique @default(uuid())
-  username    String        @unique
+  id          String       @id @unique @default(uuid())
+  username    String       @unique
   displayName String?
   password    String
   isAdmin     Boolean?
-  createdAt   DateTime      @default(now())
-  profile     UserProfile[]
+  createdAt   DateTime     @default(now())
+  profile     UserProfile?
   tokens      UserToken[]
   documents   Document[]
+  Category    Category[]
 }
 
 model UserToken {
@@ -32,19 +33,39 @@ model UserToken {
 
 model UserProfile {
   id      String @id @unique @default(uuid())
-  userId  String
+  userId  String @unique
   user    User   @relation(fields: [userId], references: [id])
   content String
 }
 
 model Document {
-  id        String    @id @unique @default(uuid())
-  title     String
-  content   String
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  isDraft   Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
+  id         String                  @id @unique @default(uuid())
+  title      String
+  content    String
+  userId     String
+  user       User                    @relation(fields: [userId], references: [id])
+  isDraft    Boolean                 @default(true)
+  createdAt  DateTime                @default(now())
+  updatedAt  DateTime                @updatedAt
+  deletedAt  DateTime?
+  categories CategoriesOnDocuments[]
+}
+
+model Category {
+  id        String                  @id @default(uuid())
+  name      String                  @unique
+  createdAt DateTime                @default(now())
   deletedAt DateTime?
+  documents CategoriesOnDocuments[]
+  createdBy User                    @relation(fields: [creator], references: [id])
+  creator   String
+}
+
+model CategoriesOnDocuments {
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  @@id([documentId, categoryId])
 }

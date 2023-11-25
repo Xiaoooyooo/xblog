@@ -60,7 +60,7 @@ export default class RequestHandler {
       });
   }
 
-  async request<T>(
+  async request<T = any>(
     url: string,
     options: RequestOption = {},
     extraOption: Record<string, any> = {},

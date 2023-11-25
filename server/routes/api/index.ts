@@ -2,6 +2,7 @@ import Router from "koa-router";
 import bodyParser from "koa-body";
 import auth from "./auth";
 import blog from "./blog";
+import category from "./category";
 import apiResponse from "./middlewares/apiResponse";
 import mountState from "./middlewares/mountState";
 
@@ -18,5 +19,6 @@ api.use(mountState());
 api.use(apiResponse());
 api.use(auth.routes());
 api.use(blog.routes());
+api.use(category.routes());
 
 export default api;

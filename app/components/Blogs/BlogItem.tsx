@@ -15,7 +15,7 @@ type BlogItemProps = {
 
 function BlogItem(props: BlogItemProps) {
   const {
-    blog: { id, title, content, createdAt },
+    blog: { id, title, content, categories, createdAt },
     onMouseEnter,
     onMouseLeave,
   } = props;
@@ -73,18 +73,19 @@ function BlogItem(props: BlogItemProps) {
               {moment(createdAt).calendar()}
             </span>
           </span>
-          <span className={classNames("flex", "items-center")}>
-            <CategoryIcon />
-            {/* <span className="ml-1 text-sm">{category}</span> */}
-          </span>
-          <span className={classNames("flex", "items-center")}>
-            <TagIcon />
-            {/* {tags.map((el) => (
-              <span className="ml-1 text-sm" key={el}>
-                {el}
-              </span>
-            ))} */}
-          </span>
+          {categories.length > 0 && (
+            <span className="flex items-center">
+              <CategoryIcon />
+              {categories.map((category) => (
+                <span
+                  key={category.id}
+                  className="ml-1 text-sm cursor-pointer hover:text-sky-600 transition-colors duration-200"
+                >
+                  {category.name}
+                </span>
+              ))}
+            </span>
+          )}
         </div>
       </section>
     </div>

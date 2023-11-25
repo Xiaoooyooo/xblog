@@ -5,11 +5,15 @@ import ContentContainer from "@/components/ContentContainer";
 import { useCreateBlog } from "@/services/blog";
 import { Navigate } from "react-router-dom";
 import Background from "@/components/Background";
+import CategorySelect from "@/components/CategorySelect";
 import image from "@/assets/images/wave.jpg";
 
 export default function CreateScene() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+  const [categories, setCategories] = useState<
+    { label: string; value: string; isCreated?: boolean }[]
+  >([]);
   const { fetchFn, isError, error, isLoading, isSuccess, result } =
     useCreateBlog();
   const [action, setAction] = useState<"save" | "publish">();
@@ -17,7 +21,22 @@ export default function CreateScene() {
   const handlePublish = useCallback(
     (isDraft = false) => {
       setAction(isDraft ? "save" : "publish");
-      fetchFn({ title, content: text, isDraft });
+      const categoriesId: string[] = [];
+      const createdCategories: string[] = [];
+      categories.forEach((item) => {
+        if (item.isCreated) {
+          createdCategories.push(item.value);
+        } else {
+          categoriesId.push(item.value);
+        }
+      });
+      fetchFn({
+        title,
+        content: text,
+        isDraft,
+        categoriesId,
+        createdCategories,
+      });
     },
     [text, title],
   );
@@ -31,13 +50,23 @@ export default function CreateScene() {
       <Background imageUrl={image} />
       <ContentContainer className="pt-8 flex-auto flex flex-col">
         <div className="flex gap-x-4 justify-end py-1 z-10 bg-white sticky top-[--header-height]">
-          <Button loading={isLoading} onClick={() => handlePublish(true)}>
+          <Button
+            loading={action === "save" && isLoading}
+            onClick={() => handlePublish(true)}
+          >
             保存为草稿
           </Button>
-          <Button loading={isLoading} onClick={() => handlePublish()}>
+          <Button
+            loading={action === "publish" && isLoading}
+            onClick={() => handlePublish()}
+          >
             发布
           </Button>
         </div>
+        <CategorySelect
+          categories={categories}
+          onCategoriesChange={setCategories}
+        />
         <BlogEditor
           title={title}
           text={text}

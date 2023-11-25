@@ -1,4 +1,5 @@
 import { useRef, useCallback, useState } from "react";
+import { Blog } from "@/types";
 
 import BlogItem from "./BlogItem";
 import classNames from "classnames";

@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { Transition } from "../Transition";
 import EditIcon from "@/assets/icons/edit.svg";
 import CreateIcon from "@/assets/icons/add.svg";
-import DeleteIcon from "@/assets/icons/delete.svg";
+import TrashIcon from "@/assets/icons/trash.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
 import { deleteBlog } from "@/services/functions/blog";
 
@@ -52,7 +52,7 @@ export default function Tools(props: ToolProps) {
           isPending ? (
             <LoadingIcon height={22} width={22} />
           ) : (
-            <DeleteIcon className="h-7 w-7" />
+            <TrashIcon className="h-7 w-7" />
           ),
         onClick: function (isPending, setIsPending) {
           __DEV__ && console.log("delete", params);

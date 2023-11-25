@@ -10,8 +10,20 @@ export type Blog = {
   content: string;
   user: User;
   isDraft: boolean;
-  // category: string;
+  categories: Category[];
   // tags: string[];
   createdAt: number;
   updatedAt: number;
+};
+
+export type Category = {
+  id: string;
+  name: string;
+};
+
+export type List<T = unknown> = {
+  page: number;
+  index: number;
+  total: number;
+  list: T[];
 };
