@@ -22,8 +22,8 @@ export type Category = {
 };
 
 export type List<T = unknown> = {
-  page: number;
   index: number;
+  size: number;
   total: number;
   list: T[];
 };
