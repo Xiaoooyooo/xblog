@@ -2,17 +2,14 @@ import Koa from "koa";
 
 import router from "./routes";
 import errorHandler from "./middlewares/errorHandler";
+import renderApp from "./middlewares/renderApp";
 
 const app = new Koa();
 
 app.use(errorHandler());
 app.use(router.routes());
 app.use(router.allowedMethods());
-app.use((ctx) => {
-  if (ctx.status === 404) {
-    ctx.status = 404;
-    ctx.body = "<h1>Not Found</h1>";
-  }
-});
+// all unknown request fallback to index page
+app.use(renderApp());
 
 export default app;

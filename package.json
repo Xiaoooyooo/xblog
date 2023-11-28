@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start:app": "node app/scripts/start.js",
+    "watch:app": "rm -rf ./build/app && node app/scripts/watch.js",
     "build:app": "rm -rf ./build/app && node app/scripts/build.js",
     "lint:app": "eslint app/src/**/*.tsx",
     "upgrade-packages": "node upgrade-dependencies.js",
@@ -31,6 +32,7 @@
     "koa": "^2.14.2",
     "koa-body": "^6.0.1",
     "koa-router": "^12.0.1",
+    "koa-send": "^5.0.1",
     "marked": "^9.1.5",
     "marked-highlight": "^2.0.7",
     "mime": "^3.0.0",
@@ -90,7 +92,6 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
     "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
   }
 }

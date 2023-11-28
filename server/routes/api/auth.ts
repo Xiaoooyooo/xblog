@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import { AppState } from "~/types";
-import { encryptPassword } from "~/utils/encrypt";
+import { hash } from "~/utils/encrypt";
 import { BadRequestError, UnauthorizedError, ForbiddenError } from "~/errors";
 import {
   signRefreshToken,
@@ -56,7 +56,7 @@ auth.post("/register", async (ctx) => {
     throw ForbiddenError("The username is already exists");
   }
   const newUser = await database.user.create({
-    data: { username, password: encryptPassword(password), displayName },
+    data: { username, password: hash(password), displayName },
   });
   ctx.body = {
     id: newUser.id,
@@ -73,7 +73,7 @@ auth.post("/login", async (ctx) => {
   if (!password) throw BadRequestError("password is needed");
   const user = await database.user.findUnique({ where: { username } });
   if (!user) throw UnauthorizedError("Wrong username or password");
-  const _password = encryptPassword(password);
+  const _password = hash(password);
   if (_password !== user.password) {
     throw UnauthorizedError("Wrong username or password");
   }
