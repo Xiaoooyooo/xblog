@@ -1,10 +1,21 @@
 import "./env";
 import * as http from "http";
+import { execSync } from "child_process";
 
 import app from "./app";
 
-const server = http.createServer(app.callback());
+function prismaMigration() {
+  const output = execSync("yarn migrate");
+  console.log(output.toString("utf8"));
+}
 
-server.listen(9999, () => {
-  console.log("server is running");
-});
+function main() {
+  const server = http.createServer(app.callback());
+
+  server.listen(9999, () => {
+    console.log("server is running");
+  });
+}
+
+prismaMigration();
+main();

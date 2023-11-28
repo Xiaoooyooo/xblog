@@ -2,19 +2,20 @@
   "name": "xblog",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Yu <xiaoooyooo@gmail.com>",
+  "author": "Xiaoooyooo <xiaoooyooo@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "upgrade-packages": "node upgrade-dependencies.js",
     "start:app": "node app/scripts/start.js",
     "watch:app": "rm -rf ./build/app && node app/scripts/watch.js",
     "build:app": "rm -rf ./build/app && node app/scripts/build.js",
-    "lint:app": "eslint app/src/**/*.tsx",
-    "upgrade-packages": "node upgrade-dependencies.js",
-    "build:server": "rm -rf ./build/* && babel -d ./build/server ./server -x .ts",
-    "watch:server": "rm -rf ./build/* && babel -d ./build/server ./server -x .ts -w",
     "start:server": "node ./server/scripts/start.js",
+    "watch:server": "rm -rf ./build/server && babel -d ./build/server ./server -x .ts --ignore **/*.d.ts -w",
+    "build:server": "rm -rf ./build/server && babel -d ./build/server ./server -x .ts --ignore **/*.d.ts",
     "generate": "prisma generate --schema=./server/prisma/schema.prisma",
-    "migrate:dev": "prisma migrate dev --schema=./server/prisma/schema.prisma"
+    "migrate": "prisma migrate dev --schema=./server/prisma/schema.prisma",
+    "build": "node build.js",
+    "start": "node build/server/index.js"
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",

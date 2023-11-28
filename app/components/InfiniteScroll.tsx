@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useRef } from "react";
+import { PropsWithChildren, useLayoutEffect, useEffect, useRef } from "react";
 import classNames from "classnames";
 
 type InfiniteScrollProps = PropsWithChildren<{
@@ -15,7 +15,7 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
   const execFnRef = useRef(execFn);
   const execDistanceRef = useRef(execDistance);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     allowExecRef.current = allowExec;
     execFnRef.current = execFn;
     execDistanceRef.current = execDistance;
@@ -34,9 +34,9 @@ export default function InfiniteScroll(props: InfiniteScrollProps) {
     if (!scrollElRef.current) {
       return;
     }
-    scrollElRef.current.addEventListener("scrollend", handleReachBottom);
+    scrollElRef.current.addEventListener("scroll", handleReachBottom);
     return () => {
-      scrollElRef.current?.removeEventListener("scrollend", handleReachBottom);
+      scrollElRef.current?.removeEventListener("scroll", handleReachBottom);
     };
   }, []);
 

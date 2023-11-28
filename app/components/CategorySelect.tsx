@@ -81,9 +81,6 @@ export default function CategorySelect(props: CategorySelectProps) {
   );
 
   const handleScrollLoadData = useCallback(() => {
-    if (categoryListPagination.end) {
-      return;
-    }
     const { index, size } = categoryListPagination;
     getCategoryList(true, {
       name: searchKeywordsRef.current,

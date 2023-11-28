@@ -2,7 +2,6 @@ import { Context, Next } from "koa";
 export default function apiResponse() {
   return async function (ctx: Context, next: Next) {
     await next();
-    console.log(ctx.status);
     if (ctx.status === 200) {
       ctx.set("content-type", "application/json");
       ctx.body = {
