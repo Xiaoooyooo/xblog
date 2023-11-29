@@ -1,0 +1,46 @@
+name: Deploy
+
+on:
+  # Runs on pushes targeting the default branch
+  pull_request:
+    branches: ["master"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Allow one concurrent deployment
+concurrency:
+  group: "deploy"
+  cancel-in-progress: true
+
+# Default to bash
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: install yarn
+        run: npm i yarn -g
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: install ssh
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+      - name: compress assets
+        run: tar -czvf build.gz ./build
+      - name: upload
+        run: scp build.gz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.WORK_DIR }}"
+      - name: clean ssh
+        run: rm -rf ~/.ssh/id_rsa
+
+  # Deployment job
