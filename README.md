@@ -38,4 +38,4 @@ A project for managing blog posts.
    yarn start:app
    ```
 
-7. open url `http://127.0.0.1:9999` in browser
+7. open url `http://127.0.0.1:{port}` in browser if you are running `watch:app` in previous step, otherwise open url `http://127.0.0.1:8888`, port is defined in `.env` file

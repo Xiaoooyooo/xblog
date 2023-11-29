@@ -4,6 +4,7 @@ dotenv.config();
 
 class Environment {
   public isProduction = process.env.NODE_ENV === "production";
+  public port = parseInt(process.env.PORT || "") || 80;
   /** disable or enable server route /api/auth/register */
   public allowNewUerRegister = process.env.ALLOW_NEW_USER_REGISTER === "true";
   /** secret for sign refresh token */
