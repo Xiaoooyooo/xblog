@@ -19,6 +19,10 @@ function Header() {
       path: "/",
     },
     {
+      name: "分类",
+      path: "/category",
+    },
+    {
       name: "关于我",
       path: "/about",
     },
@@ -52,6 +56,8 @@ function Header() {
           "decoration-[none]",
           "text-white",
           "hover:text-[crimson]",
+          "transition-colors",
+          "duration-300",
         )}
       >
         {el.name}
@@ -70,7 +76,8 @@ function Header() {
         "z-[999]",
         "shadow",
         "transition-all",
-        !isBackgroundTransparent && "bg-[rgba(30,33,40,0.8)]",
+        "bg-[rgba(30,33,40,0.8)]",
+        // !isBackgroundTransparent && "bg-[rgba(30,33,40,0.8)]",
       )}
     >
       <nav className={classNames("flex", "justify-end", "h-full")}>

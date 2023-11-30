@@ -28,10 +28,19 @@ blog.get("/list", async (ctx) => {
     take: _size,
     orderBy: { [orderBy]: order },
     where: { deletedAt: null },
-    include: {
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      updatedAt: true,
+      title: true,
+      isDraft: true,
       categories: {
         select: { category: { select: { id: true, name: true } } },
         where: { category: { is: { deletedAt: null } } },
+      },
+      user: {
+        select: { id: true, username: true, displayName: true },
       },
     },
   });
@@ -54,10 +63,19 @@ blog.get("/detail", async (ctx) => {
   const database = ctx.state.database;
   const blog = await database.document.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      updatedAt: true,
+      title: true,
+      isDraft: true,
       categories: {
         select: { category: { select: { id: true, name: true } } },
         where: { category: { is: { deletedAt: null } } },
+      },
+      user: {
+        select: { id: true, username: true, displayName: true },
       },
     },
   });

@@ -19,6 +19,7 @@ export type Blog = {
 export type Category = {
   id: string;
   name: string;
+  documents?: number;
 };
 
 export type List<T = unknown> = {

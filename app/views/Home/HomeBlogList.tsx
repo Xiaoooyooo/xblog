@@ -65,6 +65,7 @@ export default function HomeBlogList() {
         )}
       </Panel>
       <Pagination
+        href={(page: number) => `/page/${page}`}
         total={pagination.total}
         pageIndex={pagination.pageIndex}
         pageSize={pagination.pageSize}

@@ -1,8 +1,11 @@
-import { useRef, useCallback, useState } from "react";
-import { Blog } from "@/types";
-
-import BlogItem from "./BlogItem";
+import { Link } from "react-router-dom";
 import classNames from "classnames";
+import moment from "@/utils/moment";
+import CalendarIcon from "@/assets/icons/calendar.svg";
+import PersonIcon from "@/assets/icons/person.svg";
+import CategoryIcon from "@/assets/icons/category.svg";
+import { Blog } from "@/types";
+import { List, ListItem } from "../List";
 
 interface BlogListProps {
   blogs: Blog[];
@@ -10,63 +13,75 @@ interface BlogListProps {
 
 function BlogList(props: BlogListProps) {
   const { blogs } = props;
-  const [backgroundPosition, setBackgroundPosition] = useState({
-    visible: false,
-    y: 0,
-    height: 0,
-  });
-  const hoverBackgroundElRef = useRef(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
-  const handleItemMouseEnter = useCallback((target: HTMLDivElement) => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = undefined;
-    }
-    setBackgroundPosition({
-      visible: true,
-      y: target.offsetTop,
-      height: target.clientHeight,
-    });
-  }, []);
-  const handleItemMouseLeave = useCallback(() => {
-    timerRef.current = setTimeout(() => {
-      setBackgroundPosition((p) => ({
-        ...p,
-        visible: false,
-      }));
-    }, 500);
-  }, []);
 
   return (
-    <div className={classNames("relative")}>
-      {blogs.map((blog, i) => (
-        <BlogItem
-          key={i}
-          blog={blog}
-          onMouseEnter={handleItemMouseEnter}
-          onMouseLeave={handleItemMouseLeave}
-        />
+    <List>
+      {blogs.map((blog) => (
+        <ListItem
+          key={blog.id}
+          className={classNames(
+            "flex",
+            "mb-4",
+            "p-4",
+            "rounded",
+            "transition-all",
+            "relative",
+            "z-20",
+          )}
+        >
+          <section>{/* TODO: 封面图片 */}</section>
+          <section
+            className={classNames("flex-auto", "flex", "flex-col", "min-w-0")}
+          >
+            <Link to={{ pathname: `/blog/${blog.id}` }}>
+              <h1 className={classNames("text-2xl", "font-bold", "mb-4")}>
+                {blog.title}
+              </h1>
+              <p
+                className={classNames(
+                  "text-lg",
+                  "leading-5",
+                  "break-all",
+                  "text-ellipsis",
+                  "overflow-hidden",
+                  "my-4",
+                  "[display:-webkit-box]",
+                  "[-webkit-line-clamp:2]",
+                  "[-webkit-box-orient:vertical]",
+                )}
+              >
+                {blog.content}
+              </p>
+            </Link>
+            <div className="flex gap-4">
+              <span className="flex items-center">
+                <PersonIcon height={20} width={20} />
+                <span className="ml-1">{blog.user.username}</span>
+              </span>
+              <span className="flex items-center">
+                <CalendarIcon />
+                <span className="ml-1 text-sm">
+                  {moment(blog.createdAt).calendar()}
+                </span>
+              </span>
+              {blog.categories.length > 0 && (
+                <span className="flex items-center">
+                  <CategoryIcon />
+                  {blog.categories.map((category) => (
+                    <span
+                      key={category.id}
+                      className="ml-1 text-sm cursor-pointer hover:text-sky-600 transition-colors duration-200"
+                    >
+                      {category.name}
+                    </span>
+                  ))}
+                </span>
+              )}
+            </div>
+          </section>
+        </ListItem>
       ))}
-      <div
-        className={classNames(
-          "absolute",
-          "top-0",
-          "transition-all",
-          "duration-300",
-          "bg-gray-200",
-          "w-full",
-          "z-10",
-          "rounded",
-          "shadow-lg",
-        )}
-        style={{
-          transform: `translateY(${backgroundPosition.y}px)`,
-          height: backgroundPosition.height,
-          opacity: backgroundPosition.visible ? 1 : 0,
-        }}
-        ref={hoverBackgroundElRef}
-      ></div>
-    </div>
+    </List>
   );
 }
 

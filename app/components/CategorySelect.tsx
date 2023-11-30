@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import Select, { SelectItem, SelectItemOption } from "@/components/Select";
 import InfiniteScroll from "./InfiniteScroll";
-import { useGetCategories } from "@/services/category";
+import { getCategories } from "@/services/functions/categories";
 import debounce from "@/utils/debounce";
 import { Category } from "@/types";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
@@ -18,12 +18,6 @@ export default function CategorySelect(props: CategorySelectProps) {
   const [isContinueLoading, setIsContinueLoading] = useState(false);
   const [categoryList, setCategoryList] = useState<Category[]>([]);
   const searchKeywordsRef = useRef("");
-  const {
-    isLoading: isGetCateroiesLoading,
-    isSuccess: isGetCategoriesSuccess,
-    result: getCategoriesResult,
-    fetchFn: getCategoriesFn,
-  } = useGetCategories();
 
   const [categoryListPagination, setCategoryListPagination] = useState({
     index: 1,
@@ -46,19 +40,17 @@ export default function CategorySelect(props: CategorySelectProps) {
         setIsGetCategoriesLoading(true);
         setCategoryListPagination({ index: 1, size: 10, end: false });
       }
-      getCategoriesFn(search)
+      getCategories(search)
         .then((res) => {
-          if (res.isSuccess) {
-            const { list, index, size } = res.result;
-            if (isContinue) {
-              setCategoryList((p) => [...p, ...list]);
-              setCategoryListPagination((p) => ({ ...p, index }));
-              if (list.length < size) {
-                setCategoryListPagination((p) => ({ ...p, end: true }));
-              }
-            } else {
-              setCategoryList(list);
+          const { list, index, size } = res;
+          if (isContinue) {
+            setCategoryList((p) => [...p, ...list]);
+            setCategoryListPagination((p) => ({ ...p, index }));
+            if (list.length < size) {
+              setCategoryListPagination((p) => ({ ...p, end: true }));
             }
+          } else {
+            setCategoryList(list);
           }
         })
         .finally(() => {

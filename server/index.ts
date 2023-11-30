@@ -17,5 +17,7 @@ function main() {
   });
 }
 
-prismaMigration();
+if (env.isProduction) {
+  prismaMigration();
+}
 main();

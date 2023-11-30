@@ -6,6 +6,7 @@ export type GetCategoryOption = {
   name: string;
   pageIndex: number;
   pageSize: number;
+  documents?: boolean;
 };
 
 export function getCategories(search: GetCategoryOption) {

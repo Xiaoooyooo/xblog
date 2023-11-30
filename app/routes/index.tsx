@@ -9,6 +9,7 @@ const BlogScene = lazy(() => import("@/views/Blog"));
 const AboutScene = lazy(() => import("@/views/About"));
 const CreateScene = lazy(() => import("@/views/Create"));
 const EditScene = lazy(() => import("@/views/Edit"));
+const CategoryScene = lazy(() => import("@/views/Category"));
 
 export default createBrowserRouter(
   [
@@ -32,6 +33,14 @@ export default createBrowserRouter(
         {
           path: "blog/:blogId",
           element: <BlogScene />,
+        },
+        {
+          path: "category",
+          element: <CategoryScene />,
+        },
+        {
+          path: "category/page/:pageIndex",
+          element: <CategoryScene />,
         },
         {
           path: "new",

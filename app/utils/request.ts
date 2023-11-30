@@ -2,7 +2,7 @@
 
 export type RequestOption = Omit<RequestInit, "url" | "body"> & {
   data?: string | Record<string, unknown>;
-  search?: Record<string, string | number>;
+  search?: Record<string, any>;
 };
 
 // type Response<T = unknown> = {

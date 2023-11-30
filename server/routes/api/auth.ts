@@ -25,12 +25,14 @@ auth.get("/", async (ctx) => {
     include: { user: true },
   });
   if (!record) {
+    ctx.cookies.set("refreshToken", "", { expires: new Date(0) });
     ctx.body = { isLogin: false };
     return;
   }
   const { isError } = await verifyRefreshToken(refreshToken);
   if (isError) {
     await database.userToken.delete({ where: { id: record.id } });
+    ctx.cookies.set("refreshToken", "", { expires: new Date(0) });
     ctx.body = { isLogin: false };
     return;
   }
