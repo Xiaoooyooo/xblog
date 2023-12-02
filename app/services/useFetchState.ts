@@ -5,19 +5,43 @@ type UseFetchStateOption<T = unknown, P = unknown> = {
   fetchFn: (args: P) => Promise<T>;
 };
 
+type FetchState<T> =
+  | {
+      isLoading: false;
+      isError: false;
+      error: null;
+      isSuccess: false;
+      result: T | null;
+    }
+  | {
+      isLoading: true;
+      isError: false;
+      error: null;
+      isSuccess: false;
+      result: null;
+    }
+  | {
+      isLoading: false;
+      isError: true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      error: any;
+      isSuccess: false;
+      result: null;
+    }
+  | {
+      isLoading: false;
+      isError: false;
+      error: null;
+      isSuccess: true;
+      result: T;
+    };
+
 export default function useFetchState<T = unknown, P = unknown>(
   option: UseFetchStateOption<T, P>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deps: any[],
 ) {
-  const [fetchState, setFetchState] = useState<{
-    isError: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    error: any;
-    isSuccess: boolean;
-    result: T | null;
-    isLoading: boolean;
-  }>({
+  const [fetchState, setFetchState] = useState<FetchState<T>>({
     isError: false,
     error: null,
     isSuccess: false,

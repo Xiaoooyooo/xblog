@@ -6,13 +6,74 @@ import PersonIcon from "@/assets/icons/person.svg";
 import CategoryIcon from "@/assets/icons/category.svg";
 import { Blog } from "@/types";
 import { List, ListItem } from "../List";
+import BlogListSkeleton from "../Skeleton/BlogListSkeleton";
+import Empty from "../Empty";
+import Button from "../Button";
+import RefreshIcon from "@/assets/icons/refresh.svg";
 
-interface BlogListProps {
-  blogs: Blog[];
-}
+type BaseBlogListProps = {
+  isLoading: boolean;
+  isError: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  error: any;
+  isSuccess: boolean;
+  blogs: Blog[] | null;
+};
 
-function BlogList(props: BlogListProps) {
-  const { blogs } = props;
+type BlogListProps =
+  | {
+      isLoading: true;
+      isError: false;
+      error: null;
+      isSuccess: false;
+      blogs: null;
+    }
+  | {
+      isLoading: false;
+      isError: true;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      error: any;
+      isSuccess: false;
+      blogs: null;
+    }
+  | {
+      isLoading: false;
+      isError: false;
+      error: null;
+      isSuccess: true;
+      blogs: Blog[];
+    };
+
+type ReloadHandler = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reload: () => any;
+};
+
+function BlogList(props: BaseBlogListProps & ReloadHandler) {
+  const { isLoading, isSuccess, isError, error, blogs, reload } =
+    props as BlogListProps & ReloadHandler;
+
+  if (isLoading || (!isSuccess && !isError)) {
+    return <BlogListSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <div className="h-[500px] pt-[200px] text-center">
+        <p className="text-slate-400">数据加载失败了，请稍后再试一下哦。</p>
+        <Button
+          onClick={reload}
+          className="text-sky-500 flex items-center m-auto"
+        >
+          <RefreshIcon className="mr-1" />
+          Reload
+        </Button>
+      </div>
+    );
+  }
+  if (isSuccess && blogs.length === 0) {
+    return <Empty />;
+  }
 
   return (
     <List>

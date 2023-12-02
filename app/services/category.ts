@@ -1,7 +1,13 @@
-import { useEffect } from "react";
-import { getCategories, GetCategoryOption } from "./functions/categories";
+import { useEffect, useCallback } from "react";
+import {
+  getCategories,
+  GetCategoryOption,
+  getCategoryDetail,
+  getCategoryDocuments,
+  GetCategoryDocumentOption,
+} from "./functions/categories";
 import useFetchState from "./useFetchState";
-import { Category, List } from "@/types";
+import { Category, List, Blog } from "@/types";
 
 export function useGetCategories(
   pageIndex: number,
@@ -21,4 +27,42 @@ export function useGetCategories(
   }, [pageIndex, pageSize, name, documents]);
 
   return { ...state, fetchFn };
+}
+
+export function useCategoryDetail(id: string) {
+  const [state, fetchFn] = useFetchState<Category, string>(
+    {
+      fetchFn: getCategoryDetail,
+    },
+    [],
+  );
+
+  useEffect(() => {
+    fetchFn(id);
+  }, [id]);
+
+  return { ...state, fetchFn };
+}
+
+export function useGatCategoryDocuments(
+  id: string,
+  pageIndex: number,
+  pageSize: number,
+) {
+  const [state, fetchFn] = useFetchState<List<Blog>, GetCategoryDocumentOption>(
+    {
+      fetchFn: getCategoryDocuments,
+    },
+    [],
+  );
+
+  const fetchHandler = useCallback(() => {
+    fetchFn({ id, pageIndex, pageSize });
+  }, [id, pageIndex, pageSize]);
+
+  useEffect(() => {
+    fetchHandler();
+  }, [fetchHandler]);
+
+  return { ...state, reload: fetchHandler };
 }

@@ -53,6 +53,7 @@ requestHandler.useInterceptor(
     } else if (extraOption.refreshToken) {
       location.href = "/";
     }
+    throw err;
   },
 );
 

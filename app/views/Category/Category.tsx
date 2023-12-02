@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import ContentContainer from "@/components/ContentContainer";
 import Background from "@/components/Background";
-import { useGetCategories } from "@/services/category";
+import { useGatCategoryDocuments, useGetCategories } from "@/services/category";
 import CategorySkeleton from "./CategorySkeleton";
 import Pagination from "@/components/Pagination";
 import InfiniteScroll from "@/components/InfiniteScroll";
@@ -57,8 +57,10 @@ export default function CategoryScene() {
           <List>
             {result.list.map((item) => (
               <ListItem key={item.id} className="mb-4 p-2">
-                <div className="text-xl">{item.name}</div>
-                <div className="text-sm">共有 {item.documents} 篇文章</div>
+                <Link to={{ pathname: `/category/${item.id}` }}>
+                  <div className="text-xl">{item.name}</div>
+                  <div className="text-sm">共有 {item.documents} 篇文章</div>
+                </Link>
               </ListItem>
             ))}
           </List>

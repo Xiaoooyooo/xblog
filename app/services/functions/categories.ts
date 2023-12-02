@@ -15,3 +15,23 @@ export function getCategories(search: GetCategoryOption) {
     search,
   });
 }
+
+export function getCategoryDetail(id: string) {
+  return request("/api/category/detail", {
+    method: "get",
+    search: { id },
+  });
+}
+
+export type GetCategoryDocumentOption = {
+  id: string;
+  pageIndex: number;
+  pageSize: number;
+};
+
+export function getCategoryDocuments(search: GetCategoryDocumentOption) {
+  return request("/api/category/documents", {
+    method: "get",
+    search,
+  });
+}

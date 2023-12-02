@@ -10,6 +10,7 @@ const AboutScene = lazy(() => import("@/views/About"));
 const CreateScene = lazy(() => import("@/views/Create"));
 const EditScene = lazy(() => import("@/views/Edit"));
 const CategoryScene = lazy(() => import("@/views/Category"));
+const CategoryDetailScene = lazy(() => import("@/views/CategoryDetail"));
 
 export default createBrowserRouter(
   [
@@ -41,6 +42,14 @@ export default createBrowserRouter(
         {
           path: "category/page/:pageIndex",
           element: <CategoryScene />,
+        },
+        {
+          path: "category/:categoryId",
+          element: <CategoryDetailScene />,
+        },
+        {
+          path: "category/:categoryId/page/:pageIndex",
+          element: <CategoryDetailScene />,
         },
         {
           path: "new",

@@ -19,6 +19,8 @@ export type Blog = {
 export type Category = {
   id: string;
   name: string;
+  createdAt: string;
+  createdBy: User;
   documents?: number;
 };
 
