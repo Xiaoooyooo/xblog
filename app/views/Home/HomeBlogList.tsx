@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Panel from "@/components/Panel";
-import BlogList from "@/components/Blogs/BlogList";
+import { BlogList } from "@/components/Blogs";
 import Pagination from "@/components/Pagination";
 import { useBlogList } from "@/services/blog";
 

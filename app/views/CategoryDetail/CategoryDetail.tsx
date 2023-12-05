@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import ContentContainer from "@/components/ContentContainer";
 import { SkeletonItem } from "@/components/Skeleton";
-import BlogList from "@/components/Blogs/BlogList";
+import { BlogList } from "@/components/Blogs";
 import Pagination from "@/components/Pagination";
 import {
   useCategoryDetail,
