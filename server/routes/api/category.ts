@@ -1,6 +1,7 @@
 import Router from "koa-router";
-import { BadRequestError, NotFoundError } from "~/errors";
+import { BadRequestError, ForbiddenError, NotFoundError } from "~/errors";
 import { AppState, Prisma } from "~/types";
+import authentication from "./middlewares/authentication";
 
 const category = new Router<AppState>({ prefix: "/category" });
 
@@ -20,9 +21,12 @@ category.get("/list", async (ctx) => {
     size = Number(pageSize),
     isCountDocuments = documents === "true";
   const { database } = ctx.state;
-  let where: Prisma.CategoryWhereInput | undefined;
+  let where: Prisma.CategoryWhereInput = { deletedAt: null };
   if (name) {
-    where = { name: { contains: name } };
+    where = {
+      ...where,
+      name: { contains: name },
+    };
   }
   const count = await database.category.count({ where });
   const res = await database.category.findMany({
@@ -30,28 +34,36 @@ category.get("/list", async (ctx) => {
     select: {
       id: true,
       name: true,
-      ...(isCountDocuments && { _count: { select: { documents: true } } }),
+      ...(isCountDocuments && {
+        _count: {
+          select: {
+            documents: { where: { document: { deletedAt: null } } },
+          },
+        },
+      }),
     },
-    orderBy: { documents: { _count: "desc" } },
+    // sort is not working as expected
+    // orderBy: { ...(isCountDocuments && { documents: { _count: "desc" } }) },
     skip: (page - 1) * size,
     take: size,
   });
 
   ctx.body = {
-    list: isCountDocuments
-      ? res.map((item) => ({
-          id: item.id,
-          name: item.name,
-          documents: item._count.documents,
-        }))
-      : res,
+    list: res.map((item) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const d: Record<string, any> = { id: item.id, name: item.name };
+      if (isCountDocuments) {
+        d.documents = item._count.documents;
+      }
+      return d;
+    }),
     page,
     size,
     total: count,
   };
 });
 
-category.get("/detail", async (ctx) => {
+category.get("/detail", authentication({ force: false }), async (ctx) => {
   const { id } = ctx.query;
   if (!id || typeof id !== "string") {
     throw BadRequestError();
@@ -63,13 +75,23 @@ category.get("/detail", async (ctx) => {
       id: true,
       name: true,
       createdAt: true,
+      deletedAt: true,
       createdBy: { select: { id: true, username: true, displayName: true } },
     },
   });
   if (!category) {
     throw NotFoundError();
   }
-  ctx.body = category;
+  const { user } = ctx.state;
+  if (category.deletedAt !== null && (!user || !user.isAdmin)) {
+    throw ForbiddenError();
+  }
+  ctx.body = {
+    id: category.id,
+    name: category.name,
+    createdAt: category.createdAt,
+    createdBy: category.createdBy,
+  };
 });
 
 category.get("/documents", async (ctx) => {
@@ -85,10 +107,10 @@ category.get("/documents", async (ctx) => {
   const page = parseInt(pageIndex),
     size = parseInt(pageSize);
   const total = await database.document.count({
-    where: { categories: { some: { categoryId: id } } },
+    where: { categories: { some: { categoryId: id } }, deletedAt: null },
   });
   const documents = await database.document.findMany({
-    where: { categories: { some: { categoryId: id } } },
+    where: { categories: { some: { categoryId: id } }, deletedAt: null },
     take: size,
     skip: (page - 1) * size,
     select: {

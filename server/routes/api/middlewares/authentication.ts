@@ -14,9 +14,11 @@ export default function authentication(
   return async function (ctx, next) {
     const authorizationHeader = ctx.headers.authorization || "";
     const [schema, token] = authorizationHeader.split(" ");
-    /** @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#bearer */
-    if (schema !== "Bearer") throw UnauthorizedError();
-    if (force && !token) throw UnauthorizedError();
+    if (force) {
+      /** @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#bearer */
+      if (schema !== "Bearer") throw UnauthorizedError();
+      if (!token) throw UnauthorizedError();
+    }
     if (token) {
       const result = await verifyAccessToken(token);
       if (force && result.isError) {
