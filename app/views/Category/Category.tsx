@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import ContentContainer from "@/components/ContentContainer";
 import Background from "@/components/Background";
 import { useGatCategoryDocuments, useGetCategories } from "@/services/category";
@@ -14,6 +14,7 @@ import SearchIcon from "@/assets/icons/search.svg";
 
 export default function CategoryScene() {
   const params = useParams();
+  const navigate = useNavigate();
   const currentPage = parseInt(params.pageIndex || "1");
   const [pagination, setPagination] = useState({ total: 0 });
   const [searchKeywords, setSearchKeywords] = useState("");
@@ -27,6 +28,7 @@ export default function CategoryScene() {
   const handleSearchInput = useCallback(
     debounce((input: string) => {
       console.log({ input });
+      navigate({ pathname: "/category" });
       setSearchKeywords(input);
     }, 500),
     [],

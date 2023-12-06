@@ -86,6 +86,7 @@ export default function Transition(props: TransitionProps) {
   }, [show, duration, stage]);
 
   if (unmountOnHide && stage === "leave-done") return null;
+
   return cloneElement(children, {
     ...children.props,
     className: classNames(

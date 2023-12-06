@@ -20,13 +20,13 @@ const MenuContent = memo(function MenuContent() {
   const { isOpen, menus, triggerRect, closeMenu } = useMenuContext();
   const [position, setPosition] = useState({ left: 0, top: 0 });
   const menuElRef = useRef<HTMLDivElement>(null);
-  console.log({ menus });
   const content = useMemo(() => {
-    return menus.map((item) => <MenuItem key={item.label} {...item} />);
+    return menus.map((item) => <MenuItem key={item.id} {...item} />);
   }, [menus]);
 
   useLayoutEffect(() => {
-    if (menuElRef.current && triggerRect) {
+    console.log(menuElRef.current);
+    if (isOpen && menuElRef.current && triggerRect) {
       const { clientHeight, clientWidth } = menuElRef.current;
       const { top, left, right, bottom, height, width } = triggerRect;
       const { clientHeight: CH, clientWidth: CW } = document.body;
@@ -35,7 +35,7 @@ const MenuContent = memo(function MenuContent() {
         setPosition({ top: bottom, left });
       }
     }
-  }, [content]);
+  }, [isOpen, content]);
 
   useEffect(() => {
     function handleDocumentClick(e: MouseEvent) {
