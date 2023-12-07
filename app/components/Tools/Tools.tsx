@@ -2,11 +2,13 @@ import { useState, useEffect, memo } from "react";
 import { useNavigate, useMatch, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { Transition } from "../Transition";
+import { deleteBlog } from "@/services/functions/blog";
+import { useSelector } from "@/hooks/redux";
 import EditIcon from "@/assets/icons/edit.svg";
 import CreateIcon from "@/assets/icons/add.svg";
 import TrashIcon from "@/assets/icons/trash.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
-import { deleteBlog } from "@/services/functions/blog";
+import DraftIcon from "@/assets/icons/draft.svg";
 
 type ToolItem = {
   id: string;
@@ -26,6 +28,7 @@ export default function Tools(props: ToolProps) {
   const [isShowTools, setIsShowTools] = useState(false);
   const navigate = useNavigate();
   const matchBlogDetailPage = useMatch("/blog/:id");
+  const user = useSelector((state) => state.user);
   const params = useParams();
 
   const items = (
@@ -58,7 +61,7 @@ export default function Tools(props: ToolProps) {
           __DEV__ && console.log("delete", params);
           if (isPending) return;
           setIsPending(true);
-          deleteBlog(params.blogId!)
+          deleteBlog(params.blogId!, user.token)
             .then((res) => {
               if (res) {
                 setIsShowTools(false);
@@ -75,6 +78,13 @@ export default function Tools(props: ToolProps) {
           return false;
         },
         visible: () => !!matchBlogDetailPage,
+      },
+      {
+        id: "draft",
+        element: <DraftIcon className="h-7 w-7" />,
+        onClick: function () {
+          navigate({ pathname: "/draft" });
+        },
       },
     ] as ToolItem[]
   ).filter((item) => {

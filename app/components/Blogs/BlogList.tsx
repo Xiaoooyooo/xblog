@@ -9,6 +9,7 @@ import Button from "../Button";
 import { MenuTrigger } from "../Menu";
 import { useSelector } from "@/hooks/redux";
 import BlogMenu from "./BlogMenu";
+import CategoryTag from "../CategoryTag";
 import RefreshIcon from "@/assets/icons/refresh.svg";
 import TreeDotIcon from "@/assets/icons/three-dot.svg";
 import CalendarIcon from "@/assets/icons/calendar.svg";
@@ -139,12 +140,11 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
                 <span className="flex items-center">
                   <CategoryIcon />
                   {blog.categories.map((category) => (
-                    <span
+                    <CategoryTag
                       key={category.id}
+                      category={category}
                       className="ml-1 text-sm cursor-pointer hover:text-sky-600 transition-colors duration-200"
-                    >
-                      {category.name}
-                    </span>
+                    />
                   ))}
                 </span>
               )}

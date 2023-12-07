@@ -1,7 +1,7 @@
 import Router from "koa-router";
 import authentication from "./middlewares/authentication";
 import { BadRequestError, ForbiddenError, NotFoundError } from "~/errors";
-import { AppState } from "~/types";
+import { AppState, Prisma } from "~/types";
 
 const blog = new Router<AppState>({
   prefix: "/blog",
@@ -9,8 +9,10 @@ const blog = new Router<AppState>({
 
 blog.get("/list", async (ctx) => {
   const {
-    page = "1",
-    size = "10",
+    pageIndex = "1",
+    pageSize = "10",
+    draft = "false",
+    deleted = "false",
     orderBy = "updatedAt",
     order = "desc",
   } = ctx.query;
@@ -18,16 +20,30 @@ blog.get("/list", async (ctx) => {
   if (typeof orderBy !== "string" || typeof order !== "string") {
     throw BadRequestError();
   }
-  const _page = Number(page),
-    _size = Number(size);
+  const _page = Number(pageIndex),
+    _size = Number(pageSize),
+    isDraft = draft === "true",
+    isDeleted = deleted === "true";
+
+  let where: Prisma.DocumentWhereInput = {};
+  if (isDeleted) {
+    where = { ...where, deletedAt: { not: null } };
+  } else {
+    where = { ...where, deletedAt: null };
+  }
+  if (isDraft) {
+    where = { ...where, isDraft: true };
+  } else {
+    where = { ...where, isDraft: false };
+  }
   const total = await database.document.count({
-    where: { deletedAt: null },
+    where,
   });
   const data = await database.document.findMany({
     skip: (_page - 1) * _size,
     take: _size,
     orderBy: { [orderBy]: order },
-    where: { deletedAt: null },
+    where,
     select: {
       id: true,
       content: true,

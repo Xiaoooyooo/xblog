@@ -8,8 +8,8 @@ import moment from "@/utils/moment";
 import Skeleton from "@/components/Skeleton";
 import Button from "@/components/Button";
 import { Blog } from "@/types";
+import CategoryTag from "@/components/CategoryTag";
 import BlogImage from "@/assets/images/river.jpg";
-import CategoryIcon from "@/assets/icons/category.svg";
 
 type BlogParams = {
   blogId: string;
@@ -29,14 +29,12 @@ const BlogScence = () => {
             <h1 className="text-4xl">{title}</h1>
             {result.categories.length !== 0 && (
               <div className="flex justify-center items-center gap-x-2 mt-2">
-                <CategoryIcon />
                 {result.categories.map((category) => (
-                  <div
+                  <CategoryTag
                     key={category.id}
+                    category={category}
                     className="flex justify-center items-center bg-[rgba(255,255,255,0.4)] px-2 py-1 rounded"
-                  >
-                    <span>{category.name}</span>
-                  </div>
+                  />
                 ))}
               </div>
             )}

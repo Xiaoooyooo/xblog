@@ -5,6 +5,7 @@ export type GetBlogSearchOption = {
   pageSize: number;
   keywords?: string;
   categoryId?: string;
+  draft?: boolean;
 };
 
 export function getBlogList(search: GetBlogSearchOption) {

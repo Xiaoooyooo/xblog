@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useMatch } from "react-router-dom";
 import Panel from "@/components/Panel";
 import { BlogList } from "@/components/Blogs";
 import Pagination from "@/components/Pagination";
@@ -7,23 +7,20 @@ import { useBlogList } from "@/services/blog";
 
 export default function HomeBlogList() {
   const params = useParams();
+  const isDraftRoute = !!useMatch({ path: "/draft", end: false });
+  const currentPage = parseInt(params.pageIndex || "1");
+
   const [pagination, setPagination] = useState({
-    pageIndex: Number(params.pageIndex || 1),
-    pageSize: 10,
     total: 0,
   });
 
-  function handlePageChange(pageIndex: number, pageSize: number) {
-    console.log("pagination:", pageIndex, pageSize);
-    setPagination((p) => ({ ...p, pageIndex, pageSize }));
-  }
-
   const memoized = useMemo(() => {
     return {
-      pageIndex: pagination.pageIndex,
-      pageSize: pagination.pageSize,
+      pageIndex: currentPage,
+      pageSize: 10,
+      draft: isDraftRoute,
     };
-  }, [pagination.pageIndex, pagination.pageSize]);
+  }, [currentPage, isDraftRoute]);
 
   const { isError, error, isLoading, isSuccess, result, reload } =
     useBlogList(memoized);
@@ -53,9 +50,8 @@ export default function HomeBlogList() {
       <Pagination
         href={(page: number) => (page === 1 ? "/" : `/page/${page}`)}
         total={pagination.total}
-        pageIndex={pagination.pageIndex}
-        pageSize={pagination.pageSize}
-        onPaginationChange={handlePageChange}
+        pageIndex={currentPage}
+        pageSize={10}
       />
     </>
   );
