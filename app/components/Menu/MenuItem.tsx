@@ -1,47 +1,37 @@
 import classNames from "classnames";
-import { useState, useCallback, ReactNode } from "react";
-import { useMenuContext } from "./context";
+import {
+  useState,
+  useCallback,
+  ReactNode,
+  PropsWithChildren,
+  MouseEventHandler,
+} from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type BaseMenuItemProps<T = any> = {
-  id: string;
+export type MenuItemProps = PropsWithChildren<{
   disabled?: boolean;
-  onClick: (option: {
-    state: T;
-    setState: (state: T) => void;
-    close: () => void;
-  }) => void | boolean;
-  icon?: ReactNode | ((state: T) => ReactNode);
-  label: string | ((state: T) => string);
-  state?: T;
-};
+  onClick: (option: { close: () => void }) => void | boolean;
+  icon?: ReactNode;
+}>;
 
-type SeparatorMenuItemProps = {
-  id: string;
-  type: "separate";
-};
+export function MenuItem(props: MenuItemProps) {
+  const { disabled, onClick, icon, children } = props;
+  // const [state, setState] = useState(initialState);
 
-export type MenuItem = BaseMenuItemProps | SeparatorMenuItemProps;
-
-function SeparatorMenuItem() {
-  return <div className="h-[1px] bg-slate-400 my-2"></div>;
-}
-
-function BaseMenuItem(props: BaseMenuItemProps) {
-  const { disabled, onClick, icon, label, state: initialState = {} } = props;
-  const { closeMenu } = useMenuContext();
-  const [state, setState] = useState(initialState);
-
-  const handleClick = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-    const isClose = onClick({ state, setState, close: closeMenu });
-    if (typeof isClose === "boolean" && !isClose) {
-      return;
-    }
-    closeMenu();
-  }, [disabled, onClick, state]);
+  const handleClick: MouseEventHandler = useCallback(
+    (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (disabled) {
+        return;
+      }
+      const isClose = onClick({ close: () => {} });
+      if (typeof isClose === "boolean" && !isClose) {
+        return;
+      }
+      // closeMenu();
+    },
+    [disabled, onClick],
+  );
 
   return (
     <div
@@ -51,19 +41,12 @@ function BaseMenuItem(props: BaseMenuItemProps) {
         disabled ? "text-slate-400" : "hover:bg-gray-300",
       )}
     >
-      <div className="basis-8 flex justify-center items-center">
-        {typeof icon === "function" ? icon(state) : icon}
-      </div>
-      <div className="flex-auto">
-        {typeof label === "function" ? label(state) : label}
-      </div>
+      <div className="basis-8 flex justify-center items-center">{icon}</div>
+      <div className="flex-auto">{children}</div>
     </div>
   );
 }
 
-export default function MenuItem(props: MenuItem) {
-  if ("type" in props && props.type === "separate") {
-    return <SeparatorMenuItem />;
-  }
-  return <BaseMenuItem {...(props as BaseMenuItemProps)} />;
+export function Separator() {
+  return <div className="h-[1px] bg-slate-400 my-2"></div>;
 }

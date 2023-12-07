@@ -1,20 +1,13 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useMemo } from "react";
 import {
   getCategories,
   GetCategoryOption,
   getCategoryDetail,
-  getCategoryDocuments,
-  GetCategoryDocumentOption,
 } from "./functions/categories";
 import useFetchState from "./useFetchState";
-import { Category, List, Blog } from "@/types";
+import { Category, List } from "@/types";
 
-export function useGetCategories(
-  pageIndex: number,
-  pageSize: number,
-  name: string,
-  documents = false,
-) {
+export function useGetCategories(option: GetCategoryOption) {
   const [state, fetchFn] = useFetchState<List<Category>, GetCategoryOption>(
     {
       fetchFn: (arg) => getCategories(arg),
@@ -23,10 +16,15 @@ export function useGetCategories(
   );
 
   useEffect(() => {
-    fetchFn({ pageIndex, pageSize, name, documents });
-  }, [pageIndex, pageSize, name, documents]);
+    fetchFn(option);
+  }, [option]);
 
-  return { ...state, fetchFn };
+  const memoized = useMemo(
+    () => ({ ...state, reload: () => fetchFn(option) }),
+    [state, option],
+  );
+
+  return memoized;
 }
 
 export function useCategoryDetail(id: string) {
@@ -41,28 +39,10 @@ export function useCategoryDetail(id: string) {
     fetchFn(id);
   }, [id]);
 
-  return { ...state, fetchFn };
-}
-
-export function useGatCategoryDocuments(
-  id: string,
-  pageIndex: number,
-  pageSize: number,
-) {
-  const [state, fetchFn] = useFetchState<List<Blog>, GetCategoryDocumentOption>(
-    {
-      fetchFn: getCategoryDocuments,
-    },
-    [],
+  const memoized = useMemo(
+    () => ({ ...state, reload: () => fetchFn(id) }),
+    [state, id],
   );
 
-  const fetchHandler = useCallback(() => {
-    fetchFn({ id, pageIndex, pageSize });
-  }, [id, pageIndex, pageSize]);
-
-  useEffect(() => {
-    fetchHandler();
-  }, [fetchHandler]);
-
-  return { ...state, reload: fetchHandler };
+  return memoized;
 }

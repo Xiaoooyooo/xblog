@@ -5,6 +5,7 @@ import blog from "./blog";
 import category from "./category";
 import apiResponse from "./middlewares/apiResponse";
 import mountState from "./middlewares/mountState";
+import { NotFoundError } from "~/errors";
 
 const api = new Router({
   prefix: "/api",
@@ -20,5 +21,8 @@ api.use(apiResponse());
 api.use(auth.routes());
 api.use(blog.routes());
 api.use(category.routes());
+api.all("(.*)", async () => {
+  throw NotFoundError("endpoint not found");
+});
 
 export default api;

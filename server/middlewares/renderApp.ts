@@ -6,6 +6,7 @@ const indexPath = path.join(__dirname, "../../app/index.html");
 
 export default function renderApp() {
   return function (ctx: Context) {
+    console.log("render app");
     ctx.set({
       "content-type": "text/html",
     });

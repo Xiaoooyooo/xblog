@@ -5,58 +5,55 @@ import {
   useRef,
   useLayoutEffect,
   useEffect,
+  PropsWithChildren,
 } from "react";
 import { createPortal } from "react-dom";
 import classNames from "classnames";
 import { useMenuContext } from "./context";
 import { Transition } from "../Transition";
-import MenuItem from "./MenuItem";
+// import { MenuItem } from "./MenuItem";
+import "./closeEvent";
 
-export default function Menu() {
-  return createPortal(<MenuContent />, document.body);
+type MenuProps = PropsWithChildren<{
+  show: boolean;
+  anchor?: DOMRect;
+  onClose?: () => void;
+}>;
+
+export default function Menu(props: MenuProps) {
+  return createPortal(<MenuContent {...props} />, document.body);
 }
 
-const MenuContent = memo(function MenuContent() {
-  const { isOpen, menus, triggerRect, closeMenu } = useMenuContext();
+function MenuContent(props: MenuProps) {
+  const { show, children, onClose, anchor } = props;
+  // const { isOpen, menus, triggerRect, closeMenu } = useMenuContext();
   const [position, setPosition] = useState({ left: 0, top: 0 });
   const menuElRef = useRef<HTMLDivElement>(null);
-  const content = useMemo(() => {
-    return menus.map((item) => <MenuItem key={item.id} {...item} />);
-  }, [menus]);
 
   useLayoutEffect(() => {
-    console.log(menuElRef.current);
-    if (isOpen && menuElRef.current && triggerRect) {
+    // console.log({ anchor });
+    // console.log(menuElRef.current);
+
+    if (show && menuElRef.current && anchor) {
       const { clientHeight, clientWidth } = menuElRef.current;
-      const { top, left, right, bottom, height, width } = triggerRect;
+      const { top, left, right, bottom, height, width } = anchor;
       const { clientHeight: CH, clientWidth: CW } = document.body;
-      console.log({ clientHeight, clientWidth, triggerRect });
       if (right + clientWidth <= CW && bottom + clientHeight <= CH) {
         setPosition({ top: bottom, left });
       }
     }
-  }, [isOpen, content]);
-
-  useEffect(() => {
-    function handleDocumentClick(e: MouseEvent) {
-      const target = e.target as HTMLElement;
-      if (target.closest(".menu")) {
-        return;
-      }
-      closeMenu();
-    }
-    document.addEventListener("click", handleDocumentClick);
-    return () => document.removeEventListener("click", handleDocumentClick);
-  }, []);
+  }, [show, anchor]);
 
   return (
     <Transition
-      show={isOpen}
+      show={show}
       duration={200}
       beforeEnterClassName="opacity-0 scale-y-75"
       enterActiveClassName="transition-all duration-200"
       leaveActiveClassName="transition-all duration-200"
       leaveDoneClassName="opacity-0 scale-y-75"
+      unmountOnHide
+      ref={menuElRef}
     >
       <div
         style={{ left: position.left, top: position.top }}
@@ -65,10 +62,9 @@ const MenuContent = memo(function MenuContent() {
           "origin-top",
           "absolute z-[9999] shadow-lg bg-white rounded-md py-2",
         )}
-        ref={menuElRef}
       >
-        {content}
+        {children}
       </div>
     </Transition>
   );
-});
+}

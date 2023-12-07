@@ -23,15 +23,10 @@ export function getCategoryDetail(id: string) {
   });
 }
 
-export type GetCategoryDocumentOption = {
-  id: string;
-  pageIndex: number;
-  pageSize: number;
-};
-
-export function getCategoryDocuments(search: GetCategoryDocumentOption) {
-  return request("/api/category/documents", {
-    method: "get",
-    search,
+export function deleteCategory(id: string, token: string) {
+  return request<boolean>("/api/category/delete", {
+    method: "delete",
+    search: { id },
+    headers: { Authorization: `Bearer ${token}` },
   });
 }

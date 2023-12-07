@@ -34,6 +34,7 @@ category.get("/list", async (ctx) => {
     select: {
       id: true,
       name: true,
+      createdBy: { select: { id: true, username: true } },
       ...(isCountDocuments && {
         _count: {
           select: {
@@ -51,7 +52,11 @@ category.get("/list", async (ctx) => {
   ctx.body = {
     list: res.map((item) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const d: Record<string, any> = { id: item.id, name: item.name };
+      const d: Record<string, any> = {
+        id: item.id,
+        name: item.name,
+        createdBy: item.createdBy,
+      };
       if (isCountDocuments) {
         d.documents = item._count.documents;
       }
@@ -94,47 +99,25 @@ category.get("/detail", authentication({ force: false }), async (ctx) => {
   };
 });
 
-category.get("/documents", async (ctx) => {
-  const { id, pageIndex, pageSize } = ctx.query;
-  if (
-    typeof id !== "string" ||
-    typeof pageIndex !== "string" ||
-    typeof pageSize !== "string"
-  ) {
+category.delete("/delete", authentication({ force: true }), async (ctx) => {
+  const { id } = ctx.query;
+  if (typeof id !== "string") {
     throw BadRequestError();
   }
+  const user = ctx.state.user!;
   const { database } = ctx.state;
-  const page = parseInt(pageIndex),
-    size = parseInt(pageSize);
-  const total = await database.document.count({
-    where: { categories: { some: { categoryId: id } }, deletedAt: null },
+  const category = await database.category.findUnique({
+    where: { id, deletedAt: null },
+    include: { createdBy: true },
   });
-  const documents = await database.document.findMany({
-    where: { categories: { some: { categoryId: id } }, deletedAt: null },
-    take: size,
-    skip: (page - 1) * size,
-    select: {
-      id: true,
-      createdAt: true,
-      updatedAt: true,
-      content: true,
-      title: true,
-      isDraft: true,
-      user: { select: { id: true, username: true, displayName: true } },
-      categories: {
-        select: { category: { select: { id: true, name: true } } },
-      },
-    },
-  });
-  ctx.body = {
-    list: documents.map((document) => ({
-      ...document,
-      categories: document.categories.map((category) => category.category),
-    })),
-    page,
-    size,
-    total,
-  };
+  if (!category) {
+    throw NotFoundError();
+  }
+  if (!user.isAdmin && category.createdBy.id !== user.id) {
+    throw ForbiddenError();
+  }
+  await database.category.delete({ where: { id } });
+  ctx.body = true;
 });
 
 export default category;

@@ -5,6 +5,8 @@ import {
   useRef,
   cloneElement,
   ReactElement,
+  createElement,
+  forwardRef,
 } from "react";
 
 type TransitionProps = {
@@ -28,29 +30,26 @@ type TransitionStage =
   | "leave-active"
   | "leave-done";
 
-export default function Transition(props: TransitionProps) {
-  const {
-    show,
-    duration,
-    children,
-    unmountOnHide,
-    beforeEnterClassName,
-    enterActiveClassName,
-    enterDoneClassName,
-    beforeLeaveClassName,
-    leaveActiveClassName,
-    leaveDoneClassName,
-  } = props;
-  const [stage, setStage] = useState<TransitionStage>(
-    show ? "enter-done" : "leave-done",
-  );
-  const isMountRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
-  useLayoutEffect(() => {
-    if (!isMountRef.current) {
-      isMountRef.current = true;
-      return;
-    }
+export default forwardRef<HTMLElement, TransitionProps>(
+  function Transition(props, ref) {
+    const {
+      show,
+      duration,
+      children,
+      unmountOnHide,
+      beforeEnterClassName,
+      enterActiveClassName,
+      enterDoneClassName,
+      beforeLeaveClassName,
+      leaveActiveClassName,
+      leaveDoneClassName,
+    } = props;
+
+    const [stage, setStage] = useState<TransitionStage>(
+      show ? "enter-done" : "leave-done",
+    );
+
+    const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
     if (show && stage.startsWith("leave-")) {
       if (stage === "leave-done") {
@@ -83,20 +82,21 @@ export default function Transition(props: TransitionProps) {
         }, duration);
       });
     }
-  }, [show, duration, stage]);
 
-  if (unmountOnHide && stage === "leave-done") return null;
+    if (unmountOnHide && stage === "leave-done") return null;
 
-  return cloneElement(children, {
-    ...children.props,
-    className: classNames(
-      children.props.className,
-      stage === "before-enter" && beforeEnterClassName,
-      stage === "enter-active" && [enterActiveClassName, enterDoneClassName],
-      stage === "enter-done" && enterDoneClassName,
-      stage === "before-leave" && beforeLeaveClassName,
-      stage === "leave-active" && [leaveActiveClassName, leaveDoneClassName],
-      stage === "leave-done" && [leaveDoneClassName, "hidden"],
-    ),
-  });
-}
+    return createElement(children.type, {
+      ...children.props,
+      ref,
+      className: classNames(
+        children.props.className,
+        stage === "before-enter" && beforeEnterClassName,
+        stage === "enter-active" && [enterActiveClassName, enterDoneClassName],
+        stage === "enter-done" && enterDoneClassName,
+        stage === "before-leave" && beforeLeaveClassName,
+        stage === "leave-active" && [leaveActiveClassName, leaveDoneClassName],
+        stage === "leave-done" && [leaveDoneClassName, "hidden"],
+      ),
+    });
+  },
+);

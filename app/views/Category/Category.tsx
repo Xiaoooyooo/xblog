@@ -1,29 +1,36 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useSelector } from "@/hooks/redux";
+import { useGetCategories } from "@/services/category";
 import ContentContainer from "@/components/ContentContainer";
-import Background from "@/components/Background";
-import { useGatCategoryDocuments, useGetCategories } from "@/services/category";
 import CategorySkeleton from "./CategorySkeleton";
 import Pagination from "@/components/Pagination";
-import InfiniteScroll from "@/components/InfiniteScroll";
 import Input from "@/components/Input";
 import Empty from "@/components/Empty";
 import { List, ListItem } from "@/components/List";
+import { MenuItem, MenuTrigger } from "@/components/Menu";
+import CategoryMenu from "./CategoryMenu";
 import debounce from "@/utils/debounce";
 import SearchIcon from "@/assets/icons/search.svg";
+import TreeDotIcon from "@/assets/icons/three-dot.svg";
 
 export default function CategoryScene() {
+  const user = useSelector((state) => state.user);
   const params = useParams();
   const navigate = useNavigate();
   const currentPage = parseInt(params.pageIndex || "1");
   const [pagination, setPagination] = useState({ total: 0 });
   const [searchKeywords, setSearchKeywords] = useState("");
-  const { isSuccess, isLoading, result } = useGetCategories(
-    currentPage,
-    10,
-    searchKeywords,
-    true,
+  const memozied = useMemo(
+    () => ({
+      pageIndex: currentPage,
+      pageSize: 10,
+      name: searchKeywords,
+      documents: true,
+    }),
+    [],
   );
+  const { isSuccess, isLoading, result, reload } = useGetCategories(memozied);
 
   const handleSearchInput = useCallback(
     debounce((input: string) => {
@@ -60,7 +67,16 @@ export default function CategoryScene() {
             {result.list.map((item) => (
               <ListItem key={item.id} className="mb-4 p-2">
                 <Link to={{ pathname: `/category/${item.id}` }}>
-                  <div className="text-xl">{item.name}</div>
+                  <div className="flex items-center gap-x-4">
+                    <div className="text-xl">{item.name}</div>
+                    <div>
+                      <MenuTrigger
+                        menu={<CategoryMenu category={item} reload={reload} />}
+                      >
+                        <TreeDotIcon />
+                      </MenuTrigger>
+                    </div>
+                  </div>
                   <div className="text-sm">共有 {item.documents} 篇文章</div>
                 </Link>
               </ListItem>

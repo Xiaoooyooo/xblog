@@ -1,8 +1,9 @@
 import request from "./request";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import useFetchState from "./useFetchState";
 import { useSelector } from "@/hooks/redux";
 import { Blog } from "@/types";
+import { getBlogList, GetBlogSearchOption } from "./functions/blog";
 
 type CreateBlogOption = {
   title: string;
@@ -29,7 +30,10 @@ export function useCreateBlog() {
     },
     [token],
   );
-  return { ...state, fetchFn };
+
+  const memoized = useMemo(() => ({ ...state, fetchFn }), [state]);
+
+  return memoized;
 }
 
 export function useUpdateBlog() {
@@ -52,37 +56,33 @@ export function useUpdateBlog() {
     },
     [token],
   );
-  return { ...state, fetchFn };
+
+  const memoized = useMemo(() => ({ ...state, fetchFn }), [state]);
+
+  return memoized;
 }
 
-type FetchBlogListOption = {
-  index: number;
-  size: number;
-};
-
-export function useBlogList(pageIndex: number, pageSize: number) {
+export function useBlogList(options: GetBlogSearchOption) {
   const [fetchState, fetchFn] = useFetchState<
     BlogListResponse,
-    FetchBlogListOption
+    GetBlogSearchOption
   >(
     {
-      fetchFn: (args) =>
-        request("/api/blog/list", {
-          method: "get",
-          headers: { "content-type": "application/json" },
-          search: args,
-        }),
+      fetchFn: (args) => getBlogList(args),
     },
     [],
   );
 
   useEffect(() => {
-    fetchFn({ index: pageIndex, size: pageSize });
-  }, [pageIndex, pageSize]);
-  return {
-    ...fetchState,
-    reload: () => fetchFn({ index: pageIndex, size: pageSize }),
-  };
+    fetchFn(options);
+  }, [options]);
+
+  const memoized = useMemo(
+    () => ({ ...fetchState, reload: () => fetchFn(options) }),
+    [fetchState, options],
+  );
+
+  return memoized;
 }
 
 export function useBlogDetail(id?: string) {
@@ -101,5 +101,10 @@ export function useBlogDetail(id?: string) {
     id && fetchFn(id);
   }, [id]);
 
-  return { ...fetchState, reload: () => id && fetchFn(id) };
+  const memoized = useMemo(
+    () => ({ ...fetchState, reload: () => id && fetchFn(id) }),
+    [fetchState, id],
+  );
+
+  return memoized;
 }
