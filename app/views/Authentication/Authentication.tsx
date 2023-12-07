@@ -1,20 +1,26 @@
-import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useCallback, useState } from "react";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "@/hooks/redux";
 import Input from "@/components/Input";
 import { Form, FormItem } from "@/components/Form";
 import Button from "@/components/Button";
 import imageUrl from "@/assets/images/winter.jpg";
 import { login } from "@/redux/actions/user";
+import { register } from "@/services/functions/auth";
+
+type AuthenticationRouteParmas = {
+  authType: "login" | "register";
+};
 
 export default function Authentication() {
   const [authState, setAuthState] = useState({ username: "", password: "" });
   const [isPending, setIsPending] = useState(false);
   const isLogin = useSelector((state) => state.user.isLogin);
   const dispatch = useDispatch();
+  const parmas = useParams<AuthenticationRouteParmas>();
+  const navigate = useNavigate();
 
-  const handleLogin = function () {
-    if (!authState.password || !authState.username) return;
+  const handleLogin = useCallback(() => {
     setIsPending(true);
     dispatch(login(authState))
       .then((res) => {
@@ -26,7 +32,31 @@ export default function Authentication() {
       .finally(() => {
         setIsPending(false);
       });
-  };
+  }, [authState]);
+
+  const handleRegister = useCallback(() => {
+    register(authState)
+      .then(() => {
+        navigate({ pathname: "/auth/login" });
+      })
+      .finally(() => {
+        setIsPending(false);
+      });
+  }, [authState]);
+
+  const handleConfirm = useCallback(() => {
+    if (!authState.password || !authState.username) return;
+    switch (parmas.authType) {
+      case "login":
+        handleLogin();
+        break;
+      case "register":
+        handleRegister();
+        break;
+      default:
+        break;
+    }
+  }, [parmas.authType, authState]);
   __DEV__ && console.log({ isLogin });
   if (isLogin) return <Navigate to={{ pathname: "/" }} replace />;
   return (
@@ -63,10 +93,10 @@ export default function Authentication() {
                 <Button
                   type="button"
                   className="w-full"
-                  onClick={handleLogin}
+                  onClick={handleConfirm}
                   loading={isPending}
                 >
-                  Confirm
+                  {parmas.authType === "login" ? "Signin" : "Signup"}
                 </Button>
               </FormItem>
             </Form>

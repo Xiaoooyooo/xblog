@@ -66,7 +66,7 @@ export default createBrowserRouter(
       ],
     },
     {
-      path: "auth",
+      path: "auth/:authType",
       element: (
         <Suspense fallback={<p>loading...</p>}>
           <Authentication />
