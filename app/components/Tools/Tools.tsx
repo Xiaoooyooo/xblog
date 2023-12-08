@@ -9,9 +9,11 @@ import CreateIcon from "@/assets/icons/add.svg";
 import TrashIcon from "@/assets/icons/trash.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
 import DraftIcon from "@/assets/icons/draft.svg";
+import Tooltip from "../Tooltip";
 
 type ToolItem = {
   id: string;
+  tip: string;
   element: JSX.Element | ((isPending: boolean) => JSX.Element);
   onClick: (
     isPending: boolean,
@@ -35,6 +37,7 @@ export default function Tools(props: ToolProps) {
     [
       {
         id: "new",
+        tip: "新建",
         element: <CreateIcon className="h-7 w-7" />,
         onClick: function () {
           navigate({ pathname: "/new" });
@@ -42,6 +45,7 @@ export default function Tools(props: ToolProps) {
       },
       {
         id: "edit",
+        tip: "编辑",
         element: <EditIcon className="h-7 w-7" />,
         onClick: function () {
           __DEV__ && console.log("edit", params);
@@ -51,6 +55,7 @@ export default function Tools(props: ToolProps) {
       },
       {
         id: "delete",
+        tip: "删除",
         element: (isPending) =>
           isPending ? (
             <LoadingIcon height={22} width={22} />
@@ -81,6 +86,7 @@ export default function Tools(props: ToolProps) {
       },
       {
         id: "draft",
+        tip: "草稿",
         element: <DraftIcon className="h-7 w-7" />,
         onClick: function () {
           navigate({ pathname: "/draft" });
@@ -118,7 +124,7 @@ export default function Tools(props: ToolProps) {
       </div>
 
       <div className="absolute bottom-full">
-        {items.map(({ id, element, onClick }) => (
+        {items.map(({ id, element, onClick, tip }) => (
           <Transition
             key={id}
             show={isShowTools}
@@ -132,6 +138,7 @@ export default function Tools(props: ToolProps) {
             unmountOnHide
           >
             <ToolItem
+              tip={tip}
               element={element}
               onClick={(...args) => {
                 const isClose = onClick?.(...args);
@@ -192,10 +199,11 @@ type ToolItemProps = {
     setIsActionPending: (value: boolean) => void,
   ) => void;
   className?: string;
+  tip: string;
 };
 
 const ToolItem = memo(function ToolItem(props: ToolItemProps) {
-  const { element, onClick, className } = props;
+  const { element, onClick, className, tip } = props;
   const [isActionPending, setIsActionPending] = useState(false);
   return (
     <div
@@ -205,9 +213,17 @@ const ToolItem = memo(function ToolItem(props: ToolItemProps) {
         className,
       )}
     >
-      <button className="h-full w-full flex justify-center items-center pointer-events-none">
-        {typeof element === "function" ? element(isActionPending) : element}
-      </button>
+      <Tooltip
+        tip={tip}
+        className="h-full w-full flex justify-center items-center"
+        unmountTipOnHide
+        placement="left"
+        // mountOnBody
+      >
+        <button className="pointer-events-none">
+          {typeof element === "function" ? element(isActionPending) : element}
+        </button>
+      </Tooltip>
     </div>
   );
 });

@@ -11,6 +11,7 @@ blog.get("/list", async (ctx) => {
   const {
     pageIndex = "1",
     pageSize = "10",
+    categoryId,
     draft = "false",
     deleted = "false",
     orderBy = "updatedAt",
@@ -20,12 +21,18 @@ blog.get("/list", async (ctx) => {
   if (typeof orderBy !== "string" || typeof order !== "string") {
     throw BadRequestError();
   }
+  if (categoryId && typeof categoryId !== "string") {
+    throw BadRequestError();
+  }
   const _page = Number(pageIndex),
     _size = Number(pageSize),
     isDraft = draft === "true",
     isDeleted = deleted === "true";
 
   let where: Prisma.DocumentWhereInput = {};
+  if (categoryId) {
+    where = { ...where, categories: { some: { categoryId } } };
+  }
   if (isDeleted) {
     where = { ...where, deletedAt: { not: null } };
   } else {

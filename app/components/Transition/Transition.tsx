@@ -51,39 +51,41 @@ export default forwardRef<HTMLElement, TransitionProps>(
 
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
-    if (show && stage.startsWith("leave-")) {
-      if (stage === "leave-done") {
-        setStage("before-enter");
-      }
-      requestAnimationFrame(() => {
-        setStage("enter-active");
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = undefined;
+    useLayoutEffect(() => {
+      if (show && stage.startsWith("leave-")) {
+        if (stage === "leave-done") {
+          setStage("before-enter");
         }
-        timerRef.current = setTimeout(() => {
-          setStage("enter-done");
-          timerRef.current = undefined;
-        }, duration);
-      });
-    } else if (!show && stage.startsWith("enter-")) {
-      if (stage === "enter-done") {
-        setStage("before-leave");
-      }
-      requestAnimationFrame(() => {
-        setStage("leave-active");
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = undefined;
+        requestAnimationFrame(() => {
+          setStage("enter-active");
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = undefined;
+          }
+          timerRef.current = setTimeout(() => {
+            setStage("enter-done");
+            timerRef.current = undefined;
+          }, duration);
+        });
+      } else if (!show && stage.startsWith("enter-")) {
+        if (stage === "enter-done") {
+          setStage("before-leave");
         }
-        timerRef.current = setTimeout(() => {
-          setStage("leave-done");
-          timerRef.current = undefined;
-        }, duration);
-      });
-    }
+        requestAnimationFrame(() => {
+          setStage("leave-active");
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = undefined;
+          }
+          timerRef.current = setTimeout(() => {
+            setStage("leave-done");
+            timerRef.current = undefined;
+          }, duration);
+        });
+      }
+    }, [show, stage, duration]);
 
-    if (unmountOnHide && stage === "leave-done") return null;
+    if (unmountOnHide && !show && stage === "leave-done") return null;
 
     return createElement(children.type, {
       ...children.props,
@@ -95,7 +97,10 @@ export default forwardRef<HTMLElement, TransitionProps>(
         stage === "enter-done" && enterDoneClassName,
         stage === "before-leave" && beforeLeaveClassName,
         stage === "leave-active" && [leaveActiveClassName, leaveDoneClassName],
-        stage === "leave-done" && [leaveDoneClassName, "hidden"],
+        stage === "leave-done" && [
+          leaveDoneClassName,
+          !unmountOnHide && "hidden",
+        ],
       ),
     });
   },

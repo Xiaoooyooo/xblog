@@ -38,7 +38,9 @@ category.get("/list", async (ctx) => {
       ...(isCountDocuments && {
         _count: {
           select: {
-            documents: { where: { document: { deletedAt: null } } },
+            documents: {
+              where: { document: { isDraft: false, deletedAt: null } },
+            },
           },
         },
       }),
