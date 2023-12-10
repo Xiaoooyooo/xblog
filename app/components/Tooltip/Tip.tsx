@@ -34,11 +34,8 @@ export default forwardRef<HTMLDivElement, TipProps>(function Tip(props, ref) {
       unmountOnHide={unmountOnHide}
       ref={ref}
     >
-      <div
-        className={classNames("p-2 w-max", className)}
-        style={{ ...position }}
-      >
-        <div className="bg-white relative py-1 px-2 rounded shadow-md border">
+      <div className={classNames("p-2", className)} style={{ ...position }}>
+        <div className="w-max bg-white relative py-1 px-2 rounded shadow-md border">
           {children}
           <i
             className={classNames(

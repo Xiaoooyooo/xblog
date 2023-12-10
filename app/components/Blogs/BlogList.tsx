@@ -14,7 +14,8 @@ import RefreshIcon from "@/assets/icons/refresh.svg";
 import TreeDotIcon from "@/assets/icons/three-dot.svg";
 import CalendarIcon from "@/assets/icons/calendar.svg";
 import PersonIcon from "@/assets/icons/person.svg";
-import CategoryIcon from "@/assets/icons/category.svg";
+import BoxIcon from "@/assets/icons/box.svg";
+import Tooltip from "../Tooltip";
 
 type BaseBlogListProps = {
   isLoading: boolean;
@@ -132,13 +133,18 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
               </span>
               <span className="flex items-center">
                 <CalendarIcon />
-                <span className="ml-1 text-sm">
-                  {moment(blog.createdAt).calendar()}
-                </span>
+                <Tooltip
+                  className="ml-1 text-sm"
+                  tip={moment(blog.createdAt).format("LLLL")}
+                  unmountTipOnHide
+                  // mountOnBody
+                >
+                  <span>{moment(blog.createdAt).calendar()}</span>
+                </Tooltip>
               </span>
               {blog.categories.length > 0 && (
                 <span className="flex items-center">
-                  <CategoryIcon />
+                  <BoxIcon />
                   {blog.categories.map((category) => (
                     <CategoryTag
                       key={category.id}

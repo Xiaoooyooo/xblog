@@ -4,8 +4,6 @@ import {
   useMemo,
   useRef,
   useState,
-  createElement,
-  ReactElement,
   useLayoutEffect,
 } from "react";
 import Tip from "./Tip";
@@ -80,9 +78,13 @@ export default function Tooltip(props: TooptipProps) {
       const { clientHeight: tH, clientWidth: tW } = tipEl;
       if (mountOnBody) {
         let target = el as HTMLElement;
-        while (target && target.offsetParent !== document.body) {
+        while (target) {
+          console.log({ target });
           top += target.offsetTop;
           left += target.offsetLeft;
+          if (target === document.body) {
+            break;
+          }
           target = target.offsetParent as HTMLElement;
         }
       }
@@ -114,7 +116,7 @@ export default function Tooltip(props: TooptipProps) {
         show={isShow}
         mountOnBody={mountOnBody}
         unmountOnHide={unmountTipOnHide}
-        className={classNames("absolute")}
+        className={classNames("absolute", mountOnBody && "z-[9999]")}
         position={tipPosition}
         placement={placement}
         ref={tipElRef}

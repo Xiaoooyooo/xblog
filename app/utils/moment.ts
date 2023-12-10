@@ -1,5 +1,5 @@
 import moment from "moment";
 
-moment.locale("zh-cn");
+moment.locale(navigator.language);
 
 export default moment;

@@ -3,7 +3,6 @@ import {
   useState,
   useLayoutEffect,
   useRef,
-  cloneElement,
   ReactElement,
   createElement,
   forwardRef,
@@ -99,7 +98,7 @@ export default forwardRef<HTMLElement, TransitionProps>(
         stage === "leave-active" && [leaveActiveClassName, leaveDoneClassName],
         stage === "leave-done" && [
           leaveDoneClassName,
-          !unmountOnHide && "hidden",
+          !unmountOnHide && !show && "hidden",
         ],
       ),
     });
