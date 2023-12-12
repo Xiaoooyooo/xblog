@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import MarkdownParser from "@/components/MarkdownParser";
+import Markdown from "@/components/Markdown";
 import Panel from "@/components/Panel";
 import { useBlogDetail } from "@/services/blog";
 import Background from "@/components/Background";
@@ -10,6 +11,8 @@ import Button from "@/components/Button";
 import { Blog } from "@/types";
 import CategoryTag from "@/components/CategoryTag";
 import BlogImage from "@/assets/images/river.jpg";
+import { HeadingWithChildren } from "@/utils/marked";
+import TableOfContents from "@/components/TableOfContents";
 
 type BlogParams = {
   blogId: string;
@@ -17,6 +20,10 @@ type BlogParams = {
 
 const BlogScence = () => {
   const { blogId } = useParams<keyof BlogParams>();
+  const [tableOfContents, setTableOfContents] = useState<HeadingWithChildren[]>(
+    [],
+  );
+  const [activeHeading, setActiveHeading] = useState<string>();
   const { isError, error, isSuccess, result, isLoading, reload } =
     useBlogDetail(blogId as string);
   const { title, content, createdAt } = result || ({} as Blog);
@@ -46,15 +53,32 @@ const BlogScence = () => {
       </Background>
       <ContentContainer>
         <Panel>
-          {error ? (
+          {isLoading ? (
+            <div className="flex gap-x-5">
+              <div className="flex-auto mr-[240px]">
+                <Skeleton />
+              </div>
+            </div>
+          ) : isError ? (
             <div className="text-center">
               <p>文章加载失败了，请稍后再试试哦。</p>
               <Button onClick={reload}>重试</Button>
             </div>
-          ) : isLoading ? (
-            <Skeleton />
-          ) : result ? (
-            <MarkdownParser text={content} />
+          ) : isSuccess ? (
+            <div className="flex gap-x-5">
+              <Markdown
+                text={content}
+                onUpdateTableOfContents={setTableOfContents}
+                className="flex-auto min-w-0"
+                onSetActiveHeading={setActiveHeading}
+              />
+              <div className="flex-none w-[240px] sticky top-[10vh] self-start">
+                <TableOfContents
+                  contents={tableOfContents}
+                  activeHeading={activeHeading}
+                />
+              </div>
+            </div>
           ) : (
             !isLoading && <p>No Content</p>
           )}
