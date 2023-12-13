@@ -13,7 +13,7 @@ export default function SkeletonItem(props: SkeletonItemProps) {
     <div
       style={{ height, width }}
       className={classNames(
-        "bg-[#e7e7e7]",
+        "bg-[--skeleton-background-color]",
         "rounded",
         "mt-4",
         "first:mt-0",

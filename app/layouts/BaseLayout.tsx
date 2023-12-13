@@ -8,13 +8,13 @@ import { useSelector } from "@/hooks/redux";
 export default function BaseLayout() {
   const isLogin = useSelector((state) => state.user.isLogin);
   return (
-    <div className="flex flex-col min-h-full">
+    <>
       <Header />
       <main className="flex-auto mt-[--header-height] flex flex-col">
         <Outlet />
       </main>
       <Footer />
       {isLogin && <Tools />}
-    </div>
+    </>
   );
 }

@@ -1,0 +1,79 @@
+@import "markdown";
+
+@mixin light {
+  @include markdown-light();
+  --background-color: #fff;
+  --text-color: #333;
+  --header-background-color: rgba(30, 33, 40, 0.8);
+  --header-text-color: #fff;
+  --header-text-hover-color: crimson;
+  --panel-background-color: #fff;
+  --list-item-hover-background-color: rgb(229, 231, 235);
+  --tooltip-background-color: #fff;
+  --tooltip-text-color: var(--text-color);
+  --tooltip-border-color: #e5e7eb;
+  --menu-background-color: var(--background-color);
+  --menu-item-hover-background-color: rgb(209, 213, 219);
+  --menu-item-disabled-background-color: rgb(148, 163, 184);
+  --menu-text-color: var(--text-color);
+  --skeleton-background-color: #e7e7e7;
+  --scrollbar-background-color: #d8d8d8;
+  --pagination-active-text-color: rgb(0, 146, 190);
+  --tag-background-color: rgb(241, 245, 249);
+  --tag-border-color: rgb(203, 213, 225);
+  --select-background-color: var(--menu-background-color);
+  --select-item-hover-background-color: var(--menu-item-hover-background-color);
+  --select-item-disabled-background-color: var(
+    --menu-item-disabled-background-color
+  );
+  --select-item-selected-background-color: skyblue;
+}
+
+@mixin dark {
+  @include markdown-dark();
+  --background-color: #222f3d;
+  --text-color: #c9d1d9;
+  --header-background-color: rgba(30, 33, 40, 0.8);
+  --header-text-color: var(--text-color);
+  --header-text-hover-color: crimson;
+  --panel-background-color: #142941;
+  --list-item-hover-background-color: #253649;
+  --tooltip-background-color: #222f3d;
+  --tooltip-text-color: var(--text-color);
+  --tooltip-border-color: #252e38;
+  --menu-background-color: #45576b;
+  --menu-item-hover-background-color: rgb(52, 138, 172);
+  --menu-item-disabled-background-color: rgb(148, 163, 184);
+  --menu-text-color: var(--text-color);
+  --skeleton-background-color: #3c4955;
+  --scrollbar-background-color: #c9d1d9;
+  --pagination-active-text-color: rgb(0, 139, 173);
+  --tag-background-color: #324355;
+  --tag-border-color: #4c5a68;
+  --select-background-color: var(--menu-background-color);
+  --select-item-hover-background-color: var(--menu-item-hover-background-color);
+  --select-item-disabled-background-color: var(
+    --menu-item-disabled-background-color
+  );
+  --select-item-selected-background-color: #416f8a;
+}
+
+@media screen and (prefers-color-scheme: light) {
+  :root {
+    @include light();
+  }
+}
+
+.theme-light {
+  @include light();
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    @include dark();
+  }
+}
+
+.theme-dark {
+  @include dark();
+}

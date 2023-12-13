@@ -49,7 +49,7 @@ export default function CreateScene() {
     <div className="flex-auto flex flex-col">
       <Background imageUrl={image} />
       <ContentContainer className="pt-8 flex-auto flex flex-col">
-        <div className="flex gap-x-4 justify-end py-1 z-10 bg-white sticky top-[--header-height]">
+        <div className="flex gap-x-4 justify-end py-1 z-10 sticky top-[--header-height]">
           <Button
             loading={action === "save" && isLoading}
             onClick={() => handlePublish(true)}

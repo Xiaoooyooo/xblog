@@ -51,9 +51,9 @@ export default function CategoryScene() {
 
   return (
     <ContentContainer>
-      <div className="mt-10">
+      <div className="mt-10 flex justify-center">
         <Input
-          className="block w-3/5 m-auto text-xl p-3 rounded-full"
+          className="w-3/5 m-auto text-xl p-3 rounded-full"
           placeholder="输入关键字搜索"
           prefix={<SearchIcon height={20} width={20} />}
           onInput={handleSearchInput}

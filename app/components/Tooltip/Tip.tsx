@@ -35,11 +35,17 @@ export default forwardRef<HTMLDivElement, TipProps>(function Tip(props, ref) {
       ref={ref}
     >
       <div className={classNames("p-2", className)} style={{ ...position }}>
-        <div className="w-max bg-white relative py-1 px-2 rounded shadow-md border">
+        <div
+          className={classNames(
+            "w-max relative py-1 px-2 rounded shadow-md",
+            "border border-[--tooltip-border-color]",
+            "bg-[--tooltip-background-color] text-[--tooltip-text-color]",
+          )}
+        >
           {children}
           <i
             className={classNames(
-              "block absolute h-2 w-2 bg-white rotate-45",
+              "block absolute h-2 w-2 rotate-45 bg-[--tooltip-background-color] border-[--tooltip-border-color]",
               placement === "top" &&
                 "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-b border-r",
               placement === "left" &&

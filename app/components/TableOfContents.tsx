@@ -59,7 +59,7 @@ const Contents = forwardRef<HTMLDivElement, TableOfContentsProps>(
   function Contents(props, ref) {
     const { contents } = props;
     return (
-      <div className="text-slate-700" ref={ref}>
+      <div className="text-[--text-color]" ref={ref}>
         {contents.length === 0 ? (
           <div>no content</div>
         ) : (

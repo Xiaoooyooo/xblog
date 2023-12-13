@@ -5,6 +5,7 @@ import "@/assets/styles/variables.css";
 import "normalize.css";
 import "@/assets/styles/tailwind.css";
 import "@/assets/styles/index.css";
+import "@/assets/styles/theme.scss";
 
 import App from "./App";
 

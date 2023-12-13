@@ -13,10 +13,11 @@ import { useMenuContext } from "./context";
 import { Transition } from "../Transition";
 // import { MenuItem } from "./MenuItem";
 import "./closeEvent";
+import domOffset from "@/utils/domOffset";
 
 type MenuProps = PropsWithChildren<{
   show: boolean;
-  anchor?: DOMRect;
+  anchorEl?: HTMLElement | null;
   onClose?: () => void;
 }>;
 
@@ -25,24 +26,26 @@ export default function Menu(props: MenuProps) {
 }
 
 function MenuContent(props: MenuProps) {
-  const { show, children, onClose, anchor } = props;
-  // const { isOpen, menus, triggerRect, closeMenu } = useMenuContext();
+  const { show, children, onClose, anchorEl } = props;
   const [position, setPosition] = useState({ left: 0, top: 0 });
   const menuElRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    // console.log({ anchor });
-    // console.log(menuElRef.current);
-
-    if (show && menuElRef.current && anchor) {
+    if (show && menuElRef.current && anchorEl) {
       const { clientHeight, clientWidth } = menuElRef.current;
-      const { top, left, right, bottom, height, width } = anchor;
       const { clientHeight: CH, clientWidth: CW } = document.body;
+      const { clientHeight: AH, clientWidth: AW } = anchorEl;
+      const { left, top } = domOffset(anchorEl);
+      const right = left + AW,
+        bottom = top + AH;
       if (right + clientWidth <= CW && bottom + clientHeight <= CH) {
         setPosition({ top: bottom, left });
+      } else if (right - clientWidth >= 0 && bottom + clientHeight <= CH) {
+        setPosition({ top: bottom, left: right - clientWidth });
       }
+      // todo: other position
     }
-  }, [show, anchor]);
+  }, [show, anchorEl]);
 
   return (
     <Transition
@@ -60,7 +63,8 @@ function MenuContent(props: MenuProps) {
         className={classNames(
           "menu",
           "origin-top",
-          "absolute z-[9999] shadow-lg bg-white rounded-md py-2",
+          "absolute z-[9999] shadow-lg bg-[--menu-background-color] rounded-md py-2",
+          "text-[--menu-text-color]",
         )}
       >
         {children}

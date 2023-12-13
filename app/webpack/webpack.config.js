@@ -34,7 +34,7 @@ const config = {
       {
         oneOf: [
           {
-            test: /\.scss$/,
+            test: /\.module\.scss$/,
             use: [
               MiniCssExtractPlugin.loader,
               {
@@ -47,6 +47,23 @@ const config = {
                   },
                 },
               },
+              {
+                loader: "postcss-loader",
+                options: {
+                  // execute: true,
+                  postcssOptions: {
+                    config: true,
+                  },
+                },
+              },
+              "sass-loader",
+            ],
+          },
+          {
+            test: /\.scss$/,
+            use: [
+              MiniCssExtractPlugin.loader,
+              "css-loader",
               {
                 loader: "postcss-loader",
                 options: {

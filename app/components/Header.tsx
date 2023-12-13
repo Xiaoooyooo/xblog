@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
+import { Menu } from "./Menu";
+import ThemeSwitch from "./ThemeSwitch";
 
 interface NavLink {
   name: string;
@@ -53,9 +55,7 @@ function Header() {
         className={classNames(
           "leading-[--header-height]",
           "px-5",
-          "decoration-[none]",
-          "text-white",
-          "hover:text-[crimson]",
+          "hover:text-[--header-text-hover-color]",
           "transition-colors",
           "duration-300",
         )}
@@ -76,13 +76,15 @@ function Header() {
         "z-[999]",
         "shadow",
         "transition-all",
-        "bg-[rgba(30,33,40,0.8)]",
+        "bg-[--header-background-color]",
+        "text-[--header-text-color]",
+        "flex",
         // !isBackgroundTransparent && "bg-[rgba(30,33,40,0.8)]",
       )}
     >
-      <nav className={classNames("flex", "justify-end", "h-full")}>
-        {_links}
-      </nav>
+      <nav className="flex-auto flex justify-end h-full">{_links}</nav>
+      <div className="h-full w-[2px] py-4 bg-gray-500 bg-clip-content"></div>
+      <ThemeSwitch />
     </header>
   );
 }

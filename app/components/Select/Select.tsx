@@ -13,6 +13,8 @@ import SelectItem, { SelectItemOption } from "./SelectItem";
 import SelectContext from "./SelectContext";
 import DeleteIcon from "@/assets/icons/delete.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
+import Input from "../Input";
+import Tag from "../Tag";
 
 type BaseSelectProps = {
   option: SelectItemOption[];
@@ -182,27 +184,18 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         >
           {multiple &&
             value.map((v) => (
-              <div
-                key={v.value}
-                className="inline-block ml-1 border bg-slate-100 border-slate-300 rounded-sm"
-              >
-                <div className="flex justify-center items-center">
-                  <span className="px-1">{v.label}</span>
-                  <span onClick={() => handleUnselect(v)}>
-                    <DeleteIcon height={18} width={18} />
-                  </span>
-                </div>
-              </div>
+              <Tag key={v.value} deletable onDelete={() => handleUnselect(v)}>
+                {v.label}
+              </Tag>
             ))}
-          <input
-            type="text"
-            className="cursor-pointer ml-1 p-1 border-none outline-none"
+          <Input
+            type="plain"
+            className="cursor-pointer p-1 border-none outline-none"
             placeholder={placeholder}
             ref={inputRef}
             onKeyDown={handleKeyDown}
             value={input}
-            onInput={(e) => {
-              const text = (e.target as HTMLInputElement).value;
+            onInput={(text) => {
               onInput?.(text);
               setInput(text);
             }}
@@ -218,7 +211,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
           leaveDoneClassName="opacity-0 scale-y-50"
           unmountOnHide
         >
-          <div className="absolute z-50 bg-white p-1 w-full rounded shadow-xl origin-top">
+          <div className="absolute z-50 bg-[--select-background-color] p-1 w-full rounded shadow-xl origin-top">
             {loading ? (
               <div className="p-4 relative">
                 <LoadingIcon

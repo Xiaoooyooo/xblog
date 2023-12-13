@@ -14,7 +14,7 @@ function Panel(props: PanelProps) {
       className={classNames(
         "p-8",
         "relative",
-        "bg-white",
+        "bg-[--panel-background-color]",
         shadow && "shadow-xl",
         rounded && "rounded-lg",
         className,

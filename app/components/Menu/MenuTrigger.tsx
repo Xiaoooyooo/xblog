@@ -20,13 +20,11 @@ type MenuTriggerProps = PropsWithChildren<{
 export default function MenuTrigger(props: MenuTriggerProps) {
   const { children, className, menu } = props;
   const [isShow, setIsShow] = useState(false);
-  const [triggerPosition, setTriggerPosition] = useState<DOMRect>();
   const triggerElRef = useRef<HTMLDivElement>(null);
   const handleClick: MouseEventHandler = useCallback((e) => {
     e.stopPropagation();
     e.preventDefault();
     setIsShow(true);
-    setTriggerPosition(triggerElRef.current?.getBoundingClientRect());
   }, []);
 
   useEffect(() => {
@@ -46,7 +44,7 @@ export default function MenuTrigger(props: MenuTriggerProps) {
       >
         {children}
       </div>
-      <Menu show={isShow} anchor={triggerPosition}>
+      <Menu show={isShow} anchorEl={triggerElRef.current}>
         {menu}
       </Menu>
     </>

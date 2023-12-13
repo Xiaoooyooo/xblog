@@ -56,7 +56,7 @@ export default function List(props: ListProps) {
             "top-0",
             "transition-all",
             "duration-300",
-            "bg-gray-200",
+            "bg-[--list-item-hover-background-color]",
             "w-full",
             "z-10",
             "rounded",

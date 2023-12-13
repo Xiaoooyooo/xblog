@@ -8,6 +8,7 @@ import {
 } from "react";
 import Tip from "./Tip";
 import classNames from "classnames";
+import domOffset from "@/utils/domOffset";
 
 type TooptipProps = PropsWithChildren<{
   trigger?: "click" | "hover";
@@ -77,16 +78,9 @@ export default function Tooltip(props: TooptipProps) {
       const { clientHeight: h, clientWidth: w } = el;
       const { clientHeight: tH, clientWidth: tW } = tipEl;
       if (mountOnBody) {
-        let target = el as HTMLElement;
-        while (target) {
-          console.log({ target });
-          top += target.offsetTop;
-          left += target.offsetLeft;
-          if (target === document.body) {
-            break;
-          }
-          target = target.offsetParent as HTMLElement;
-        }
+        const offset = domOffset(el);
+        top += offset.top;
+        left += offset.left;
       }
       switch (placement) {
         case "top":

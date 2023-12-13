@@ -51,38 +51,36 @@ const BlogScence = () => {
           </div>
         )}
       </Background>
-      <ContentContainer>
-        <Panel>
-          {isLoading ? (
-            <div className="flex gap-x-5">
-              <div className="flex-auto mr-[240px]">
-                <Skeleton />
-              </div>
+      <ContentContainer className="pt-8">
+        {isLoading ? (
+          <div className="flex gap-x-5">
+            <div className="flex-auto mr-[240px]">
+              <Skeleton />
             </div>
-          ) : isError ? (
-            <div className="text-center">
-              <p>文章加载失败了，请稍后再试试哦。</p>
-              <Button onClick={reload}>重试</Button>
-            </div>
-          ) : isSuccess ? (
-            <div className="flex gap-x-5">
-              <Markdown
-                text={content}
-                onUpdateTableOfContents={setTableOfContents}
-                className="flex-auto min-w-0"
-                onSetActiveHeading={setActiveHeading}
+          </div>
+        ) : isError ? (
+          <div className="text-center">
+            <p>文章加载失败了，请稍后再试试哦。</p>
+            <Button onClick={reload}>重试</Button>
+          </div>
+        ) : isSuccess ? (
+          <div className="flex gap-x-5">
+            <Markdown
+              text={content}
+              onUpdateTableOfContents={setTableOfContents}
+              className="flex-auto min-w-0"
+              onSetActiveHeading={setActiveHeading}
+            />
+            <div className="flex-none w-[240px] sticky top-[10vh] self-start">
+              <TableOfContents
+                contents={tableOfContents}
+                activeHeading={activeHeading}
               />
-              <div className="flex-none w-[240px] sticky top-[10vh] self-start">
-                <TableOfContents
-                  contents={tableOfContents}
-                  activeHeading={activeHeading}
-                />
-              </div>
             </div>
-          ) : (
-            !isLoading && <p>No Content</p>
-          )}
-        </Panel>
+          </div>
+        ) : (
+          !isLoading && <p>No Content</p>
+        )}
       </ContentContainer>
     </>
   );

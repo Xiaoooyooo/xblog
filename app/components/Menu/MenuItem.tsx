@@ -38,7 +38,9 @@ export function MenuItem(props: MenuItemProps) {
       onClick={handleClick}
       className={classNames(
         "w-40 flex cursor-pointer",
-        disabled ? "text-slate-400" : "hover:bg-gray-300",
+        disabled
+          ? "text-[--menu-item-disabled-background-color]"
+          : "hover:bg-[--menu-item-hover-background-color]",
       )}
     >
       <div className="basis-8 flex justify-center items-center">{icon}</div>

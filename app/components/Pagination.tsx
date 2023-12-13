@@ -16,7 +16,10 @@ const Pagination = function (props: PaginationProps) {
   const isFirstRender = useRef<boolean>(true);
 
   const pageBtns = useMemo(() => {
-    const maxPageCount = Math.floor(total / pageSize) + 1;
+    const maxPageCount =
+      total % pageSize === 0
+        ? total / pageSize
+        : Math.floor(total / pageSize) + 1;
     if (pageIndex > maxPageCount) {
       console.warn("current page index is invalid");
     }
@@ -103,14 +106,7 @@ function PageBtn(props: PageBtnProps) {
           "transition-[background]",
           "duration-300",
           "hover:bg-[rgba(210,210,210,0.3)]",
-          active && [
-            "text-[#c85c5c]",
-            "after:content-['']",
-            "after:absolute",
-            "after:z-[-1]",
-            "after:inset-0",
-            "after:bg-[rgba(210,210,210,0.7)]",
-          ],
+          active && ["text-[--pagination-active-text-color]"],
         )}
       >
         {index}

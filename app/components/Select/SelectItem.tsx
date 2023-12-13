@@ -25,9 +25,9 @@ export default function SelectItem(props: SelectItemProps) {
   return (
     <div
       className={classNames(
-        "p-2 cursor-pointer hover:bg-slate-400 transition-all duration-200",
+        "p-2 cursor-pointer hover:bg-[--select-item-hover-background-color] transition-all duration-200",
         "flex items-center",
-        selected && "bg-sky-200",
+        selected && "bg-[--select-item-selected-background-color]",
       )}
       onClick={() => handleSelect(item)}
     >

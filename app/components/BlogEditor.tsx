@@ -1,4 +1,5 @@
 import Editor from "./Editor";
+import Input from "./Input";
 
 type BlogEditorProps = {
   title: string;
@@ -12,9 +13,10 @@ export default function BlogEditor(props: BlogEditorProps) {
 
   return (
     <>
-      <input
+      <Input
         value={title}
-        onInput={(e) => onTitleChange((e.target as HTMLInputElement).value)}
+        type="plain"
+        onInput={onTitleChange}
         placeholder="输入标题"
         className="mt-2 mb-8 outline-none border-none text-4xl font-bold"
       />

@@ -172,19 +172,19 @@ function ToolButton(props: ToolButtonProps) {
     >
       <span
         className={classNames(
-          "block h-1 w-3/5 bg-gray-800 rounded-sm transition-all duration-200 origin-right",
+          "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-all duration-200 origin-right",
           open && ["-rotate-[42deg]", "-translate-x-1"],
         )}
       ></span>
       <span
         className={classNames(
-          "block h-1 w-3/5 bg-gray-800 rounded-sm transition-all duration-200",
+          "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-all duration-200",
           open && ["translate-x-full", "opacity-0"],
         )}
       ></span>
       <span
         className={classNames(
-          "block h-1 w-3/5 bg-gray-800 rounded-sm transition-all duration-200 origin-right",
+          "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-all duration-200 origin-right",
           open && ["rotate-[42deg]", "-translate-x-1"],
         )}
       ></span>
