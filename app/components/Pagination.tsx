@@ -16,6 +16,9 @@ const Pagination = function (props: PaginationProps) {
   const isFirstRender = useRef<boolean>(true);
 
   const pageBtns = useMemo(() => {
+    if (total === 0) {
+      return null;
+    }
     const maxPageCount =
       total % pageSize === 0
         ? total / pageSize
