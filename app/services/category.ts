@@ -8,9 +8,12 @@ import useFetchState from "./useFetchState";
 import { Category, List } from "@/types";
 
 export function useGetCategories(option: GetCategoryOption) {
-  const [state, fetchFn] = useFetchState<List<Category>, GetCategoryOption>(
+  const { fetchState, fetchFn, abortHandler } = useFetchState<
+    List<Category>,
+    GetCategoryOption
+  >(
     {
-      fetchFn: (arg) => getCategories(arg),
+      fetchFn: (arg, signal) => getCategories(arg, signal),
     },
     [],
   );
@@ -19,16 +22,18 @@ export function useGetCategories(option: GetCategoryOption) {
     fetchFn(option);
   }, [option]);
 
-  const memoized = useMemo(
-    () => ({ ...state, reload: () => fetchFn(option) }),
-    [state, option],
+  return useMemo(
+    () => ({
+      ...fetchState,
+      reload: () => fetchFn(option),
+      abort: abortHandler,
+    }),
+    [fetchState, option],
   );
-
-  return memoized;
 }
 
 export function useCategoryDetail(id: string) {
-  const [state, fetchFn] = useFetchState<Category, string>(
+  const { fetchState, fetchFn, abortHandler } = useFetchState<Category, string>(
     {
       fetchFn: getCategoryDetail,
     },
@@ -39,10 +44,8 @@ export function useCategoryDetail(id: string) {
     fetchFn(id);
   }, [id]);
 
-  const memoized = useMemo(
-    () => ({ ...state, reload: () => fetchFn(id) }),
-    [state, id],
+  return useMemo(
+    () => ({ ...fetchState, reload: () => fetchFn(id), abort: abortHandler }),
+    [fetchState, id],
   );
-
-  return memoized;
 }

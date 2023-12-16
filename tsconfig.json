@@ -8,6 +8,9 @@
     "paths": {
       "~/*": ["server/*"]
     },
-    "esModuleInterop": true
-  }
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "app"]
 }

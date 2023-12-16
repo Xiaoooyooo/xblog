@@ -6,6 +6,7 @@ import {
   ReactElement,
   createElement,
   forwardRef,
+  useEffect,
 } from "react";
 
 type TransitionProps = {
@@ -19,6 +20,7 @@ type TransitionProps = {
   beforeLeaveClassName?: string;
   leaveActiveClassName?: string;
   leaveDoneClassName?: string;
+  onExited?: () => void;
 };
 
 type TransitionStage =
@@ -42,6 +44,7 @@ export default forwardRef<HTMLElement, TransitionProps>(
       beforeLeaveClassName,
       leaveActiveClassName,
       leaveDoneClassName,
+      onExited,
     } = props;
 
     const [stage, setStage] = useState<TransitionStage>(
@@ -83,6 +86,12 @@ export default forwardRef<HTMLElement, TransitionProps>(
         });
       }
     }, [show, stage, duration]);
+
+    useEffect(() => {
+      if (!show && stage === "leave-done") {
+        onExited?.();
+      }
+    }, [show, stage, onExited]);
 
     if (unmountOnHide && !show && stage === "leave-done") return null;
 

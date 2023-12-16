@@ -7,7 +7,7 @@ function CategorySkeleton() {
     items.push(
       <div key={i} className="mb-8">
         <SkeletonItem animated height={24} />
-        <SkeletonItem animated width={150} mt={8} />
+        <SkeletonItem animated width={150} />
       </div>,
     );
   }

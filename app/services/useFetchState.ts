@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 
 type UseFetchStateOption<T = unknown, P = unknown> = {
   initialData?: T;
-  fetchFn: (args: P) => Promise<T>;
+  fetchFn: (args: P, signal: AbortSignal) => Promise<T>;
 };
 
 type FetchState<T> =
@@ -48,9 +48,10 @@ export default function useFetchState<T = unknown, P = unknown>(
     result: option.initialData || null,
     isLoading: false,
   });
+  const abortController = useRef<AbortController>();
 
   const fetchFn = useCallback(
-    (args: P) => {
+    async (args: P) => {
       setFetchState({
         isError: false,
         error: null,
@@ -58,8 +59,9 @@ export default function useFetchState<T = unknown, P = unknown>(
         result: null,
         isLoading: true,
       });
+      abortController.current = new AbortController();
       return option
-        .fetchFn(args)
+        .fetchFn(args, abortController.current.signal)
         .then((res) => {
           const state = {
             isError: false,
@@ -69,6 +71,7 @@ export default function useFetchState<T = unknown, P = unknown>(
             isLoading: false,
           } as const;
           setFetchState(state);
+          abortController.current = undefined;
           return state;
         })
         .catch((error) => {
@@ -80,11 +83,18 @@ export default function useFetchState<T = unknown, P = unknown>(
             isLoading: false,
           } as const;
           setFetchState(state);
+          abortController.current = undefined;
           return state;
         });
     },
     [deps],
   );
 
-  return [fetchState, fetchFn] as const;
+  const abortHandler = useCallback(() => {
+    if (abortController.current) {
+      abortController.current.abort();
+    }
+  }, []);
+
+  return { fetchState, fetchFn, abortHandler } as const;
 }

@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
 
-import { MenuItem } from "./MenuItem";
+import { MenuItemProps } from "./MenuItem";
 
 type MenuContextOption = {
   isOpen: boolean;
-  menus: MenuItem[];
-  setMenu: (menus: MenuItem[]) => void;
+  menus: MenuItemProps[];
+  setMenu: (menus: MenuItemProps[]) => void;
   closeMenu: () => void;
   triggerRect?: DOMRect;
   setTriggerRect: (rect: DOMRect) => void;

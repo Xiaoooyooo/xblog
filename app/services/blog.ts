@@ -16,9 +16,12 @@ type CreateBlogOption = {
 export function useCreateBlog() {
   const token = useSelector((state) => state.user.token);
 
-  const [state, fetchFn] = useFetchState<{ id: string }, CreateBlogOption>(
+  const { fetchState, fetchFn, abortHandler } = useFetchState<
+    { id: string },
+    CreateBlogOption
+  >(
     {
-      fetchFn: (data) =>
+      fetchFn: (data, signal) =>
         request("/api/blog/create", {
           method: "post",
           headers: {
@@ -26,25 +29,27 @@ export function useCreateBlog() {
             Authorization: `Bearer ${token}`,
           },
           data,
+          signal,
         }),
     },
     [token],
   );
 
-  const memoized = useMemo(() => ({ ...state, fetchFn }), [state]);
-
-  return memoized;
+  return useMemo(
+    () => ({ ...fetchState, fetchFn, abort: abortHandler }),
+    [fetchState],
+  );
 }
 
 export function useUpdateBlog() {
   const token = useSelector((state) => state.user.token);
 
-  const [state, fetchFn] = useFetchState<
+  const { fetchState, fetchFn, abortHandler } = useFetchState<
     { id: string },
     CreateBlogOption & { id: string }
   >(
     {
-      fetchFn: (data) =>
+      fetchFn: (data, signal) =>
         request("/api/blog/update", {
           method: "post",
           headers: {
@@ -52,23 +57,25 @@ export function useUpdateBlog() {
             Authorization: `Bearer ${token}`,
           },
           data,
+          signal,
         }),
     },
     [token],
   );
 
-  const memoized = useMemo(() => ({ ...state, fetchFn }), [state]);
-
-  return memoized;
+  return useMemo(
+    () => ({ ...fetchState, fetchFn, abort: abortHandler }),
+    [fetchState],
+  );
 }
 
 export function useBlogList(options: GetBlogSearchOption) {
-  const [fetchState, fetchFn] = useFetchState<
+  const { fetchState, fetchFn, abortHandler } = useFetchState<
     BlogListResponse,
     GetBlogSearchOption
   >(
     {
-      fetchFn: (args) => getBlogList(args),
+      fetchFn: (args, signal) => getBlogList(args, signal),
     },
     [],
   );
@@ -77,16 +84,18 @@ export function useBlogList(options: GetBlogSearchOption) {
     fetchFn(options);
   }, [options]);
 
-  const memoized = useMemo(
-    () => ({ ...fetchState, reload: () => fetchFn(options) }),
+  return useMemo(
+    () => ({
+      ...fetchState,
+      reload: () => fetchFn(options),
+      abort: abortHandler,
+    }),
     [fetchState, options],
   );
-
-  return memoized;
 }
 
 export function useBlogDetail(id?: string) {
-  const [fetchState, fetchFn] = useFetchState<Blog, string>(
+  const { fetchState, fetchFn, abortHandler } = useFetchState<Blog, string>(
     {
       fetchFn: (id) =>
         request("/api/blog/detail", {
@@ -101,10 +110,12 @@ export function useBlogDetail(id?: string) {
     id && fetchFn(id);
   }, [id]);
 
-  const memoized = useMemo(
-    () => ({ ...fetchState, reload: () => id && fetchFn(id) }),
+  return useMemo(
+    () => ({
+      ...fetchState,
+      reload: () => id && fetchFn(id),
+      abort: abortHandler,
+    }),
     [fetchState, id],
   );
-
-  return memoized;
 }

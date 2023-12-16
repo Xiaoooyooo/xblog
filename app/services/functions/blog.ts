@@ -8,17 +8,19 @@ export type GetBlogSearchOption = {
   draft?: boolean;
 };
 
-export function getBlogList(search: GetBlogSearchOption) {
+export function getBlogList(search: GetBlogSearchOption, signal: AbortSignal) {
   return request("/api/blog/list", {
     method: "get",
     search,
+    signal,
   });
 }
 
-export function deleteBlog(id: string, token: string) {
+export function deleteBlog(id: string, token: string, signal?: AbortSignal) {
   return request<boolean>("/api/blog/delete", {
     method: "delete",
     search: { id },
     headers: { Authorization: `Bearer ${token}` },
+    signal,
   });
 }

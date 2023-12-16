@@ -25,6 +25,7 @@ export default function CategorySelect(props: CategorySelectProps) {
     end: false,
   });
 
+  const abortControllerRef = useRef<AbortController>();
   /**
    * @param {boolean} isContinue 是否是滚动继续加载
    */
@@ -40,7 +41,8 @@ export default function CategorySelect(props: CategorySelectProps) {
         setIsGetCategoriesLoading(true);
         setCategoryListPagination({ index: 1, size: 10, end: false });
       }
-      getCategories(search)
+      abortControllerRef.current = new AbortController();
+      getCategories(search, abortControllerRef.current.signal)
         .then((res) => {
           const { list, index, size } = res;
           if (isContinue) {
@@ -54,6 +56,7 @@ export default function CategorySelect(props: CategorySelectProps) {
           }
         })
         .finally(() => {
+          abortControllerRef.current = undefined;
           if (isContinue) {
             setIsContinueLoading(false);
           } else {
@@ -92,6 +95,12 @@ export default function CategorySelect(props: CategorySelectProps) {
     [categoryList],
   );
 
+  const handleDropdownClosed = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+  }, []);
+
   const handleCreateCatecoryTag = useCallback((value: SelectItemOption) => {
     console.log("handleCreateCatecoryTag", { value });
   }, []);
@@ -104,8 +113,9 @@ export default function CategorySelect(props: CategorySelectProps) {
       onChange={onCategoriesChange}
       onSelect={(v) => console.log("select", v)}
       onInput={debouncedInputCallback}
-      onDropDownVisibleChange={handleCategoryDropDownVisibleChange}
+      onDropdownVisibleChange={handleCategoryDropDownVisibleChange}
       onCreate={handleCreateCatecoryTag}
+      onDropdownClosed={handleDropdownClosed}
       placeholder="选择或创建文章分类"
     >
       {categoryList.length === 0 && isGetCategoriesListLoading ? (

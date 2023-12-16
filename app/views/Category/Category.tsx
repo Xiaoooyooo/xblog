@@ -28,13 +28,13 @@ export default function CategoryScene() {
       name: searchKeywords,
       documents: true,
     }),
-    [],
+    [currentPage, searchKeywords],
   );
+
   const { isSuccess, isLoading, result, reload } = useGetCategories(memozied);
 
   const handleSearchInput = useCallback(
     debounce((input: string) => {
-      console.log({ input });
       navigate({ pathname: "/category" });
       setSearchKeywords(input);
     }, 500),
@@ -46,8 +46,6 @@ export default function CategoryScene() {
       setPagination({ total: result.total });
     }
   }, [isSuccess, result]);
-
-  console.log({ params, isSuccess, isLoading, result });
 
   return (
     <ContentContainer>

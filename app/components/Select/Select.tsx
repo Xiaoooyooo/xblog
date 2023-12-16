@@ -20,9 +20,10 @@ type BaseSelectProps = {
   option: SelectItemOption[];
   readOnly?: boolean;
   placeholder?: string;
-  onDropDownVisibleChange?: (visible: boolean) => void;
+  onDropdownVisibleChange?: (visible: boolean) => void;
   loading?: boolean;
   children?: undefined;
+  onDropdownClosed?: () => void;
 };
 
 type CustomRenderChildrenProps = Omit<
@@ -65,10 +66,11 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
     placeholder,
     allowCreate,
     onInput,
-    onDropDownVisibleChange,
+    onDropdownVisibleChange,
     loading,
     onCreate,
     children,
+    onDropdownClosed,
   } = props;
   const [input, setInput] = useState("");
   const [isShowDropDown, setIsShowDropDown] = useState(false);
@@ -162,7 +164,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
   }, [value, handleSelect]);
 
   useEffect(() => {
-    onDropDownVisibleChange?.(isShowDropDown);
+    onDropdownVisibleChange?.(isShowDropDown);
   }, [isShowDropDown]);
 
   useEffect(() => {
@@ -175,7 +177,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
 
   return (
     <SelectContext.Provider value={selectContextValue}>
-      <div className="relative" onClick={handleFocus}>
+      <div className="group x-select relative" onClick={handleFocus}>
         <div
           className={classNames(
             "cursor-pointer border-2 border-transparent transition-all duration-300",
@@ -210,6 +212,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
           leaveActiveClassName="transition-all duration-200"
           leaveDoneClassName="opacity-0 scale-y-50"
           unmountOnHide
+          onExited={onDropdownClosed}
         >
           <div className="absolute z-50 bg-[--select-background-color] p-1 w-full rounded shadow-xl origin-top">
             {loading ? (

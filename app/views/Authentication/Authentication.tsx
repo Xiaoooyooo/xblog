@@ -62,9 +62,9 @@ export default function Authentication() {
   return (
     <div
       style={{ backgroundImage: `url(${imageUrl})` }}
-      className="h-full bg-cover bg-center bg-no-repeat"
+      className="flex-auto min-h-0 bg-cover bg-center bg-no-repeat flex"
     >
-      <div className="h-full flex items-center justify-center backdrop-blur-md">
+      <div className="flex-auto flex items-center justify-center backdrop-blur-md">
         <div className="rounded bg-white flex h-[500px] shadow overflow-hidden">
           <div
             style={{ backgroundImage: `url(${imageUrl})` }}
@@ -74,6 +74,7 @@ export default function Authentication() {
             <Form className="mt-12">
               <FormItem label="Username">
                 <Input
+                  className="w-full"
                   value={authState.username}
                   onInput={(username) =>
                     setAuthState({ ...authState, username })
@@ -82,6 +83,7 @@ export default function Authentication() {
               </FormItem>
               <FormItem label="Password">
                 <Input
+                  className="w-full"
                   type="password"
                   value={authState.password}
                   onInput={(password) =>

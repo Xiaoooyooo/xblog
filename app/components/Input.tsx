@@ -55,7 +55,10 @@ export default forwardRef<HTMLInputElement, InputProps>(
           value={value}
           defaultValue={defaultValue}
           placeholder={placeholder}
-          className="flex-auto border-none outline-none bg-transparent"
+          className={classNames(
+            "flex-auto border-none outline-none bg-transparent",
+            "group-[.x-select]:cursor-pointer",
+          )}
           onInput={
             onInput && ((e) => onInput((e.target as HTMLInputElement).value))
           }
