@@ -1,16 +1,19 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES5",
+    "module": "esnext",
+    "moduleResolution": "Node",
+    "target": "ES2015",
     "lib": ["ESNext"],
     "strict": true,
     "baseUrl": ".",
+    "jsx": "preserve",
     "paths": {
+      "@/*": ["app/*"],
       "~/*": ["server/*"]
     },
     "noEmit": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "app"]
+  "exclude": ["node_modules", "build"]
 }

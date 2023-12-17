@@ -2,6 +2,7 @@ import { Middleware } from "koa";
 import { UnauthorizedError } from "~/errors";
 import { AppState, User } from "~/types";
 import { verifyAccessToken } from "~/utils/jwt";
+import { normalizeUser } from "~/utils/normalize";
 
 type AuthenticationMiddlewareOptions = {
   force?: boolean;
@@ -34,11 +35,7 @@ export default function authentication(
           throw UnauthorizedError();
         }
         if (user) {
-          ctx.state.user = {
-            id: user.id,
-            username: user.username,
-            isAdmin: user.isAdmin || false,
-          };
+          ctx.state.user = normalizeUser(user);
         }
       }
     }

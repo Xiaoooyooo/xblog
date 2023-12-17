@@ -24,6 +24,7 @@ function BlogListSkeleton(props: BlogListSkeletonProps) {
   const { count = 10 } = props;
 
   useLayoutEffect(() => {
+    window.scrollTo(0, 0);
     document.body.classList.add("overflow-hidden");
     return () => document.body.classList.remove("overflow-hidden");
   }, []);

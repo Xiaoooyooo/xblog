@@ -7,6 +7,7 @@ import {
   signAccessToken,
   verifyRefreshToken,
 } from "~/utils/jwt";
+import { normalizeUser } from "~/utils/normalize";
 import env from "~/env";
 
 const auth = new Router<AppState>({
@@ -20,27 +21,25 @@ auth.get("/", async (ctx) => {
     return;
   }
   const { database } = ctx.state;
-  const record = await database.userToken.findFirst({
+  const token = await database.userToken.findFirst({
     where: { refreshToken },
     include: { user: true },
   });
-  if (!record) {
+  if (!token) {
     ctx.cookies.set("refreshToken", "", { expires: new Date(0) });
     ctx.body = { isLogin: false };
     return;
   }
   const { isError } = await verifyRefreshToken(refreshToken);
   if (isError) {
-    await database.userToken.delete({ where: { id: record.id } });
+    await database.userToken.delete({ where: { id: token.id } });
     ctx.cookies.set("refreshToken", "", { expires: new Date(0) });
     ctx.body = { isLogin: false };
     return;
   }
-  const accessToken = signAccessToken(record.user);
+  const accessToken = signAccessToken(token.user);
   ctx.body = {
-    id: record.user.id,
-    displayName: record.user.displayName,
-    username: record.user.username,
+    ...normalizeUser(token.user),
     token: accessToken,
     isLogin: true,
   };
@@ -58,13 +57,15 @@ auth.post("/register", async (ctx) => {
     throw ForbiddenError("The username is already exists");
   }
   const newUser = await database.user.create({
-    data: { username, password: hash(password), displayName },
+    data: {
+      username,
+      password: hash(password),
+      displayName,
+      // create a empty profile
+      profile: { create: {} },
+    },
   });
-  ctx.body = {
-    id: newUser.id,
-    displayName: newUser.displayName,
-    username: newUser.username,
-  };
+  ctx.body = normalizeUser(newUser);
 });
 
 auth.post("/login", async (ctx) => {
@@ -92,9 +93,7 @@ auth.post("/login", async (ctx) => {
     maxAge: 864000000, // 10 days
   });
   ctx.body = {
-    id: user.id,
-    displayName: user.displayName,
-    username: user.username,
+    ...normalizeUser(user),
     token: accessToken,
   };
 });

@@ -10,6 +10,27 @@ export type AppState = {
 
 export type User = {
   id: string;
+  isAdmin: boolean | null;
   username: string;
-  isAdmin: boolean;
+  displayName: string | null;
+};
+
+export type Profile = {
+  avatar: string | null;
+  introduction: string | null;
+  resume: string | null;
+};
+
+export type Blog = {
+  id: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  isDraft: boolean;
+};
+
+export type Category = {
+  id: string;
+  name: string;
 };

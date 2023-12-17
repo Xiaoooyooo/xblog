@@ -4,6 +4,14 @@ export type User = {
   displayName: string;
 };
 
+export type UserProfile = {
+  avatar: string;
+  introduction: string;
+  resume: string;
+};
+
+export type UserWithProfile = User & UserProfile;
+
 export type Blog = {
   id: string;
   title: string;

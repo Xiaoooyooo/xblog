@@ -32,10 +32,12 @@ model UserToken {
 }
 
 model UserProfile {
-  id      String @id @unique @default(uuid())
-  userId  String @unique
-  user    User   @relation(fields: [userId], references: [id])
-  content String
+  id           String  @id @unique @default(uuid())
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id])
+  avatar       String?
+  introduction String?
+  resume       String?
 }
 
 model Document {

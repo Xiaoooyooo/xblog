@@ -3,6 +3,7 @@ import bodyParser from "koa-body";
 import auth from "./auth";
 import blog from "./blog";
 import category from "./category";
+import user from "./user";
 import apiResponse from "./middlewares/apiResponse";
 import mountState from "./middlewares/mountState";
 import { NotFoundError } from "~/errors";
@@ -21,6 +22,7 @@ api.use(apiResponse());
 api.use(auth.routes());
 api.use(blog.routes());
 api.use(category.routes());
+api.use(user.routes());
 api.all("(.*)", async () => {
   throw NotFoundError("endpoint not found");
 });

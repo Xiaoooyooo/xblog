@@ -2,6 +2,7 @@ import Router from "koa-router";
 import { BadRequestError, ForbiddenError, NotFoundError } from "~/errors";
 import { AppState, Prisma } from "~/types";
 import authentication from "./middlewares/authentication";
+import { normalizeUser } from "~/utils/normalize";
 
 const category = new Router<AppState>({ prefix: "/category" });
 
@@ -78,13 +79,7 @@ category.get("/detail", authentication({ force: false }), async (ctx) => {
   const { database } = ctx.state;
   const category = await database.category.findUnique({
     where: { id },
-    select: {
-      id: true,
-      name: true,
-      createdAt: true,
-      deletedAt: true,
-      createdBy: { select: { id: true, username: true, displayName: true } },
-    },
+    include: { createdBy: true },
   });
   if (!category) {
     throw NotFoundError();
@@ -97,7 +92,7 @@ category.get("/detail", authentication({ force: false }), async (ctx) => {
     id: category.id,
     name: category.name,
     createdAt: category.createdAt,
-    createdBy: category.createdBy,
+    createdBy: normalizeUser(category.createdBy),
   };
 });
 

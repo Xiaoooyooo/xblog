@@ -2,6 +2,11 @@ import Router from "koa-router";
 import authentication from "./middlewares/authentication";
 import { BadRequestError, ForbiddenError, NotFoundError } from "~/errors";
 import { AppState, Prisma } from "~/types";
+import {
+  normalizeBlog,
+  normalizeCategory,
+  normalizeUser,
+} from "~/utils/normalize";
 
 const blog = new Router<AppState>({
   prefix: "/blog",
@@ -86,28 +91,23 @@ blog.get("/detail", async (ctx) => {
   const database = ctx.state.database;
   const blog = await database.document.findUnique({
     where: { id },
-    select: {
-      id: true,
-      content: true,
-      createdAt: true,
-      updatedAt: true,
-      title: true,
-      isDraft: true,
+    include: {
       categories: {
-        select: { category: { select: { id: true, name: true } } },
+        include: { category: true },
         where: { category: { is: { deletedAt: null } } },
       },
-      user: {
-        select: { id: true, username: true, displayName: true },
-      },
+      user: true,
     },
   });
   if (!blog) {
     throw NotFoundError();
   }
   ctx.body = {
-    ...blog,
-    categories: blog.categories.map((item) => item.category),
+    ...normalizeBlog(blog),
+    user: normalizeUser(blog.user),
+    categories: blog.categories
+      .map((item) => item.category)
+      .map(normalizeCategory),
   };
 });
 
