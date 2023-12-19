@@ -6,6 +6,7 @@ import {
   normalizeBlog,
   normalizeCategory,
   normalizeUser,
+  normalizeProfile,
 } from "~/utils/normalize";
 
 const blog = new Router<AppState>({
@@ -56,26 +57,24 @@ blog.get("/list", async (ctx) => {
     take: _size,
     orderBy: { [orderBy]: order },
     where,
-    select: {
-      id: true,
-      content: true,
-      createdAt: true,
-      updatedAt: true,
-      title: true,
-      isDraft: true,
+    include: {
       categories: {
-        select: { category: { select: { id: true, name: true } } },
+        include: { category: true },
         where: { category: { is: { deletedAt: null } } },
       },
-      user: {
-        select: { id: true, username: true, displayName: true },
-      },
+      user: { include: { profile: { select: { avatar: true } } } },
     },
   });
   ctx.body = {
     list: data.map((item) => ({
-      ...item,
-      categories: item.categories.map((el) => el.category),
+      ...normalizeBlog(item),
+      user: {
+        ...normalizeUser(item.user),
+        avatar: item.user.profile?.avatar,
+      },
+      categories: item.categories.map((catagory) =>
+        normalizeCategory(catagory.category),
+      ),
     })),
     page: _page,
     size: _size,

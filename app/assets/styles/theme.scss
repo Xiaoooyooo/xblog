@@ -34,6 +34,12 @@
   --error-text-color: #fff;
   --warning-background-color: rgb(255, 168, 38);
   --warning-text-color: #fff;
+  --modal-mask-background-color: rgba(150, 150, 150, 0.3);
+  --button-primary-background-color: rgb(59, 130, 246);
+  --button-primary-text-color: white;
+  --button-primary-hover-background-color: rgb(96, 165, 250);
+  --button-primary-active-background-color: rgb(147, 197, 253);
+  --button-primary-disabled-background-color: rgb(96, 165, 250);
 }
 
 @mixin dark {

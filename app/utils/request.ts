@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type RequestOption = Omit<RequestInit, "url" | "body"> & {
-  data?: string | Record<string, unknown>;
+  data?: string | Record<string, unknown> | FormData;
   search?: Record<string, any>;
 };
 
@@ -24,6 +24,8 @@ export default class RequestHandler {
     const { data, search, ...rest } = option;
     let body: BodyInit | null = null;
     if (typeof data === "string") {
+      body = data;
+    } else if (data instanceof FormData) {
       body = data;
     } else if (data) {
       body = JSON.stringify(data);

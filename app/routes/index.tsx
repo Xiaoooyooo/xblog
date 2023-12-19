@@ -17,6 +17,7 @@ const CreateScene = lazy(() => import("@/views/Create"));
 const EditScene = lazy(() => import("@/views/Edit"));
 const CategoryScene = lazy(() => import("@/views/Category"));
 const CategoryDetailScene = lazy(() => import("@/views/CategoryDetail"));
+const ProfileDetailScene = lazy(() => import("@/views/Profile"));
 
 function createRouter(user: RootState["user"]) {
   const routes: RouteObject[] = [
@@ -60,6 +61,10 @@ function createRouter(user: RootState["user"]) {
         {
           path: "category/:categoryId/page/:pageIndex",
           element: <CategoryDetailScene />,
+        },
+        {
+          path: "user/:userId",
+          element: <ProfileDetailScene />,
         },
         {
           path: "about",

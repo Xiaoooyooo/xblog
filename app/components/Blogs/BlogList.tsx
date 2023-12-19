@@ -128,8 +128,19 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
             </Link>
             <div className="flex gap-4">
               <span className="flex items-center">
-                <PersonIcon height={20} width={20} />
-                <span className="ml-1">{blog.user.username}</span>
+                {blog.user.avatar ? (
+                  <span className="block h-5 w-5 rounded-full overflow-hidden">
+                    <img src={`/assets/avatar/${blog.user.avatar}`} />
+                  </span>
+                ) : (
+                  <PersonIcon height={20} width={20} />
+                )}
+                <Link
+                  to={{ pathname: `/user/${blog.user.id}` }}
+                  className="ml-1"
+                >
+                  {blog.user.username}
+                </Link>
               </span>
               <span className="flex items-center">
                 <CalendarIcon />

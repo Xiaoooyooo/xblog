@@ -6,8 +6,8 @@ import "@/assets/styles/markdown.css";
 
 interface MarkdownProps {
   text: string | undefined;
-  onUpdateTableOfContents: (contents: HeadingWithChildren[]) => void;
-  onSetActiveHeading: (headingId?: string) => void;
+  onUpdateTableOfContents?: (contents: HeadingWithChildren[]) => void;
+  onSetActiveHeading?: (headingId?: string) => void;
   className?: string;
 }
 
@@ -24,7 +24,7 @@ function Markdown(props: MarkdownProps) {
   }, [text]);
 
   useEffect(() => {
-    onUpdateTableOfContents(result.headings);
+    onUpdateTableOfContents?.(result.headings);
   }, [result]);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ function Markdown(props: MarkdownProps) {
       const scrollY = window.scrollY + 60;
       const offsets = headingOffsetRef.current;
       if (scrollY < offsets[0]) {
-        onSetActiveHeading(undefined);
+        onSetActiveHeading?.(undefined);
         return;
       }
       const headings = headingElsRef.current;
@@ -62,7 +62,7 @@ function Markdown(props: MarkdownProps) {
         i++;
       }
 
-      onSetActiveHeading(
+      onSetActiveHeading?.(
         decodeURIComponent(
           scrollY === offsets[i] ? headings[i].id : headings[i - 1].id,
         ),

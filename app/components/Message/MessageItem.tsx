@@ -15,8 +15,15 @@ export type MessageProps = {
 };
 
 export default function Message(props: MessageProps) {
-  const { type, message, duration, top, onMounted, onExiting, nextCallback } =
-    props;
+  const {
+    type,
+    message,
+    duration = 3000,
+    top,
+    onMounted,
+    onExiting,
+    nextCallback,
+  } = props;
 
   const elRef = useRef<HTMLDivElement>(null);
   const [left, setLeft] = useState("0px");

@@ -14,6 +14,7 @@ type TransitionProps = {
   duration: number;
   children: ReactElement;
   unmountOnHide?: boolean;
+  transitionOnFirstMount?: boolean;
   beforeEnterClassName?: string;
   enterActiveClassName?: string;
   enterDoneClassName?: string;
@@ -38,6 +39,7 @@ export default forwardRef<HTMLElement, TransitionProps>(
       duration,
       children,
       unmountOnHide,
+      transitionOnFirstMount,
       beforeEnterClassName,
       enterActiveClassName,
       enterDoneClassName,
@@ -47,9 +49,12 @@ export default forwardRef<HTMLElement, TransitionProps>(
       onExited,
     } = props;
 
-    const [stage, setStage] = useState<TransitionStage>(
-      show ? "enter-done" : "leave-done",
-    );
+    const [stage, setStage] = useState<TransitionStage>(() => {
+      if (transitionOnFirstMount) {
+        return show ? "leave-done" : "enter-done";
+      }
+      return show ? "enter-done" : "leave-done";
+    });
 
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
 

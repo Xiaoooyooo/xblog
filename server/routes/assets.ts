@@ -1,17 +1,33 @@
 import Router from "koa-router";
 import fs from "fs";
 import path from "path";
-import mime from "mime";
-import { hash } from "~/utils/encrypt";
+import env from "~/env";
+import { isFileExits } from "~/utils/fs";
+import { forceCache, validationCache } from "~/utils/clientCache";
 
 const assets = new Router({ prefix: "/assets" });
 
-const appPath = "../../app/assets";
+const appDir = "../../app/assets";
+const avatarDir = path.resolve(process.cwd(), env.avatarUploadDir);
+
+assets.get("/avatar/:filename", async (ctx, next) => {
+  const { filename } = ctx.params;
+  if (!filename) {
+    return next();
+  }
+  const avatarPath = path.join(avatarDir, filename);
+  const avatarStats = await isFileExits(avatarPath);
+  if (!avatarStats) {
+    return next();
+  }
+  forceCache(ctx, avatarStats, avatarPath);
+  ctx.body = fs.createReadStream(avatarPath);
+});
 
 assets.get("(.*)", async (ctx, next) => {
   try {
     const filename = ctx.path.replace(/^\/assets/, "");
-    const filepath = path.join(__dirname, appPath, filename);
+    const filepath = path.join(__dirname, appDir, filename);
     const isExists = fs.existsSync(filepath);
     if (!isExists) {
       return next();
@@ -20,24 +36,7 @@ assets.get("(.*)", async (ctx, next) => {
     if (!filestats.isFile()) {
       return next();
     }
-    const etag = ctx.headers["if-none-match"];
-    const { mtime } = filestats;
-    const _etag = hash(mtime.toISOString());
-    if (etag === _etag) {
-      ctx.status = 304;
-      return;
-    }
-    const mimeType = mime.getType(filepath);
-    let headers: Record<string, string> = {
-      etag: _etag,
-    };
-    if (mimeType) {
-      headers = {
-        ...headers,
-        "content-type": mimeType,
-      };
-    }
-    ctx.set(headers);
+    validationCache(ctx, filestats, filepath);
     ctx.body = fs.createReadStream(filepath);
   } catch (err) {
     console.log(err);
