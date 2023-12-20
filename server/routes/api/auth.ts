@@ -23,7 +23,7 @@ auth.get("/", async (ctx) => {
   const { database } = ctx.state;
   const token = await database.userToken.findFirst({
     where: { refreshToken },
-    include: { user: true },
+    include: { user: { include: { profile: true } } },
   });
   if (!token) {
     ctx.cookies.set("refreshToken", "", { expires: new Date(0) });
@@ -40,6 +40,7 @@ auth.get("/", async (ctx) => {
   const accessToken = signAccessToken(token.user);
   ctx.body = {
     ...normalizeUser(token.user),
+    avatar: token.user.profile?.avatar,
     token: accessToken,
     isLogin: true,
   };

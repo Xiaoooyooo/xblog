@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import classNames from "classnames";
 import { Menu } from "./Menu";
 import ThemeSwitch from "./ThemeSwitch";
+import { useSelector } from "@/hooks/redux";
 
 interface NavLink {
   name: string;
@@ -11,6 +12,7 @@ interface NavLink {
 }
 
 function Header() {
+  const user = useSelector((state) => state.user);
   const links: NavLink[] = [
     {
       name: "",
@@ -83,6 +85,21 @@ function Header() {
       )}
     >
       <nav className="flex-auto flex justify-end h-full">{_links}</nav>
+      {user.isLogin && (
+        <Link to={{ pathname: `/user/${user.id}` }}>
+          <div className="h-full mx-5 flex gap-x-2 items-center">
+            {user.avatar && (
+              <div className="rounded-full overflow-hidden">
+                <img
+                  src={`/assets/avatar/${user.avatar}`}
+                  className="h-8 w-8"
+                />
+              </div>
+            )}
+            <div>{user.username}</div>
+          </div>
+        </Link>
+      )}
       <div className="h-full w-[2px] py-4 bg-gray-500 bg-clip-content"></div>
       <ThemeSwitch />
     </header>

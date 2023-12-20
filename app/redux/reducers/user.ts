@@ -13,6 +13,7 @@ const initialUserState: UserState = {
   username: "",
   displayName: "",
   token: "",
+  avatar: "",
   isLogin: false,
   fetching: false,
 };
@@ -24,6 +25,7 @@ const user = createReducer(initialUserState, (builder) => {
       payload.displayName && (state.displayName = payload.displayName);
       payload.id && (state.id = payload.id);
       payload.username && (state.username = payload.username);
+      payload.avatar && (state.avatar = payload.avatar);
       payload.token && (state.token = payload.token);
       payload.isLogin && (state.isLogin = payload.isLogin);
     })
@@ -38,6 +40,7 @@ const user = createReducer(initialUserState, (builder) => {
         state.id = action.payload.id;
         state.username = action.payload.username;
         state.displayName = action.payload.displayName;
+        state.avatar = action.payload.avatar;
         state.token = action.payload.token;
         state.isLogin = true;
       }
@@ -47,6 +50,7 @@ const user = createReducer(initialUserState, (builder) => {
       state.id = action.payload.id;
       state.username = action.payload.username;
       state.displayName = action.payload.displayName;
+      state.avatar = action.payload.avatar;
       state.token = action.payload.token;
       state.isLogin = true;
     });
