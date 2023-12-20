@@ -27,3 +27,29 @@ export function uploadUserAvatar(
     signal,
   });
 }
+
+type UpdateUserProfileOption =
+  | {
+      introduction: string;
+      resume?: undefined;
+    }
+  | {
+      introduction?: undefined;
+      resume: string;
+    };
+
+export function updateUserProfile(
+  option: UpdateUserProfileOption,
+  token: string,
+  signal?: AbortSignal,
+) {
+  return request<boolean>("/api/user/profile/update", {
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "content-type": "application/json",
+    },
+    data: option,
+    signal,
+  });
+}

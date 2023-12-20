@@ -5,7 +5,7 @@ type UseFetchStateOption<T = unknown, P = unknown> = {
   fetchFn: (args: P, signal: AbortSignal) => Promise<T>;
 };
 
-type FetchState<T> =
+export type FetchState<T> =
   | {
       isLoading: false;
       isError: false;
