@@ -9,6 +9,8 @@ import { UserWithProfile } from "@/types";
 import { updateUserProfile } from "@/services/functions/user";
 import message from "@/components/Message/message";
 import { FetchState } from "@/services";
+import { useDispatch } from "@/hooks/redux";
+import { setUserInfo } from "@/redux/actions/user";
 
 type IntroductionProps = {
   profile: FetchState<UserWithProfile>;
@@ -23,6 +25,7 @@ export default function Introduction(props: IntroductionProps) {
   const [isShowAvatarUploadModal, setIsShowAvatarUploadModal] = useState(false);
   const [avatar, setAvatar] = useState<string>();
   const [introduction, setIntroduction] = useState<string>();
+  const dispatch = useDispatch();
 
   function handleSaveIntroduction(e: FormEvent) {
     const target = e.target as HTMLInputElement;
@@ -50,8 +53,10 @@ export default function Introduction(props: IntroductionProps) {
 
   function handleAvatarUplaoded(avatar: string) {
     setAvatar(avatar);
+    // update avatar in redux store
+    dispatch(setUserInfo({ avatar }));
     setIsShowAvatarUploadModal(false);
-    message({ type: "success", message: "修改成功" });
+    message({ type: "success", message: "修改头像成功" });
   }
 
   useEffect(() => {
@@ -67,7 +72,7 @@ export default function Introduction(props: IntroductionProps) {
         imageUrl={profileImageUrl}
         className="flex flex-col justify-center items-center text-white"
       >
-        <div className="relative h-40 w-40 rounded-full bg-[rgba(255,255,255,0.5)] overflow-hidden">
+        <div className="relative h-32 w-32 rounded-full bg-[rgba(255,255,255,0.5)] overflow-hidden">
           {avatar && (
             <>
               <img
