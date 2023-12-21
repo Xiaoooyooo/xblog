@@ -24,3 +24,12 @@ export function deleteBlog(id: string, token: string, signal?: AbortSignal) {
     signal,
   });
 }
+
+export function updateBlogViews(id: string, signal?: AbortSignal) {
+  return request<number>("/api/blog/views", {
+    method: "post",
+    headers: { "content-type": "application/json" },
+    data: { id },
+    signal,
+  });
+}

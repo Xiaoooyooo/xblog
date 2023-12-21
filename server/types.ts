@@ -28,6 +28,7 @@ export type Blog = {
   updatedAt: Date;
   title: string;
   isDraft: boolean;
+  views: number;
 };
 
 export type Category = {

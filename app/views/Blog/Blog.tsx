@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Markdown from "@/components/Markdown";
 import Panel from "@/components/Panel";
@@ -13,6 +13,8 @@ import CategoryTag from "@/components/CategoryTag";
 import BlogImage from "@/assets/images/river.jpg";
 import { HeadingWithChildren } from "@/utils/marked";
 import TableOfContents from "@/components/TableOfContents";
+import EyeIcon from "@/assets/icons/eye.svg";
+import ViewUpdater from "./ViewUpdater";
 
 type BlogParams = {
   blogId: string;
@@ -24,8 +26,16 @@ const BlogScence = () => {
     [],
   );
   const [activeHeading, setActiveHeading] = useState<string>();
+  const [views, setViews] = useState(0);
   const { isError, error, isSuccess, result, isLoading, reload } =
     useBlogDetail(blogId as string);
+
+  useLayoutEffect(() => {
+    if (result) {
+      setViews(result.views);
+    }
+  }, [result]);
+
   const { title, content, createdAt } = result || ({} as Blog);
 
   return (
@@ -45,8 +55,12 @@ const BlogScence = () => {
                 ))}
               </div>
             )}
-            <div className="mt-8">
+            <div className="mt-8 flex gap-x-2">
               <span>{moment(createdAt).format("llll")}</span>
+              <span>
+                <EyeIcon className="inline align-[-2px] mr-1" />
+                {views}
+              </span>
             </div>
           </div>
         )}
@@ -64,20 +78,23 @@ const BlogScence = () => {
             <Button onClick={reload}>重试</Button>
           </div>
         ) : isSuccess ? (
-          <div className="flex gap-x-5">
-            <Markdown
-              text={content}
-              onUpdateTableOfContents={setTableOfContents}
-              className="flex-auto min-w-0"
-              onSetActiveHeading={setActiveHeading}
-            />
-            <div className="flex-none w-[240px] sticky top-[10vh] self-start">
-              <TableOfContents
-                contents={tableOfContents}
-                activeHeading={activeHeading}
+          <>
+            <div className="flex gap-x-5">
+              <Markdown
+                text={content}
+                onUpdateTableOfContents={setTableOfContents}
+                className="flex-auto min-w-0"
+                onSetActiveHeading={setActiveHeading}
               />
+              <div className="flex-none w-[240px] sticky top-[10vh] self-start">
+                <TableOfContents
+                  contents={tableOfContents}
+                  activeHeading={activeHeading}
+                />
+              </div>
             </div>
-          </div>
+            <ViewUpdater blogId={blogId!} onUpdated={setViews} />
+          </>
         ) : (
           !isLoading && <p>No Content</p>
         )}

@@ -14,8 +14,8 @@ export function normalizeProfile<T extends Profile>(profile: T) {
 
 /** Remove unnecessary fields from blog */
 export function normalizeBlog<T extends Blog>(blog: T): Blog {
-  const { id, content, createdAt, updatedAt, title, isDraft } = blog;
-  return { id, content, createdAt, updatedAt, title, isDraft };
+  const { id, content, createdAt, updatedAt, title, isDraft, views } = blog;
+  return { id, content, createdAt, updatedAt, title, isDraft, views };
 }
 
 /** Remove unnecessary fields from category */

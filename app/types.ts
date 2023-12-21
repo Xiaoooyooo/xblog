@@ -20,9 +20,9 @@ export type Blog = {
   user: User;
   isDraft: boolean;
   categories: Category[];
-  // tags: string[];
   createdAt: number;
   updatedAt: number;
+  views: number;
 };
 
 export type Category = {

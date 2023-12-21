@@ -232,4 +232,24 @@ blog.delete("/delete", authentication({ force: true }), async (ctx) => {
   ctx.body = true;
 });
 
+blog.post("/views", async (ctx) => {
+  const { id } = ctx.state.body;
+  const database = ctx.state.database;
+  if (typeof id !== "string") {
+    throw BadRequestError();
+  }
+  const blog = await database.document.findUnique({ where: { id } });
+  if (!blog) {
+    throw NotFoundError();
+  }
+  if (blog.isDraft || blog.deletedAt) {
+    throw ForbiddenError();
+  }
+  const updatedBlog = await database.document.update({
+    where: { id },
+    data: { views: { increment: 1 } },
+  });
+  ctx.body = updatedBlog.views;
+});
+
 export default blog;
