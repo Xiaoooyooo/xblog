@@ -8,7 +8,7 @@ import Tooltip from "./Tooltip";
 export default function ThemeSwitch() {
   const { theme, changeTheme } = useTheme();
   const themes: (typeof theme)[] = ["auto", "dark", "light"];
-  const themeIndexRef = useRef(0);
+  const themeIndexRef = useRef(themes.findIndex((item) => item === theme));
 
   const handleChangeTheme = useCallback(() => {
     const curr = themeIndexRef.current;
