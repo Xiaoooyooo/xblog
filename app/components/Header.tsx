@@ -26,10 +26,6 @@ function Header() {
       name: "分类",
       path: "/category",
     },
-    {
-      name: "关于我",
-      path: "/about",
-    },
   ];
   const [isBackgroundTransparent, setBackgroundTransparent] = useState(
     window.scrollY <= 200,

@@ -12,7 +12,6 @@ import Progress from "@/components/Progress";
 const Authentication = lazy(() => import("@/views/Authentication"));
 const HomeScene = lazy(() => import("@/views/Home"));
 const BlogScene = lazy(() => import("@/views/Blog"));
-const AboutScene = lazy(() => import("@/views/About"));
 const CreateScene = lazy(() => import("@/views/Create"));
 const EditScene = lazy(() => import("@/views/Edit"));
 const CategoryScene = lazy(() => import("@/views/Category"));
@@ -65,10 +64,6 @@ function createRouter(user: RootState["user"]) {
         {
           path: "user/:userId",
           element: <ProfileDetailScene />,
-        },
-        {
-          path: "about",
-          element: <AboutScene />,
         },
         // protected routes
         ...(user.isLogin
