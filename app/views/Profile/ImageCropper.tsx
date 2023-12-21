@@ -45,6 +45,7 @@ export default forwardRef<Cropper, ImageCropperProps>(
       height: 150,
     });
     const cropAreaRef = useRef<typeof cropArea>();
+
     useImperativeHandle(
       ref,
       () => {
@@ -61,10 +62,11 @@ export default forwardRef<Cropper, ImageCropperProps>(
                     "#image",
                   ) as HTMLImageElement;
                   const { naturalWidth, width: WIDTH } = imageRect;
+                  const size = 160;
                   const { top, left, height, width } = cropArea;
                   const scale = naturalWidth / WIDTH;
-                  canvas.height = 128;
-                  canvas.width = 128;
+                  canvas.height = size;
+                  canvas.width = size;
                   ctx.drawImage(
                     image,
                     left * scale,
@@ -73,8 +75,8 @@ export default forwardRef<Cropper, ImageCropperProps>(
                     height * scale,
                     0,
                     0,
-                    128,
-                    128,
+                    size,
+                    size,
                   );
                   canvas.toBlob((blob) => {
                     resolve(blob);
