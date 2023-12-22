@@ -190,18 +190,20 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
                 {v.label}
               </Tag>
             ))}
-          <Input
-            type="plain"
-            className="cursor-pointer p-1 border-none outline-none"
-            placeholder={placeholder}
-            ref={inputRef}
-            onKeyDown={handleKeyDown}
-            value={input}
-            onInput={(text) => {
-              onInput?.(text);
-              setInput(text);
-            }}
-          />
+          <div className="inline-block w-40">
+            <Input
+              type="plain"
+              className="cursor-pointer border-none outline-none"
+              placeholder={placeholder}
+              ref={inputRef}
+              onKeyDown={handleKeyDown}
+              value={input}
+              onInput={(text) => {
+                onInput?.(text);
+                setInput(text);
+              }}
+            />
+          </div>
         </div>
         <Transition
           show={isShowDropDown}

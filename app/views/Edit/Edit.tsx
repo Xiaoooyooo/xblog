@@ -3,7 +3,6 @@ import { useParams, Navigate } from "react-router-dom";
 import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
 import Button from "@/components/Button";
-// import Input from "@/components/Input";
 import Background from "@/components/Background";
 import { useBlogDetail, useUpdateBlog } from "@/services/blog";
 import CategorySelect from "../../components/CategorySelect";

@@ -24,18 +24,17 @@ export default forwardRef<HTMLInputElement, InputProps>(
       prefix,
     } = props;
 
+    const isPlain = type === "plain";
+
     return (
       <div
         className={classNames(
-          "inline-block",
-          "p-1",
-          "rounded",
-          type !== "plain" && [
+          "flex rounded",
+          !isPlain && [
             "border-[1px]",
             "border-[#ddd]",
             "focus-within:border-blue-400",
-            "outline-2",
-            "outline",
+            "outline outline-2",
             "outline-offset-0",
             "outline-transparent",
             "focus-within:outline-blue-300",
@@ -46,25 +45,26 @@ export default forwardRef<HTMLInputElement, InputProps>(
         )}
       >
         {prefix && (
-          <div className="inline-flex relative mr-3 items-center justify-center align-[-3px]">
-            {prefix}
-          </div>
+          <div className="self-stretch flex items-center">{prefix}</div>
         )}
-        <input
-          type={type}
-          value={value}
-          defaultValue={defaultValue}
-          placeholder={placeholder}
-          className={classNames(
-            "flex-auto border-none outline-none bg-transparent",
-            "group-[.x-select]:cursor-pointer",
-          )}
-          onInput={
-            onInput && ((e) => onInput((e.target as HTMLInputElement).value))
-          }
-          onKeyDown={onKeyDown}
-          ref={ref}
-        />
+        <div className="flex-auto min-w-0">
+          <input
+            type={type}
+            value={value}
+            defaultValue={defaultValue}
+            placeholder={placeholder}
+            className={classNames(
+              "block w-full p-1",
+              "border-none outline-none bg-transparent",
+              "group-[.x-select]:cursor-pointer",
+            )}
+            onInput={
+              onInput && ((e) => onInput((e.target as HTMLInputElement).value))
+            }
+            onKeyDown={onKeyDown}
+            ref={ref}
+          />
+        </div>
       </div>
     );
   },

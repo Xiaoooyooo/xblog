@@ -93,7 +93,7 @@ export default function Authentication() {
               </FormItem>
               <FormItem>
                 <Button
-                  type="button"
+                  htmlType="button"
                   className="w-full"
                   onClick={handleConfirm}
                   loading={isPending}
