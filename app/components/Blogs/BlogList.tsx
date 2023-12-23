@@ -12,7 +12,7 @@ import BlogMenu from "./BlogMenu";
 import CategoryTag from "../CategoryTag";
 import RefreshIcon from "@/assets/icons/refresh.svg";
 import TreeDotIcon from "@/assets/icons/three-dot.svg";
-import CalendarIcon from "@/assets/icons/calendar.svg";
+import ClockIcon from "@/assets/icons/clock.svg";
 import PersonIcon from "@/assets/icons/person.svg";
 import BoxIcon from "@/assets/icons/box.svg";
 import Tooltip from "../Tooltip";
@@ -143,7 +143,7 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
                 </Link>
               </span>
               <span className="flex items-center">
-                <CalendarIcon />
+                <ClockIcon />
                 <Tooltip
                   className="ml-1 text-sm"
                   tip={moment(blog.createdAt).format("LLLL")}
