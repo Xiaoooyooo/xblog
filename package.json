@@ -48,6 +48,7 @@
     "react-router-dom": "^6.18.0",
     "remove-markdown": "^0.5.0",
     "slate": "^0.100.0",
+    "slate-history": "^0.100.0",
     "slate-react": "^0.101.0"
   },
   "devDependencies": {
