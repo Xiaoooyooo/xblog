@@ -38,7 +38,7 @@ export default function CreateScene() {
         createdCategories,
       });
     },
-    [text, title],
+    [text, title, categories],
   );
 
   if (isSuccess && result) {
