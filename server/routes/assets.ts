@@ -1,47 +1,32 @@
 import Router from "koa-router";
-import fs from "fs";
 import path from "path";
 import env from "~/env";
-import { isFileExits } from "~/utils/fs";
-import { forceCache, validationCache } from "~/utils/clientCache";
+import { isFileExists } from "~/utils/fs";
+import sendFile from "~/utils/sendFile";
 
 const assets = new Router({ prefix: "/assets" });
 
-const appDir = "../../app/assets";
+const assetsDir = path.join(__dirname, "../../app/assets");
 const avatarDir = path.resolve(process.cwd(), env.avatarUploadDir);
 
 assets.get("/avatar/:filename", async (ctx, next) => {
   const { filename } = ctx.params;
-  if (!filename) {
-    return next();
-  }
   const avatarPath = path.join(avatarDir, filename);
-  const avatarStats = await isFileExits(avatarPath);
+  const avatarStats = await isFileExists(avatarPath);
   if (!avatarStats) {
     return next();
   }
-  forceCache(ctx, avatarStats, avatarPath);
-  ctx.body = fs.createReadStream(avatarPath);
+  sendFile(ctx, avatarStats, avatarPath);
 });
 
 assets.get("(.*)", async (ctx, next) => {
-  try {
-    const filename = ctx.path.replace(/^\/assets/, "");
-    const filepath = path.join(__dirname, appDir, filename);
-    const isExists = fs.existsSync(filepath);
-    if (!isExists) {
-      return next();
-    }
-    const filestats = fs.statSync(filepath);
-    if (!filestats.isFile()) {
-      return next();
-    }
-    validationCache(ctx, filestats, filepath);
-    ctx.body = fs.createReadStream(filepath);
-  } catch (err) {
-    console.log(err);
+  const filename = ctx.path.replace(/^\/assets/, "");
+  const filepath = path.join(assetsDir, filename);
+  const filestats = await isFileExists(filepath);
+  if (!filestats) {
     return next();
   }
+  sendFile(ctx, filestats, filepath);
 });
 
 export default assets;

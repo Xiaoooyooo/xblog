@@ -1,6 +1,9 @@
 import fs from "fs";
 
-export function isFileExits(filename: string) {
+/**
+ * check if file exists, if exists return its stats, otherwise return null
+ */
+export function isFileExists(filename: string) {
   return new Promise<fs.Stats | null>((resolve) => {
     fs.stat(filename, (err, stat) => {
       if (err) {
