@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Markdown from "@/components/Markdown";
+import Markdown from "@/components/Markdown/Markdown";
 import Panel from "@/components/Panel";
 import { useBlogDetail } from "@/services/blog";
 import Background from "@/components/Background";

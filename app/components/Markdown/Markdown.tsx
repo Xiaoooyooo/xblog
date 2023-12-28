@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import classNames from "classnames";
-import MarkdownParser, { HeadingWithChildren } from "@/utils/marked";
+import MarkdownParser, { HeadingWithChildren } from "./parser";
 import debounce from "@/utils/debounce";
 import "@/assets/styles/markdown.css";
 

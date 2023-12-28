@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ContentContainer from "@/components/ContentContainer";
 import Skeleton from "@/components/Skeleton";
-import Markdown from "@/components/Markdown";
+import Markdown from "@/components/Markdown/Markdown";
 import Button from "@/components/Button";
 import { UserWithProfile } from "@/types";
 import Editor from "@/components/Editor";
