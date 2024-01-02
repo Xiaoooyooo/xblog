@@ -15,7 +15,7 @@ model User {
   username    String       @unique
   displayName String?
   password    String
-  isAdmin     Boolean?
+  isAdmin     Boolean      @default(false)
   createdAt   DateTime     @default(now())
   profile     UserProfile?
   tokens      UserToken[]

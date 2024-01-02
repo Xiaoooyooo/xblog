@@ -53,10 +53,13 @@ auth.post("/register", async (ctx) => {
   const { username, password, displayName } = body;
   if (!username) throw BadRequestError("username is needed");
   if (!password) throw BadRequestError("password is needed");
+
   const user = await database.user.findUnique({ where: { username } });
   if (user) {
     throw ForbiddenError("The username is already exists");
   }
+
+  const admin = await database.user.findFirst({ where: { isAdmin: true } });
   const newUser = await database.user.create({
     data: {
       username,
@@ -64,8 +67,11 @@ auth.post("/register", async (ctx) => {
       displayName,
       // create a empty profile
       profile: { create: {} },
+      // set the first registered user to administrator by default
+      ...(admin ? {} : { isAdmin: true }),
     },
   });
+
   ctx.body = normalizeUser(newUser);
 });
 
