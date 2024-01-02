@@ -79,24 +79,22 @@ export default function Introduction(props: IntroductionProps) {
           )}
         >
           {avatar && (
-            <>
-              <img
-                className="w-full h-full"
-                src={`/assets/avatar/${avatar}`}
-                alt={avatar}
+            <img
+              className="w-full h-full"
+              src={`/assets/avatar/${avatar}`}
+              alt={avatar}
+            />
+          )}
+          {isSelfUser && (
+            <span
+              className="cursor-pointer absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-200"
+              onClick={() => setIsShowAvatarUploadModal(true)}
+            >
+              <CameraIcon
+                className="relative h-20 w-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                fill="black"
               />
-              {isSelfUser && (
-                <span
-                  className="cursor-pointer absolute inset-0 bg-white opacity-0 hover:opacity-30 transition-opacity duration-200"
-                  onClick={() => setIsShowAvatarUploadModal(true)}
-                >
-                  <CameraIcon
-                    className="relative h-20 w-20 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                    fill="black"
-                  />
-                </span>
-              )}
-            </>
+            </span>
           )}
         </div>
         <h2 className="mt-2 md:mt-6 text-3xl">
