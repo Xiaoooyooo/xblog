@@ -13,7 +13,7 @@ export default function CategoryTag(props: CategoryTagProps) {
   return (
     <Link
       to={{ pathname: `/category/${category.id}` }}
-      className={classNames(className)}
+      className={classNames("inline", className)}
     >
       {category.name}
     </Link>

@@ -89,7 +89,6 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
           key={blog.id}
           className="mb-2 p-2 md:mb-4 md:p-4 flex rounded transition-all relative z-20"
         >
-          <section>{/* TODO: 封面图片 */}</section>
           <section className="flex-auto flex flex-col min-w-0">
             <Link to={{ pathname: `/blog/${blog.id}` }}>
               <div
@@ -123,8 +122,11 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
                 {blog.content}
               </p>
             </Link>
-            <div className="flex gap-4">
-              <span className="flex items-center">
+            <div className="flex gap-4 text-sm md:text-base">
+              <Link
+                to={{ pathname: `/user/${blog.user.id}` }}
+                className="flex-none flex items-center"
+              >
                 {blog.user.avatar ? (
                   <span className="block h-5 w-5 rounded-full overflow-hidden">
                     <img src={`/assets/avatar/${blog.user.avatar}`} />
@@ -132,16 +134,11 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
                 ) : (
                   <PersonIcon height={20} width={20} />
                 )}
-                <Link
-                  to={{ pathname: `/user/${blog.user.id}` }}
-                  className="ml-1"
-                >
-                  {blog.user.username}
-                </Link>
-              </span>
-              <span className="flex items-center">
+                <span className="ml-1">{blog.user.username}</span>
+              </Link>
+              <div className="flex-none flex items-center">
                 <ClockIcon />
-                <span className="inline md:hidden ml-1">
+                <span className="inline md:hidden ml-1 text-sm">
                   {moment(blog.createdAt).calendar()}
                 </span>
                 <Tooltip
@@ -151,18 +148,22 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
                 >
                   <span>{moment(blog.createdAt).calendar()}</span>
                 </Tooltip>
-              </span>
+              </div>
               {blog.categories.length > 0 && (
-                <span className="flex items-center">
-                  <BoxIcon />
-                  {blog.categories.map((category) => (
-                    <CategoryTag
-                      key={category.id}
-                      category={category}
-                      className="ml-1 text-sm cursor-pointer hover:text-sky-600 transition-colors duration-200"
-                    />
-                  ))}
-                </span>
+                <div className="min-w-0 flex items-center">
+                  <span className="flex-none">
+                    <BoxIcon />
+                  </span>
+                  <div className="min-w-0 overflow-hidden text-ellipsis">
+                    {blog.categories.map((category) => (
+                      <CategoryTag
+                        key={category.id}
+                        category={category}
+                        className="ml-1 cursor-pointer hover:text-sky-600 transition-colors duration-200"
+                      />
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </section>
