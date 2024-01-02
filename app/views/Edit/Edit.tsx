@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
 import Button from "@/components/Button";
@@ -7,6 +7,7 @@ import Background from "@/components/Background";
 import { useBlogDetail, useUpdateBlog } from "@/services/blog";
 import CategorySelect from "../../components/CategorySelect";
 import image from "@/assets/images/aurora.jpg";
+import message from "@/components/Message/message";
 
 export default function EditScence() {
   const [title, setTitle] = useState("");
@@ -17,6 +18,7 @@ export default function EditScence() {
   const [isReadyEdit, setIsReadyEdit] = useState(false);
   const [action, setAction] = useState<"save" | "publish">();
   const { blogId } = useParams();
+  const navigate = useNavigate();
 
   const {
     isSuccess: isGetDetailSuccess,
@@ -26,19 +28,12 @@ export default function EditScence() {
     isLoading: isGetBlogDetailLoading,
   } = useBlogDetail(blogId);
 
-  const {
-    fetchFn: updateBlogFn,
-    isError: isUpdateBlogError,
-    error: updateBlogError,
-    isLoading: isUpdateBlogLoading,
-    isSuccess: isUpdateBlogSuccess,
-    result: updateBlogResult,
-  } = useUpdateBlog();
+  const { fetchFn: updateBlogFn, isLoading: isUpdateBlogLoading } =
+    useUpdateBlog();
 
   const handleSave = useCallback(
     (isDraft?: false) => {
       setAction(isDraft === false ? "publish" : "save");
-      console.log({ categories });
       const categoriesId: string[] = [];
       const createdCategories: string[] = [];
       categories.forEach((item) => {
@@ -55,6 +50,12 @@ export default function EditScence() {
         isDraft,
         categoriesId,
         createdCategories,
+      }).then(({ isSuccess, result, isError, error }) => {
+        if (isSuccess && result) {
+          navigate({ pathname: `/blog/${result.id}` }, { replace: true });
+        } else if (isError) {
+          message({ type: "error", message: error.error.message });
+        }
       });
     },
     [text, title, categories, blogId],
@@ -73,18 +74,6 @@ export default function EditScence() {
       setIsReadyEdit(true);
     }
   }, [isGetDetailSuccess, blogDetailResult]);
-
-  useEffect(() => {
-    if (isUpdateBlogError) {
-      __DEV__ && console.log(updateBlogError);
-    }
-  }, [isUpdateBlogError, updateBlogError]);
-
-  if (isUpdateBlogSuccess && updateBlogResult) {
-    return (
-      <Navigate to={{ pathname: `/blog/${updateBlogResult.id}` }} replace />
-    );
-  }
 
   if (!isReadyEdit) {
     return <div>loading</div>;

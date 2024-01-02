@@ -16,8 +16,6 @@ type RequestError = {
   extraOption: Record<string, any>;
 };
 
-const request = requestHandler.request.bind(requestHandler);
-
 requestHandler.useInterceptor(
   // eslint-disable-next-line
   (response: any) => {
@@ -26,7 +24,6 @@ requestHandler.useInterceptor(
   },
   async (err: RequestError) => {
     const { config, error, extraOption } = err;
-    __DEV__ && console.log({ error });
     if (
       typeof err !== "string" &&
       "status" in error &&
@@ -56,5 +53,8 @@ requestHandler.useInterceptor(
     throw err;
   },
 );
+
+const request: typeof requestHandler.request = (...args) =>
+  requestHandler.request(...args);
 
 export default request;

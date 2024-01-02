@@ -3,10 +3,11 @@ import BlogEditor from "@/components/BlogEditor";
 import Button from "@/components/Button";
 import ContentContainer from "@/components/ContentContainer";
 import { useCreateBlog } from "@/services/blog";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Background from "@/components/Background";
 import CategorySelect from "@/components/CategorySelect";
 import image from "@/assets/images/wave.jpg";
+import message from "@/components/Message/message";
 
 export default function CreateScene() {
   const [title, setTitle] = useState("");
@@ -14,9 +15,9 @@ export default function CreateScene() {
   const [categories, setCategories] = useState<
     { label: string; value: string; isCreated?: boolean }[]
   >([]);
-  const { fetchFn, isError, error, isLoading, isSuccess, result } =
-    useCreateBlog();
+  const { fetchFn, isLoading } = useCreateBlog();
   const [action, setAction] = useState<"save" | "publish">();
+  const navigate = useNavigate();
 
   const handlePublish = useCallback(
     (isDraft = false) => {
@@ -36,14 +37,16 @@ export default function CreateScene() {
         isDraft,
         categoriesId,
         createdCategories,
+      }).then(({ isSuccess, result, isError, error }) => {
+        if (isSuccess && result) {
+          navigate({ pathname: `/blog/${result.id}` }, { replace: true });
+        } else if (isError) {
+          message({ type: "error", message: error.error.message });
+        }
       });
     },
     [text, title, categories],
   );
-
-  if (isSuccess && result) {
-    return <Navigate to={{ pathname: `/blog/${result.id}` }} replace />;
-  }
 
   return (
     <div className="flex-auto flex flex-col">

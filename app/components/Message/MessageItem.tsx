@@ -51,8 +51,9 @@ export default function Message(props: MessageProps) {
       className={classNames(
         "x-message",
         "fixed z-[9999]",
-        "bg-[--message-background-color] shadow-lg py-2 px-4 rounded",
+        "shadow-lg py-2 px-4 rounded",
         "flex justify-center items-center gap-x-2",
+        type === "plain" && "bg-[--message-background-color]",
         type === "success" && [
           "bg-[--success-background-color]",
           "text-[--success-text-color]",
