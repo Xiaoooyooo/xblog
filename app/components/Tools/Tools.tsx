@@ -38,7 +38,7 @@ export default function Tools(props: ToolProps) {
       {
         id: "new",
         tip: "新建",
-        element: <CreateIcon className="h-7 w-7" />,
+        element: <CreateIcon className="h-5 w-5 md:h-7 md:w-7" />,
         onClick: function () {
           navigate({ pathname: "/new" });
         },
@@ -46,7 +46,7 @@ export default function Tools(props: ToolProps) {
       {
         id: "edit",
         tip: "编辑",
-        element: <EditIcon className="h-7 w-7" />,
+        element: <EditIcon className="h-5 w-5 md:h-7 md:w-7" />,
         onClick: function () {
           __DEV__ && console.log("edit", params);
           navigate({ pathname: `/edit/${params.blogId}` });
@@ -58,9 +58,9 @@ export default function Tools(props: ToolProps) {
         tip: "删除",
         element: (isPending) =>
           isPending ? (
-            <LoadingIcon height={22} width={22} />
+            <LoadingIcon className="h-5 w-5 md:h-7 md:w-7" />
           ) : (
-            <TrashIcon className="h-7 w-7" />
+            <TrashIcon className="h-5 w-5 md:h-7 md:w-7" />
           ),
         onClick: function (isPending, setIsPending) {
           __DEV__ && console.log("delete", params);
@@ -87,7 +87,7 @@ export default function Tools(props: ToolProps) {
       {
         id: "draft",
         tip: "草稿",
-        element: <DraftIcon className="h-7 w-7" />,
+        element: <DraftIcon className="h-5 w-5 md:h-7 md:w-7" />,
         onClick: function () {
           navigate({ pathname: "/draft" });
         },
@@ -115,7 +115,12 @@ export default function Tools(props: ToolProps) {
   }, []);
 
   return (
-    <div id="tools" className="fixed right-[60px] bottom-[130px]">
+    <div
+      id="tools"
+      className={classNames(
+        "fixed z-50 right-[20px] bottom-[80px] md:right-[60px] md:bottom-[130px]",
+      )}
+    >
       <div>
         <ToolButton
           onClick={() => setIsShowTools(!isShowTools)}
@@ -142,7 +147,7 @@ export default function Tools(props: ToolProps) {
               element={element}
               onClick={(...args) => {
                 const isClose = onClick?.(...args);
-                if (typeof isClose !== "undefined" && isClose !== false) {
+                if (typeof isClose === "undefined" || isClose) {
                   setIsShowTools(false);
                 }
               }}
@@ -165,27 +170,34 @@ function ToolButton(props: ToolButtonProps) {
     <button
       onClick={onClick}
       className={classNames(
-        "rounded-full shadow-lg h-[50px] w-[50px] leading-[50px] text-center cursor-pointer",
+        "bg-[--background-color]",
+        "h-9 w-9 md:h-[50px] md:w-[50px]",
+        "rounded-full shadow-lg leading-[50px] text-center cursor-pointer",
         "hover:shadow-xl transition-all duration-200",
-        "flex items-center justify-center flex-col gap-y-[6px]",
+        "relative",
       )}
     >
       <span
         className={classNames(
-          "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-all duration-200 origin-right",
-          open && ["-rotate-[42deg]", "-translate-x-1"],
+          "absolute top-1/2 left-[20%] h-[3px] w-3/5 md:h-1",
+          "bg-[--text-color] rounded-sm transition-transform duration-200",
+          "origin-center -translate-y-2 md:-translate-y-[10px]",
+          open && "-rotate-[45deg] !translate-y-0",
         )}
       ></span>
       <span
         className={classNames(
+          "absolute top-1/2 left-[20%] h-[3px] w-3/5 md:h-1",
           "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-all duration-200",
-          open && ["translate-x-full", "opacity-0"],
+          open && "translate-x-full opacity-0",
         )}
       ></span>
       <span
         className={classNames(
-          "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-all duration-200 origin-right",
-          open && ["rotate-[42deg]", "-translate-x-1"],
+          "absolute top-1/2 left-[20%] h-[3px] w-3/5 md:h-1",
+          "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-transform duration-200",
+          "origin-center translate-y-2 md:translate-y-[10px]",
+          open && "rotate-[45deg] !translate-y-0",
         )}
       ></span>
     </button>

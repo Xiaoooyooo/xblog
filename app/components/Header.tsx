@@ -51,9 +51,9 @@ function Header() {
         key={index}
         to={el.path}
         className={classNames(
+          "px-3 md:px-5",
           "leading-[--header-height]",
-          "px-5",
-          "hover:text-[--header-text-hover-color]",
+          "md:hover:text-[--header-text-hover-color]",
           "transition-colors",
           "duration-300",
         )}
@@ -66,7 +66,7 @@ function Header() {
     <header
       className={classNames(
         "h-[--header-height]",
-        "px-16",
+        "px-4 md:px-16",
         "backdrop-blur-sm",
         "fixed",
         "top-0",
@@ -92,7 +92,7 @@ function Header() {
                 />
               </div>
             )}
-            <div>{user.username}</div>
+            <div className="hidden md:block">{user.username}</div>
           </div>
         </Link>
       )}

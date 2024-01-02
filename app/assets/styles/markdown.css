@@ -819,17 +819,6 @@
   border: 0;
 }
 
-.markdown-body pre > code-copy {
-  transition: opacity 0.3s ease;
-  transition-delay: 1s;
-  opacity: 0;
-}
-
-.markdown-body pre:hover > code-copy {
-  transition-delay: 0ms;
-  opacity: 1;
-}
-
 .markdown-body .highlight {
   margin-bottom: 16px;
 }

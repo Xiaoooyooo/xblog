@@ -1,7 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Markdown from "@/components/Markdown/Markdown";
-import Panel from "@/components/Panel";
 import { useBlogDetail } from "@/services/blog";
 import Background from "@/components/Background";
 import ContentContainer from "@/components/ContentContainer";
@@ -11,10 +10,10 @@ import Button from "@/components/Button";
 import { Blog } from "@/types";
 import CategoryTag from "@/components/CategoryTag";
 import BlogImage from "@/assets/images/river.jpg";
-import { HeadingWithChildren } from "@/utils/marked";
 import TableOfContents from "@/components/TableOfContents";
 import EyeIcon from "@/assets/icons/eye.svg";
 import ViewUpdater from "./ViewUpdater";
+import { HeadingWithChildren } from "@/components/Markdown/parser";
 
 type BlogParams = {
   blogId: string;
@@ -43,7 +42,7 @@ const BlogScence = () => {
       <Background imageUrl={BlogImage}>
         {result && (
           <div className="h-full flex flex-col items-center justify-center text-white">
-            <h1 className="text-4xl">{title}</h1>
+            <h1 className="text-xl md:text-4xl text-center">{title}</h1>
             {result.categories.length !== 0 && (
               <div className="flex justify-center items-center gap-x-2 mt-2">
                 {result.categories.map((category) => (
@@ -55,7 +54,7 @@ const BlogScence = () => {
                 ))}
               </div>
             )}
-            <div className="mt-8 flex gap-x-2">
+            <div className="mt-8 flex gap-x-2 text-sm md:text-base">
               <span>{moment(createdAt).format("llll")}</span>
               <span>
                 <EyeIcon className="inline align-[-2px] mr-1" />
@@ -86,7 +85,7 @@ const BlogScence = () => {
                 className="flex-auto min-w-0"
                 onSetActiveHeading={setActiveHeading}
               />
-              <div className="flex-none w-[240px] sticky top-[10vh] self-start">
+              <div className="hidden md:block flex-none w-[240px] sticky top-[10vh] self-start">
                 <TableOfContents
                   contents={tableOfContents}
                   activeHeading={activeHeading}

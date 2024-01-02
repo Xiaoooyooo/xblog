@@ -1,6 +1,6 @@
 import BaseStore from "./base";
 import request from "@/services/request";
-import { Blog } from "@/types";
+import { List, Blog } from "@/types";
 
 class BlogStore extends BaseStore<Blog> {
   fetch(id: string) {
@@ -15,7 +15,7 @@ class BlogStore extends BaseStore<Blog> {
   }
   fetchListByPage(pageIndex: number, pageSize: number) {
     __DEV__ && console.log("fetchListByPage");
-    return request<BlogListResponse>("/api/blog.list", {
+    return request<List<Blog>>("/api/blog.list", {
       method: "post",
       data: { pageIndex, pageSize },
     }).then((res) => {

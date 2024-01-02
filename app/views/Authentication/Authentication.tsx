@@ -65,12 +65,12 @@ export default function Authentication() {
       className="flex-auto min-h-0 bg-cover bg-center bg-no-repeat flex"
     >
       <div className="flex-auto flex items-center justify-center backdrop-blur-md">
-        <div className="rounded bg-white flex h-[500px] shadow overflow-hidden">
+        <div className="md:h-[500px] rounded bg-white flex shadow overflow-hidden">
           <div
             style={{ backgroundImage: `url(${imageUrl})` }}
-            className="w-[450px] bg-cover bg-center bg-no-repeat"
+            className="hidden md:block w-[450px] bg-cover bg-center bg-no-repeat"
           ></div>
-          <div className="w-[350px] p-6">
+          <div className="w-[80vw] md:w-[350px] p-6">
             <Form className="mt-12">
               <FormItem label="Username">
                 <Input

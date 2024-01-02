@@ -70,9 +70,14 @@ export default function Introduction(props: IntroductionProps) {
     <>
       <Background
         imageUrl={profileImageUrl}
-        className="flex flex-col justify-center items-center text-white"
+        className="pt-[--header-height] flex flex-col justify-center items-center text-white"
       >
-        <div className="relative h-32 w-32 rounded-full bg-[rgba(255,255,255,0.5)] overflow-hidden">
+        <div
+          className={classNames(
+            "w-24 h-24 md:h-32 md:w-32",
+            "relative rounded-full bg-[rgba(255,255,255,0.5)] overflow-hidden",
+          )}
+        >
           {avatar && (
             <>
               <img
@@ -94,7 +99,7 @@ export default function Introduction(props: IntroductionProps) {
             </>
           )}
         </div>
-        <h2 className="mt-6 text-3xl">
+        <h2 className="mt-2 md:mt-6 text-3xl">
           {profile.isLoading ? (
             <SkeletonItem animated height={36} width="10em" />
           ) : profile.isSuccess ? (
@@ -103,7 +108,7 @@ export default function Introduction(props: IntroductionProps) {
             "-"
           )}
         </h2>
-        <div className="mt-4 text-sm">
+        <div className="mt-2 md:mt-4 text-sm">
           {profile.isLoading ? (
             <SkeletonItem height={20} width="20em" animated />
           ) : (

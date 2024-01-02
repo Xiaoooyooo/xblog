@@ -51,13 +51,13 @@ export default function CategoryScene() {
     <ContentContainer>
       <div className="mt-10 flex justify-center">
         <Input
-          className="w-3/5 m-auto text-xl p-3 rounded-full"
+          className="w-5/6 px-2 md:w-3/5 md:p-3 text-base md:text-xl m-auto rounded-full"
           placeholder="输入关键字搜索"
           prefix={<SearchIcon height={20} width={20} />}
           onInput={handleSearchInput}
         />
       </div>
-      <div className="mt-20">
+      <div className="mt-10 md:mt-20">
         {isLoading ? (
           <CategorySkeleton />
         ) : result && result.list.length !== 0 ? (
@@ -67,13 +67,17 @@ export default function CategoryScene() {
                 <Link to={{ pathname: `/category/${item.id}` }}>
                   <div className="flex items-center gap-x-4">
                     <div className="text-xl">{item.name}</div>
-                    <div>
-                      <MenuTrigger
-                        menu={<CategoryMenu category={item} reload={reload} />}
-                      >
-                        <TreeDotIcon />
-                      </MenuTrigger>
-                    </div>
+                    {user.isLogin && (
+                      <div>
+                        <MenuTrigger
+                          menu={
+                            <CategoryMenu category={item} reload={reload} />
+                          }
+                        >
+                          <TreeDotIcon />
+                        </MenuTrigger>
+                      </div>
+                    )}
                   </div>
                   <div className="text-sm">共有 {item.documents} 篇文章</div>
                 </Link>

@@ -54,7 +54,7 @@ export default forwardRef<HTMLInputElement, InputProps>(
             defaultValue={defaultValue}
             placeholder={placeholder}
             className={classNames(
-              "block w-full p-1",
+              "block w-full p-1 leading-none",
               "border-none outline-none bg-transparent",
               "group-[.x-select]:cursor-pointer",
             )}

@@ -19,16 +19,21 @@ export default memo(function ToolItem(props: ToolItemProps) {
     <div
       onClick={() => onClick(isActionPending, setIsActionPending)}
       className={classNames(
-        "h-[50px] w-[50px] rounded-full shadow-lg mb-3 cursor-pointer",
+        "h-9 w-9 md:h-[50px] md:w-[50px]",
+        "bg-[--background-color] rounded-full shadow-lg mb-3 cursor-pointer",
         className,
       )}
     >
+      <div className="flex h-full w-full justify-center items-center md:hidden">
+        <button className="pointer-events-none">
+          {typeof element === "function" ? element(isActionPending) : element}
+        </button>
+      </div>
       <Tooltip
         tip={tip}
-        className="h-full w-full flex justify-center items-center"
+        className="hidden md:flex h-full w-full justify-center items-center"
         unmountTipOnHide
         placement="left"
-        // mountOnBody
       >
         <button className="pointer-events-none">
           {typeof element === "function" ? element(isActionPending) : element}

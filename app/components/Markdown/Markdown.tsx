@@ -53,6 +53,9 @@ function Markdown(props: MarkdownProps) {
         return;
       }
       const headings = headingElsRef.current;
+      if (headings.length === 0) {
+        return;
+      }
       const len = offsets.length;
       let i = 0;
       while (i < len) {

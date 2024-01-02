@@ -25,13 +25,14 @@ export default function BackTop() {
   return (
     <div
       className={classNames(
-        "fixed right-[60px] bottom-[60px] transition-opacity duration-200",
+        "fixed z-50 right-[20px] bottom-[20px] md:right-[60px] md:bottom-[60px]",
+        "transition-opacity duration-200",
         isShow ? "opacity-100" : "opacity-0 pointer-events-none",
       )}
     >
       <ToolItem
         tip="Back Top"
-        element={<ArrowUpIcon className="h-7 w-7" />}
+        element={<ArrowUpIcon className="h-5 w-5 md:h-7 md:w-7" />}
         onClick={handleBackTop}
       />
     </div>

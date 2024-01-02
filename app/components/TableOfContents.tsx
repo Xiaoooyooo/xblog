@@ -5,8 +5,8 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { HeadingWithChildren } from "@/utils/marked";
 import classNames from "classnames";
+import { HeadingWithChildren } from "./Markdown/parser";
 
 const TableOfContentsContext = createContext<{
   activeHeading: string | undefined;

@@ -16,29 +16,33 @@ export default function ThemeSwitch() {
     changeTheme(themes[themeIndexRef.current]);
   }, []);
 
+  const content = (
+    <button
+      className="h-full w-full flex items-center justify-center"
+      onClick={handleChangeTheme}
+    >
+      {theme === "light" && (
+        <SunIcon fill="currentColor" height={22} width={22} />
+      )}
+      {theme === "dark" && (
+        <MoonIcon fill="currentColor" height={22} width={22} />
+      )}
+      {theme === "auto" && (
+        <CircleHalfIcon fill="currentColor" height={22} width={22} />
+      )}
+    </button>
+  );
+
   return (
     <div className="h-full aspect-square">
+      <div className="h-full w-full md:hidden">{content}</div>
       <Tooltip
-        className="h-full w-full"
+        className="hidden md:block h-full w-full"
         tip={theme.replace(/^\w/, (match) => match.toUpperCase())}
         placement="bottom"
         unmountTipOnHide
-        mountOnBody
       >
-        <button
-          className="h-full w-full flex items-center justify-center"
-          onClick={handleChangeTheme}
-        >
-          {theme === "light" && (
-            <SunIcon fill="currentColor" height={22} width={22} />
-          )}
-          {theme === "dark" && (
-            <MoonIcon fill="currentColor" height={22} width={22} />
-          )}
-          {theme === "auto" && (
-            <CircleHalfIcon fill="currentColor" height={22} width={22} />
-          )}
-        </button>
+        {content}
       </Tooltip>
     </div>
   );

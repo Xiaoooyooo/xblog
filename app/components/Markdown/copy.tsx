@@ -34,7 +34,7 @@ function Copy(props: CopyProps) {
   return (
     <div
       onClick={handleClick}
-      className="absolute top-0 right-0 p-2 cursor-pointer"
+      className="pt-2 pr-2 -mb-2 cursor-pointer flex justify-end"
     >
       {state === 0 && <ClipboardIcon />}
       {state === 1 && <ClipboardCheckIcon />}
@@ -66,18 +66,25 @@ export default class CodeCopy extends HTMLElement {
         .query({ name: "clipboard-write" })
         .then((res) => {
           if (res.state === "granted") {
-            navigator.clipboard.writeText(text);
+            navigator.clipboard.write([
+              new ClipboardItem({
+                "text/plain": new Blob([text], { type: "text/plain" }),
+              }),
+            ]);
           } else {
-            const el = document.createElement("textarea");
-            el.style.position = "absolute";
-            el.style.top = "0";
-            el.style.zIndex = "-1";
-            el.value = text;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand("copy");
-            el.remove();
+            throw new Error();
           }
+        })
+        .catch(() => {
+          const el = document.createElement("pre");
+          el.style.position = "absolute";
+          el.style.top = "0";
+          el.style.zIndex = "-1";
+          el.innerText = text;
+          document.body.appendChild(el);
+          document.getSelection()?.selectAllChildren(el);
+          document.execCommand("copy");
+          el.remove();
         })
     );
   }

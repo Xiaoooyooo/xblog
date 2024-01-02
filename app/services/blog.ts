@@ -2,7 +2,7 @@ import request from "./request";
 import { useEffect, useMemo } from "react";
 import useFetchState from "./useFetchState";
 import { useSelector } from "@/hooks/redux";
-import { Blog } from "@/types";
+import { List, Blog } from "@/types";
 import { getBlogList, GetBlogSearchOption } from "./functions/blog";
 
 type CreateBlogOption = {
@@ -71,7 +71,7 @@ export function useUpdateBlog() {
 
 export function useBlogList(options: GetBlogSearchOption) {
   const { fetchState, fetchFn, abortHandler } = useFetchState<
-    BlogListResponse,
+    List<Blog>,
     GetBlogSearchOption
   >(
     {

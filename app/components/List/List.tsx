@@ -52,6 +52,7 @@ export default function List(props: ListProps) {
         {children}
         <div
           className={classNames(
+            "hidden md:block",
             "absolute",
             "top-0",
             "transition-all",

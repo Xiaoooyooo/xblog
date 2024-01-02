@@ -87,23 +87,20 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
       {blogs.map((blog) => (
         <ListItem
           key={blog.id}
-          className={classNames(
-            "flex",
-            "mb-4",
-            "p-4",
-            "rounded",
-            "transition-all",
-            "relative",
-            "z-20",
-          )}
+          className="mb-2 p-2 md:mb-4 md:p-4 flex rounded transition-all relative z-20"
         >
           <section>{/* TODO: 封面图片 */}</section>
-          <section
-            className={classNames("flex-auto", "flex", "flex-col", "min-w-0")}
-          >
+          <section className="flex-auto flex flex-col min-w-0">
             <Link to={{ pathname: `/blog/${blog.id}` }}>
-              <div className="flex items-center gap-x-4 mb-4">
-                <h1 className="text-2xl font-bold">{blog.title}</h1>
+              <div
+                className={classNames(
+                  "flex items-center gap-x-4",
+                  "mb-2 md:mb-4",
+                )}
+              >
+                <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap text-ellipsis overflow-hidden">
+                  {blog.title}
+                </h1>
                 {user.isLogin && (
                   <MenuTrigger menu={<BlogMenu blog={blog} reload={reload} />}>
                     <TreeDotIcon height={24} width={24} />
@@ -112,12 +109,12 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
               </div>
               <p
                 className={classNames(
+                  "my-2 md:my-4",
                   "text-lg",
                   "leading-5",
                   "break-all",
                   "text-ellipsis",
                   "overflow-hidden",
-                  "my-4",
                   "[display:-webkit-box]",
                   "[-webkit-line-clamp:2]",
                   "[-webkit-box-orient:vertical]",
@@ -144,11 +141,13 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
               </span>
               <span className="flex items-center">
                 <ClockIcon />
+                <span className="inline md:hidden ml-1">
+                  {moment(blog.createdAt).calendar()}
+                </span>
                 <Tooltip
-                  className="ml-1 text-sm"
+                  className="hidden md:block ml-1 text-sm"
                   tip={moment(blog.createdAt).format("LLLL")}
                   unmountTipOnHide
-                  // mountOnBody
                 >
                   <span>{moment(blog.createdAt).calendar()}</span>
                 </Tooltip>
