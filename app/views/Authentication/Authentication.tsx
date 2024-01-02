@@ -7,6 +7,7 @@ import Button from "@/components/Button";
 import imageUrl from "@/assets/images/winter.jpg";
 import { login } from "@/redux/actions/user";
 import { register } from "@/services/functions/auth";
+import message from "@/components/Message/message";
 
 type AuthenticationRouteParmas = {
   authType: "login" | "register";
@@ -24,9 +25,8 @@ export default function Authentication() {
     setIsPending(true);
     dispatch(login(authState))
       .then((res) => {
-        console.log("login res", res);
         if ("error" in res) {
-          console.log(res.error.message);
+          message({ type: "error", message: res.error.message });
         }
       })
       .finally(() => {
@@ -36,9 +36,14 @@ export default function Authentication() {
 
   const handleRegister = useCallback(() => {
     register(authState)
-      .then(() => {
-        navigate({ pathname: "/auth/login" });
-      })
+      .then(
+        () => {
+          navigate({ pathname: "/auth/login" });
+        },
+        (err) => {
+          message({ type: "error", message: err.error.message });
+        },
+      )
       .finally(() => {
         setIsPending(false);
       });
@@ -57,8 +62,9 @@ export default function Authentication() {
         break;
     }
   }, [parmas.authType, authState]);
-  __DEV__ && console.log({ isLogin });
+
   if (isLogin) return <Navigate to={{ pathname: "/" }} replace />;
+
   return (
     <div
       style={{ backgroundImage: `url(${imageUrl})` }}
