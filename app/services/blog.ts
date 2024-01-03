@@ -35,10 +35,7 @@ export function useCreateBlog() {
     [token],
   );
 
-  return useMemo(
-    () => ({ ...fetchState, fetchFn, abort: abortHandler }),
-    [fetchState],
-  );
+  return { ...fetchState, fetchFn, abort: abortHandler };
 }
 
 export function useUpdateBlog() {
@@ -63,10 +60,7 @@ export function useUpdateBlog() {
     [token],
   );
 
-  return useMemo(
-    () => ({ ...fetchState, fetchFn, abort: abortHandler }),
-    [fetchState],
-  );
+  return { ...fetchState, fetchFn, abort: abortHandler };
 }
 
 export function useBlogList(options: GetBlogSearchOption) {

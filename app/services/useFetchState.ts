@@ -50,45 +50,43 @@ export default function useFetchState<T = unknown, P = unknown>(
   });
   const abortController = useRef<AbortController>();
 
-  const fetchFn = useCallback(
-    async (args: P) => {
-      setFetchState({
-        isError: false,
-        error: null,
-        isSuccess: false,
-        result: null,
-        isLoading: true,
+  const fetchFn = useCallback(async (args: P) => {
+    setFetchState({
+      isError: false,
+      error: null,
+      isSuccess: false,
+      result: null,
+      isLoading: true,
+    });
+    abortController.current = new AbortController();
+
+    return option
+      .fetchFn(args, abortController.current.signal)
+      .then((res) => {
+        const state = {
+          isError: false,
+          error: null,
+          isSuccess: true,
+          result: res,
+          isLoading: false,
+        } as const;
+        setFetchState(state);
+        abortController.current = undefined;
+        return state;
+      })
+      .catch((error) => {
+        const state = {
+          isError: true,
+          error: error,
+          isSuccess: false,
+          result: null,
+          isLoading: false,
+        } as const;
+        setFetchState(state);
+        abortController.current = undefined;
+        return state;
       });
-      abortController.current = new AbortController();
-      return option
-        .fetchFn(args, abortController.current.signal)
-        .then((res) => {
-          const state = {
-            isError: false,
-            error: null,
-            isSuccess: true,
-            result: res,
-            isLoading: false,
-          } as const;
-          setFetchState(state);
-          abortController.current = undefined;
-          return state;
-        })
-        .catch((error) => {
-          const state = {
-            isError: true,
-            error: error,
-            isSuccess: false,
-            result: null,
-            isLoading: false,
-          } as const;
-          setFetchState(state);
-          abortController.current = undefined;
-          return state;
-        });
-    },
-    [deps],
-  );
+  }, deps);
 
   const abortHandler = useCallback(() => {
     if (abortController.current) {
