@@ -3,12 +3,17 @@ import ContentContainer from "@/components/ContentContainer";
 import HomeBlogList from "@/views/Home/HomeBlogList";
 import homeImage from "@/assets/images/forest.jpg";
 
-export default function HomeScence() {
+type HomeSceneProps = {
+  isDraft?: boolean;
+};
+
+export default function HomeScence(props: HomeSceneProps) {
+  const { isDraft } = props;
   return (
     <>
       <Background imageUrl={homeImage} shift />
       <ContentContainer>
-        <HomeBlogList />
+        <HomeBlogList isDraft={isDraft} />
       </ContentContainer>
     </>
   );

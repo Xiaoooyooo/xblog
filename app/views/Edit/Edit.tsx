@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
 import Button from "@/components/Button";
@@ -18,7 +18,6 @@ export default function EditScence() {
   const [isReadyEdit, setIsReadyEdit] = useState(false);
   const [action, setAction] = useState<"save" | "publish">();
   const { blogId } = useParams();
-  const navigate = useNavigate();
 
   const {
     isSuccess: isGetDetailSuccess,
@@ -28,8 +27,12 @@ export default function EditScence() {
     isLoading: isGetBlogDetailLoading,
   } = useBlogDetail(blogId);
 
-  const { fetchFn: updateBlogFn, isLoading: isUpdateBlogLoading } =
-    useUpdateBlog();
+  const {
+    fetchFn: updateBlogFn,
+    isLoading: isUpdateBlogLoading,
+    isSuccess: isUpdateSuccess,
+    result: updateResult,
+  } = useUpdateBlog();
 
   const handleSave = useCallback(
     (isDraft?: false) => {
@@ -50,15 +53,13 @@ export default function EditScence() {
         isDraft,
         categoriesId,
         createdCategories,
-      }).then(({ isSuccess, result, isError, error }) => {
-        if (isSuccess && result) {
-          navigate({ pathname: `/blog/${result.id}` }, { replace: true });
-        } else if (isError) {
+      }).then(({ isError, error }) => {
+        if (isError) {
           message({ type: "error", message: error.error.message });
         }
       });
     },
-    [text, title, categories, blogId],
+    [updateBlogFn, text, title, categories, blogId],
   );
 
   useEffect(() => {
@@ -74,6 +75,10 @@ export default function EditScence() {
       setIsReadyEdit(true);
     }
   }, [isGetDetailSuccess, blogDetailResult]);
+
+  if (isUpdateSuccess) {
+    return <Navigate to={{ pathname: `/blog/${updateResult.id}` }} replace />;
+  }
 
   if (!isReadyEdit) {
     return <div>loading</div>;

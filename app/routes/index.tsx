@@ -16,7 +16,7 @@ const CreateScene = lazy(() => import("@/views/Create"));
 const EditScene = lazy(() => import("@/views/Edit"));
 const CategoryScene = lazy(() => import("@/views/Category"));
 const CategoryDetailScene = lazy(() => import("@/views/CategoryDetail"));
-const ProfileDetailScene = lazy(() => import("@/views/Profile"));
+const ProfileScene = lazy(() => import("@/views/Profile"));
 
 function createRouter(user: RootState["user"]) {
   const routes: RouteObject[] = [
@@ -63,17 +63,17 @@ function createRouter(user: RootState["user"]) {
         },
         {
           path: "user/:userId",
-          element: <ProfileDetailScene />,
+          element: <ProfileScene />,
         },
         // protected routes
         ...(user.isLogin
           ? [
               {
-                path: "new",
+                path: "blog/new",
                 element: <CreateScene />,
               },
               {
-                path: "edit/:blogId",
+                path: "blog/:blogId/edit",
                 element: <EditScene />,
               },
               {
@@ -82,11 +82,11 @@ function createRouter(user: RootState["user"]) {
                   {
                     path: "",
                     index: true,
-                    element: <HomeScene />,
+                    element: <HomeScene isDraft />,
                   },
                   {
                     path: "page/:pageIndex",
-                    element: <HomeScene />,
+                    element: <HomeScene isDraft />,
                   },
                 ],
               },

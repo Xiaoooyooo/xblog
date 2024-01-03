@@ -1,15 +1,15 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useMatch, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { Transition } from "../Transition";
-import { deleteBlog } from "@/services/functions/blog";
-import { useSelector } from "@/hooks/redux";
 import EditIcon from "@/assets/icons/edit.svg";
 import CreateIcon from "@/assets/icons/add.svg";
 import TrashIcon from "@/assets/icons/trash.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
 import DraftIcon from "@/assets/icons/draft.svg";
 import ToolItem from "./ToolItem";
+import { useDeleteBlog } from "@/services/blog";
+import message from "../Message/message";
 
 type ToolItem = {
   id: string;
@@ -29,79 +29,87 @@ type ToolProps = {
 export default function Tools(props: ToolProps) {
   const [isShowTools, setIsShowTools] = useState(false);
   const navigate = useNavigate();
-  const matchBlogDetailPage = useMatch("/blog/:id");
-  const user = useSelector((state) => state.user);
+  const matchBlogDetailPage = useMatch("/blog/:blogId");
+  // whether current pathname matches blog detail path
+  const isBlogDetailPage = useMemo(() => {
+    return matchBlogDetailPage && matchBlogDetailPage.params.blogId !== "new";
+  }, [matchBlogDetailPage]);
   const params = useParams();
 
-  const items = (
-    [
-      {
-        id: "new",
-        tip: "新建",
-        element: <CreateIcon className="h-5 w-5 md:h-7 md:w-7" />,
-        onClick: function () {
-          navigate({ pathname: "/new" });
+  const { isSuccess: isDeleteSuccess, fetchFn: deleteBlog } = useDeleteBlog();
+
+  const items = useMemo(() => {
+    return (
+      [
+        {
+          id: "new",
+          tip: "新建",
+          element: <CreateIcon className="h-5 w-5 md:h-7 md:w-7" />,
+          onClick: function () {
+            navigate({ pathname: "/blog/new" });
+          },
         },
-      },
-      {
-        id: "edit",
-        tip: "编辑",
-        element: <EditIcon className="h-5 w-5 md:h-7 md:w-7" />,
-        onClick: function () {
-          __DEV__ && console.log("edit", params);
-          navigate({ pathname: `/edit/${params.blogId}` });
+        {
+          id: "edit",
+          tip: "编辑",
+          element: <EditIcon className="h-5 w-5 md:h-7 md:w-7" />,
+          onClick: function () {
+            navigate({ pathname: `/blog/${params.blogId}/edit` });
+          },
+          visible: isBlogDetailPage,
         },
-        visible: () => !!matchBlogDetailPage,
-      },
-      {
-        id: "delete",
-        tip: "删除",
-        element: (isPending) =>
-          isPending ? (
-            <LoadingIcon className="h-5 w-5 md:h-7 md:w-7" />
-          ) : (
-            <TrashIcon className="h-5 w-5 md:h-7 md:w-7" />
-          ),
-        onClick: function (isPending, setIsPending) {
-          __DEV__ && console.log("delete", params);
-          if (isPending) return;
-          setIsPending(true);
-          deleteBlog(params.blogId!, user.token)
-            .then((res) => {
-              if (res) {
-                setIsShowTools(false);
-                setTimeout(() => {
-                  navigate({ pathname: "/" });
-                }, 100);
-              } else {
-                __DEV__ && console.log("delete failed", res);
-              }
-            })
-            .finally(() => {
-              setIsPending(false);
-            });
-          return false;
+        {
+          id: "delete",
+          tip: "删除",
+          element: (isPending) =>
+            isPending ? (
+              <LoadingIcon className="h-5 w-5 md:h-7 md:w-7" />
+            ) : (
+              <TrashIcon className="h-5 w-5 md:h-7 md:w-7" />
+            ),
+          onClick: function (isPending, setIsPending) {
+            if (isPending) return;
+            setIsPending(true);
+            deleteBlog(params.blogId!)
+              .then((res) => {
+                if (res) {
+                  setIsShowTools(false);
+                } else {
+                  message({ type: "error", message: "删除失败，请稍后再试" });
+                }
+              })
+              .finally(() => {
+                setIsPending(false);
+              });
+            return false;
+          },
+          visible: isBlogDetailPage,
         },
-        visible: () => !!matchBlogDetailPage,
-      },
-      {
-        id: "draft",
-        tip: "草稿",
-        element: <DraftIcon className="h-5 w-5 md:h-7 md:w-7" />,
-        onClick: function () {
-          navigate({ pathname: "/draft" });
+        {
+          id: "draft",
+          tip: "草稿",
+          element: <DraftIcon className="h-5 w-5 md:h-7 md:w-7" />,
+          onClick: function () {
+            navigate({ pathname: "/draft" });
+          },
         },
-      },
-    ] as ToolItem[]
-  ).filter((item) => {
-    if (typeof item.visible === "undefined") {
-      return true;
+      ] as ToolItem[]
+    ).filter((item) => {
+      if (typeof item.visible === "undefined") {
+        return true;
+      }
+      if (typeof item.visible === "function") {
+        return item.visible();
+      }
+      return item.visible;
+    });
+  }, [navigate, params, isBlogDetailPage]);
+
+  useEffect(() => {
+    if (isDeleteSuccess) {
+      navigate({ pathname: "/" }, { replace: true });
     }
-    if (typeof item.visible === "function") {
-      return item.visible();
-    }
-    return item.visible;
-  });
+  }, [isDeleteSuccess]);
 
   useEffect(() => {
     function onDocumentClick(e: MouseEvent) {

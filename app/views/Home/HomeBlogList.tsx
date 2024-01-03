@@ -5,9 +5,13 @@ import { BlogList } from "@/components/Blogs";
 import Pagination from "@/components/Pagination";
 import { useBlogList } from "@/services/blog";
 
-export default function HomeBlogList() {
+type HomeBlogListProps = {
+  isDraft?: boolean;
+};
+
+export default function HomeBlogList(props: HomeBlogListProps) {
+  const { isDraft } = props;
   const params = useParams();
-  const isDraftRoute = !!useMatch({ path: "/draft", end: false });
   const currentPage = parseInt(params.pageIndex || "1");
 
   const [pagination, setPagination] = useState({
@@ -18,9 +22,9 @@ export default function HomeBlogList() {
     return {
       pageIndex: currentPage,
       pageSize: 10,
-      draft: isDraftRoute,
+      draft: isDraft,
     };
-  }, [currentPage, isDraftRoute]);
+  }, [currentPage, isDraft]);
 
   const { isError, error, isLoading, isSuccess, result, reload } =
     useBlogList(memoized);

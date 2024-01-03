@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react";
 import useFetchState from "./useFetchState";
 import { useSelector } from "@/hooks/redux";
 import { List, Blog } from "@/types";
-import { getBlogList, GetBlogSearchOption } from "./functions/blog";
+import { deleteBlog, getBlogList, GetBlogSearchOption } from "./functions/blog";
 
 type CreateBlogOption = {
   title: string;
@@ -112,4 +112,15 @@ export function useBlogDetail(id?: string) {
     }),
     [fetchState, id],
   );
+}
+
+export function useDeleteBlog() {
+  const token = useSelector((state) => state.user.token);
+  const { fetchState, fetchFn, abortHandler } = useFetchState<boolean, string>(
+    {
+      fetchFn: (args, signal) => deleteBlog(args, token, signal),
+    },
+    [token],
+  );
+  return { ...fetchState, fetchFn, abort: abortHandler };
 }
