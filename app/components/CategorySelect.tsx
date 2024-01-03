@@ -6,6 +6,8 @@ import debounce from "@/utils/debounce";
 import { Category } from "@/types";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
 
+export { SelectItemOption };
+
 type CategorySelectProps = {
   categories: SelectItemOption[];
   onCategoriesChange: (value: SelectItemOption[]) => void;

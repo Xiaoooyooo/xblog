@@ -1,11 +1,9 @@
 import { useState, useCallback } from "react";
 import { Navigate } from "react-router-dom";
 import BlogEditor from "@/components/BlogEditor";
-import Button from "@/components/Button";
 import ContentContainer from "@/components/ContentContainer";
 import { useCreateBlog } from "@/services/blog";
 import Background from "@/components/Background";
-import CategorySelect from "@/components/CategorySelect";
 import image from "@/assets/images/wave.jpg";
 import message from "@/components/Message/message";
 
@@ -15,12 +13,11 @@ export default function CreateScene() {
   const [categories, setCategories] = useState<
     { label: string; value: string; isCreated?: boolean }[]
   >([]);
-  const { fetchFn, isLoading, isSuccess, result } = useCreateBlog();
-  const [action, setAction] = useState<"save" | "publish">();
+
+  const { fetchFn, isSuccess, result } = useCreateBlog();
 
   const handlePublish = useCallback(
-    (isDraft = false) => {
-      setAction(isDraft ? "save" : "publish");
+    async (isPublish: boolean) => {
       const categoriesId: string[] = [];
       const createdCategories: string[] = [];
       categories.forEach((item) => {
@@ -30,12 +27,12 @@ export default function CreateScene() {
           categoriesId.push(item.value);
         }
       });
-      fetchFn({
+      return fetchFn({
         title,
         content: text,
-        isDraft,
         categoriesId,
         createdCategories,
+        ...(isPublish ? { isDraft: false } : {}),
       }).then(({ isError, error }) => {
         if (isError) {
           message({ type: "error", message: error.error.message });
@@ -53,29 +50,16 @@ export default function CreateScene() {
     <div className="flex-auto flex flex-col">
       <Background imageUrl={image} />
       <ContentContainer className="pt-8 flex-auto flex flex-col">
-        <div className="flex gap-x-4 justify-end py-1 z-10 sticky top-[--header-height]">
-          <Button
-            loading={action === "save" && isLoading}
-            onClick={() => handlePublish(true)}
-          >
-            保存为草稿
-          </Button>
-          <Button
-            loading={action === "publish" && isLoading}
-            onClick={() => handlePublish()}
-          >
-            发布
-          </Button>
-        </div>
-        <CategorySelect
-          categories={categories}
-          onCategoriesChange={setCategories}
-        />
         <BlogEditor
+          action="create"
           title={title}
           text={text}
           onTitleChange={setTitle}
           onContentChange={setText}
+          categories={categories}
+          onCategoriesChange={setCategories}
+          onSave={() => handlePublish(false)}
+          onPublish={() => handlePublish(true)}
         />
       </ContentContainer>
     </div>
