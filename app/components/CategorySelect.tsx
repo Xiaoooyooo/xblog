@@ -6,7 +6,7 @@ import debounce from "@/utils/debounce";
 import { Category } from "@/types";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
 
-export { SelectItemOption };
+export type { SelectItemOption };
 
 type CategorySelectProps = {
   categories: SelectItemOption[];
@@ -86,16 +86,13 @@ export default function CategorySelect(props: CategorySelectProps) {
     });
   }, [categoryListPagination]);
 
-  const handleCategoryDropDownVisibleChange = useCallback(
-    (visible: boolean) => {
-      if (visible) {
-        if (categoryList.length === 0) {
-          getCategoryList(false, { name: "", pageIndex: 1, pageSize: 10 });
-        }
+  const handleCategoryDropDownVisibleChange = (visible: boolean) => {
+    if (visible) {
+      if (categoryList.length === 0) {
+        getCategoryList(false, { name: "", pageIndex: 1, pageSize: 10 });
       }
-    },
-    [categoryList],
-  );
+    }
+  };
 
   const handleDropdownClosed = useCallback(() => {
     if (abortControllerRef.current) {

@@ -11,10 +11,10 @@ import classNames from "classnames";
 import { Transition } from "../Transition";
 import SelectItem, { SelectItemOption } from "./SelectItem";
 import SelectContext from "./SelectContext";
-import DeleteIcon from "@/assets/icons/delete.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
 import Input from "../Input";
 import Tag from "../Tag";
+import useFunctionRef from "@/hooks/useFunctionRef";
 
 type BaseSelectProps = {
   option: SelectItemOption[];
@@ -76,6 +76,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
   const [isShowDropDown, setIsShowDropDown] = useState(false);
   const [createdOptions, setCreatedOptions] = useState<SelectItemOption[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const onDropdownVisibleChangeRef = useFunctionRef(onDropdownVisibleChange);
 
   const handleUnselect = useCallback(
     (v: SelectItemOption) => {
@@ -86,7 +87,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         onChange?.(value.filter((item) => item.value !== v.value));
       }
     },
-    [value],
+    [value, multiple, onChange],
   );
 
   const handleSelect = useCallback(
@@ -104,7 +105,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         onChange?.(v);
       }
     },
-    [multiple, value, allowCreate, createdOptions, handleUnselect],
+    [multiple, value, handleUnselect, onSelect, onChange],
   );
 
   const handleKeyDown = useCallback(
@@ -140,7 +141,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         onChange?.([...value, createdItem]);
       }
     },
-    [allowCreate, value, option, createdOptions, input, loading],
+    [allowCreate, value, createdOptions, input, loading, onChange, onCreate],
   );
 
   const handleFocus = useCallback((e: MouseEvent) => {
@@ -161,10 +162,10 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
 
   const selectContextValue = useMemo(() => {
     return { handleSelect, isSelected: _isSelected };
-  }, [value, handleSelect]);
+  }, [handleSelect, _isSelected]);
 
   useEffect(() => {
-    onDropdownVisibleChange?.(isShowDropDown);
+    onDropdownVisibleChangeRef(isShowDropDown);
   }, [isShowDropDown]);
 
   useEffect(() => {
@@ -181,12 +182,17 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         <div
           className={classNames(
             "cursor-pointer border-2 border-transparent transition-all duration-300",
-            isShowDropDown && "border-sky-400",
+            isShowDropDown && "!border-sky-400",
           )}
         >
           {multiple &&
             value.map((v) => (
-              <Tag key={v.value} deletable onDelete={() => handleUnselect(v)}>
+              <Tag
+                key={v.value}
+                className="m-1"
+                deletable
+                onDelete={() => handleUnselect(v)}
+              >
                 {v.label}
               </Tag>
             ))}
