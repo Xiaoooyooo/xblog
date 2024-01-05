@@ -56,10 +56,12 @@ const BlogScence = () => {
             )}
             <div className="mt-8 flex gap-x-2 text-sm md:text-base">
               <span>{moment(createdAt).format("llll")}</span>
-              <span>
-                <EyeIcon className="inline align-[-2px] mr-1" />
-                {views}
-              </span>
+              {!result.isDraft && (
+                <span>
+                  <EyeIcon className="inline align-[-2px] mr-1" />
+                  {views}
+                </span>
+              )}
             </div>
           </div>
         )}
@@ -92,7 +94,9 @@ const BlogScence = () => {
                 />
               </div>
             </div>
-            <ViewUpdater blogId={blogId!} onUpdated={setViews} />
+            {!result.isDraft && (
+              <ViewUpdater blogId={result.id} onUpdated={setViews} />
+            )}
           </>
         ) : (
           !isLoading && <p>No Content</p>
