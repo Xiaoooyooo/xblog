@@ -3,8 +3,6 @@ import { Navigate } from "react-router-dom";
 import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
 import { useCreateBlog } from "@/services/blog";
-import Background from "@/components/Background";
-import image from "@/assets/images/wave.jpg";
 import message from "@/components/Message/message";
 
 export default function CreateScene() {
@@ -47,21 +45,18 @@ export default function CreateScene() {
   }
 
   return (
-    <div className="flex-auto flex flex-col">
-      <Background imageUrl={image} />
-      <ContentContainer className="pt-8 flex-auto flex flex-col">
-        <BlogEditor
-          action="create"
-          title={title}
-          text={text}
-          onTitleChange={setTitle}
-          onContentChange={setText}
-          categories={categories}
-          onCategoriesChange={setCategories}
-          onSave={() => handlePublish(false)}
-          onPublish={() => handlePublish(true)}
-        />
-      </ContentContainer>
-    </div>
+    <ContentContainer className="pt-8 flex-auto flex flex-col">
+      <BlogEditor
+        action="create"
+        title={title}
+        text={text}
+        onTitleChange={setTitle}
+        onContentChange={setText}
+        categories={categories}
+        onCategoriesChange={setCategories}
+        onSave={() => handlePublish(false)}
+        onPublish={() => handlePublish(true)}
+      />
+    </ContentContainer>
   );
 }

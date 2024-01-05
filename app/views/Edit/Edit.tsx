@@ -2,9 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
-import Background from "@/components/Background";
 import { useBlogDetail, useUpdateBlog } from "@/services/blog";
-import image from "@/assets/images/aurora.jpg";
 import message from "@/components/Message/message";
 
 export default function EditScence() {
@@ -75,22 +73,19 @@ export default function EditScence() {
   }
 
   return (
-    <div className="flex-auto flex flex-col">
-      <Background imageUrl={image} />
-      <ContentContainer className="pt-8 flex-auto flex flex-col">
-        <BlogEditor
-          action="edit"
-          idEditDraft={blogDetailResult?.isDraft}
-          title={title}
-          text={text}
-          onTitleChange={setTitle}
-          onContentChange={setText}
-          categories={categories}
-          onCategoriesChange={setCategories}
-          onSave={() => handlePublish(false)}
-          onPublish={() => handlePublish(true)}
-        />
-      </ContentContainer>
-    </div>
+    <ContentContainer className="pt-8 flex-auto flex flex-col">
+      <BlogEditor
+        action="edit"
+        idEditDraft={blogDetailResult?.isDraft}
+        title={title}
+        text={text}
+        onTitleChange={setTitle}
+        onContentChange={setText}
+        categories={categories}
+        onCategoriesChange={setCategories}
+        onSave={() => handlePublish(false)}
+        onPublish={() => handlePublish(true)}
+      />
+    </ContentContainer>
   );
 }
