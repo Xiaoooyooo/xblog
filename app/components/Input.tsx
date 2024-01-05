@@ -7,8 +7,9 @@ type InputProps = {
   defaultValue?: string;
   onInput?: (value: string) => void;
   onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
-  className?: string;
   prefix?: ReactNode;
+  className?: string;
+  inputClassName?: string;
 };
 
 export default forwardRef<HTMLInputElement, InputProps>(
@@ -20,8 +21,9 @@ export default forwardRef<HTMLInputElement, InputProps>(
       defaultValue,
       onInput,
       onKeyDown,
-      className,
       prefix,
+      className,
+      inputClassName,
     } = props;
 
     const isPlain = type === "plain";
@@ -37,7 +39,7 @@ export default forwardRef<HTMLInputElement, InputProps>(
             "outline outline-2",
             "outline-offset-0",
             "outline-transparent",
-            "focus-within:outline-blue-300",
+            "focus-within:!outline-blue-300",
             "transition-all",
             "duration-200",
           ],
@@ -56,7 +58,7 @@ export default forwardRef<HTMLInputElement, InputProps>(
             className={classNames(
               "block w-full p-1 leading-none",
               "border-none outline-none bg-transparent",
-              "group-[.x-select]:cursor-pointer",
+              inputClassName,
             )}
             onInput={
               onInput && ((e) => onInput((e.target as HTMLInputElement).value))

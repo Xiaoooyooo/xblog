@@ -178,7 +178,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
 
   return (
     <SelectContext.Provider value={selectContextValue}>
-      <div className="group x-select relative" onClick={handleFocus}>
+      <div className="relative" onClick={handleFocus}>
         <div
           className={classNames(
             "cursor-pointer border-2 border-transparent transition-all duration-300",
@@ -200,6 +200,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
             <Input
               type="plain"
               className="cursor-pointer border-none outline-none"
+              inputClassName="cursor-pointer"
               placeholder={placeholder}
               ref={inputRef}
               onKeyDown={handleKeyDown}
@@ -222,7 +223,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
           unmountOnHide
           onExited={onDropdownClosed}
         >
-          <div className="absolute z-50 bg-[--select-background-color] p-1 w-full rounded shadow-xl origin-top">
+          <div className="absolute z-50 bg-[--select-background-color] w-full rounded shadow-xl origin-top">
             {loading ? (
               <div className="p-4 relative">
                 <LoadingIcon

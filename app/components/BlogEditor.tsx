@@ -3,6 +3,7 @@ import Button from "./Button";
 import CategorySelect, { SelectItemOption as Category } from "./CategorySelect";
 import Editor from "./Editor";
 import Input from "./Input";
+import classNames from "classnames";
 
 type BlogEditorProps = {
   action: "create" | "edit";
@@ -75,7 +76,11 @@ export default function BlogEditor(props: BlogEditorProps) {
         type="plain"
         onInput={onTitleChange}
         placeholder="输入标题"
-        className="mt-2 mb-8 outline-none border-none text-4xl font-bold"
+        className={classNames(
+          "text-xl md:text-4xl",
+          "mt-2 mb-8 outline-none border-none font-bold",
+        )}
+        inputClassName="!p-0"
       />
       <Editor
         initialText={text}
