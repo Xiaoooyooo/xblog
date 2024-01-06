@@ -1,20 +1,26 @@
 import fs from "fs";
 
+export function getFileStats(filename: string) {
+  return new Promise<fs.Stats | null>((resolve) => {
+    fs.stat(filename, (err, stats) => {
+      if (err) {
+        resolve(null);
+      } else {
+        resolve(stats);
+      }
+    });
+  });
+}
+
 /**
  * check if file exists, if exists return its stats, otherwise return null
  */
-export function isFileExists(filename: string) {
-  return new Promise<fs.Stats | null>((resolve) => {
-    fs.stat(filename, (err, stat) => {
-      if (err) {
-        return resolve(null);
-      }
-      if (stat.isFile()) {
-        return resolve(stat);
-      }
-      resolve(null);
-    });
-  });
+export async function isFileExists(filename: string) {
+  const stats = await getFileStats(filename);
+  if (stats && stats.isFile()) {
+    return stats;
+  }
+  return null;
 }
 
 export function tryToCreateDir(path: string) {

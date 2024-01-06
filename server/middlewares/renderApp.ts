@@ -1,14 +1,21 @@
-import { Context } from "koa";
+import { Context, Next } from "koa";
 import path from "path";
-import fs from "fs";
+import { isFileExists } from "~/utils/fs";
+import sendFile from "~/utils/sendFile";
 
 const indexPath = path.join(__dirname, "../../app/index.html");
 
 export default function renderApp() {
-  return function (ctx: Context) {
-    ctx.set({
-      "content-type": "text/html",
+  return async function (ctx: Context, next: Next) {
+    const stats = await isFileExists(indexPath);
+    // ctx.body = fs.createReadStream(indexPath);
+    if (!stats) {
+      return next();
+    }
+    sendFile({
+      context: ctx,
+      filename: indexPath,
+      stats,
     });
-    ctx.body = fs.createReadStream(indexPath);
   };
 }

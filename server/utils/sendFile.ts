@@ -1,4 +1,5 @@
 import fs, { Stats } from "fs";
+import zlib from "zlib";
 import mime from "mime";
 import { Context } from "koa";
 import { hash } from "./encrypt";
@@ -6,11 +7,14 @@ import { hash } from "./encrypt";
 // 1 year
 const maxAge = 365 * 24 * 60 * 60;
 
-export default function sendFile(
-  ctx: Context,
-  stats: fs.Stats,
-  filename: string,
-) {
+type SendFileOptions = {
+  context: Context;
+  filename: string;
+  stats: Stats;
+};
+
+export default function sendFile(options: SendFileOptions) {
+  const { context: ctx, filename, stats } = options;
   const mimeType = mime.getType(filename);
   const headers: Record<string, string> = mimeType
     ? { "content-type": mimeType }
@@ -33,5 +37,7 @@ export default function sendFile(
       return;
     }
   }
-  ctx.body = fs.createReadStream(filename);
+  const gzip = zlib.createGzip();
+  ctx.set("Content-Encoding", "gzip");
+  ctx.body = fs.createReadStream(filename).pipe(gzip);
 }

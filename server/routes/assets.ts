@@ -16,7 +16,7 @@ assets.get("/avatar/:filename", async (ctx, next) => {
   if (!avatarStats) {
     return next();
   }
-  sendFile(ctx, avatarStats, avatarPath);
+  sendFile({ context: ctx, filename: avatarPath, stats: avatarStats });
 });
 
 assets.get("(.*)", async (ctx, next) => {
@@ -26,7 +26,7 @@ assets.get("(.*)", async (ctx, next) => {
   if (!filestats) {
     return next();
   }
-  sendFile(ctx, filestats, filepath);
+  sendFile({ context: ctx, filename: filepath, stats: filestats });
 });
 
 export default assets;
