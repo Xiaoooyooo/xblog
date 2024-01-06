@@ -9,11 +9,12 @@ import Skeleton from "@/components/Skeleton";
 import Button from "@/components/Button";
 import { Blog } from "@/types";
 import CategoryTag from "@/components/CategoryTag";
-import BlogImage from "@/assets/images/river.jpg";
 import TableOfContents from "@/components/TableOfContents";
 import EyeIcon from "@/assets/icons/eye.svg";
 import ViewUpdater from "./ViewUpdater";
 import { HeadingWithChildren } from "@/components/Markdown/parser";
+import TagsIcon from "@/assets/icons/tags.svg";
+import BlogImage from "@/assets/images/stars.jpg";
 
 type BlogParams = {
   blogId: string;
@@ -41,20 +42,21 @@ const BlogScence = () => {
     <>
       <Background imageUrl={BlogImage}>
         {result && (
-          <div className="h-full flex flex-col items-center justify-center text-white">
+          <div className="pt-[--header-height] h-full flex flex-col items-center justify-center text-white">
             <h1 className="text-xl md:text-4xl text-center">{title}</h1>
             {result.categories.length !== 0 && (
-              <div className="flex justify-center items-center gap-x-2 mt-2">
+              <div className="flex justify-center items-center gap-x-2 mt-4">
+                <TagsIcon height={18} width={18} />
                 {result.categories.map((category) => (
                   <CategoryTag
                     key={category.id}
                     category={category}
-                    className="flex justify-center items-center bg-[rgba(255,255,255,0.4)] px-2 py-1 rounded"
+                    // className="flex justify-center items-center bg-[rgba(255,255,255,0.4)] px-2 py-1 rounded"
                   />
                 ))}
               </div>
             )}
-            <div className="mt-8 flex gap-x-2 text-sm md:text-base">
+            <div className="mt-4 flex gap-x-2 text-sm">
               <span>{moment(createdAt).format("llll")}</span>
               {!result.isDraft && (
                 <span>

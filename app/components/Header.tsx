@@ -45,6 +45,7 @@ function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   const _links = links.map((el, index) => {
     return (
       <Link
@@ -66,7 +67,7 @@ function Header() {
     <header
       className={classNames(
         "h-[--header-height]",
-        "px-4 md:px-16",
+        "md:px-16",
         "backdrop-blur-sm",
         "fixed",
         "top-0",
