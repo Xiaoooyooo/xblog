@@ -81,7 +81,10 @@ auth.post("/login", async (ctx) => {
   const { username, password } = body;
   if (!username) throw BadRequestError("username is needed");
   if (!password) throw BadRequestError("password is needed");
-  const user = await database.user.findUnique({ where: { username } });
+  const user = await database.user.findUnique({
+    where: { username },
+    include: { profile: true },
+  });
   if (!user) throw UnauthorizedError("Wrong username or password");
   const _password = hash(password);
   if (_password !== user.password) {
@@ -98,9 +101,12 @@ auth.post("/login", async (ctx) => {
   ctx.cookies.set("refreshToken", refreshToken, {
     httpOnly: true,
     maxAge: 864000000, // 10 days
+    // only available for /api/auth
+    path: "/api/auth",
   });
   ctx.body = {
     ...normalizeUser(user),
+    avatar: user.profile?.avatar,
     token: accessToken,
   };
 });
