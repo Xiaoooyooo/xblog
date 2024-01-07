@@ -64,14 +64,15 @@ export function useUpdateBlog() {
 }
 
 export function useBlogList(options: GetBlogSearchOption) {
+  const token = useSelector((state) => state.user.token);
   const { fetchState, fetchFn, abortHandler } = useFetchState<
     List<Blog>,
     GetBlogSearchOption
   >(
     {
-      fetchFn: (args, signal) => getBlogList(args, signal),
+      fetchFn: (args, signal) => getBlogList(args, token, signal),
     },
-    [],
+    [token],
   );
 
   useEffect(() => {

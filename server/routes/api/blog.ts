@@ -1,19 +1,23 @@
 import Router from "koa-router";
 import authentication from "./middlewares/authentication";
-import { BadRequestError, ForbiddenError, NotFoundError } from "~/errors";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "~/errors";
 import { AppState, Prisma } from "~/types";
 import {
   normalizeBlog,
   normalizeCategory,
   normalizeUser,
-  normalizeProfile,
 } from "~/utils/normalize";
 
 const blog = new Router<AppState>({
   prefix: "/blog",
 });
 
-blog.get("/list", async (ctx) => {
+blog.get("/list", authentication({ force: false }), async (ctx) => {
   const {
     pageIndex = "1",
     pageSize = "10",
@@ -45,7 +49,11 @@ blog.get("/list", async (ctx) => {
     where = { ...where, deletedAt: null };
   }
   if (isDraft) {
-    where = { ...where, isDraft: true };
+    const user = ctx.state.user;
+    if (!user) {
+      throw UnauthorizedError("login is needed");
+    }
+    where = { ...where, userId: user.id, isDraft: true };
   } else {
     where = { ...where, isDraft: false };
   }

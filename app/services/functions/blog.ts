@@ -8,10 +8,16 @@ export type GetBlogSearchOption = {
   draft?: boolean;
 };
 
-export function getBlogList(search: GetBlogSearchOption, signal: AbortSignal) {
+export function getBlogList(
+  search: GetBlogSearchOption,
+  token: string,
+  signal: AbortSignal,
+) {
   return request("/api/blog/list", {
     method: "get",
     search,
+    // token is needed when fetch draft blogs
+    headers: { Authorization: `Bearer ${token}` },
     signal,
   });
 }
