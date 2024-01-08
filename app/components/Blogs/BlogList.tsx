@@ -14,7 +14,7 @@ import RefreshIcon from "@/assets/icons/refresh.svg";
 import TreeDotIcon from "@/assets/icons/three-dot.svg";
 import ClockIcon from "@/assets/icons/clock.svg";
 import PersonIcon from "@/assets/icons/person.svg";
-import BoxIcon from "@/assets/icons/box.svg";
+import TagsIcon from "@/assets/icons/tags.svg";
 import Tooltip from "../Tooltip";
 
 type BaseBlogListProps = {
@@ -152,7 +152,7 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
               {blog.categories.length > 0 && (
                 <div className="min-w-0 flex items-center">
                   <span className="flex-none">
-                    <BoxIcon />
+                    <TagsIcon />
                   </span>
                   <div className="min-w-0 overflow-hidden text-ellipsis">
                     {blog.categories.map((category) => (
