@@ -8,6 +8,7 @@ import {
   forwardRef,
   useEffect,
 } from "react";
+import useFunctionRef from "@/hooks/useFunctionRef";
 
 type TransitionProps = {
   show: boolean;
@@ -56,6 +57,8 @@ export default forwardRef<HTMLElement, TransitionProps>(
       return show ? "enter-done" : "leave-done";
     });
 
+    const onExitedRef = useFunctionRef(onExited);
+
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
     useLayoutEffect(() => {
@@ -94,9 +97,9 @@ export default forwardRef<HTMLElement, TransitionProps>(
 
     useEffect(() => {
       if (!show && stage === "leave-done") {
-        onExited?.();
+        onExitedRef();
       }
-    }, [show, stage, onExited]);
+    }, [show, stage]);
 
     if (unmountOnHide && !show && stage === "leave-done") return null;
 
