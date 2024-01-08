@@ -6,12 +6,10 @@ import { List, ListItem } from "../List";
 import BlogListSkeleton from "../Skeleton/BlogListSkeleton";
 import Empty from "../Empty";
 import Button from "../Button";
-import { MenuTrigger } from "../Menu";
 import { useSelector } from "@/hooks/redux";
 import BlogMenu from "./BlogMenu";
 import CategoryTag from "../CategoryTag";
 import RefreshIcon from "@/assets/icons/refresh.svg";
-import TreeDotIcon from "@/assets/icons/three-dot.svg";
 import ClockIcon from "@/assets/icons/clock.svg";
 import PersonIcon from "@/assets/icons/person.svg";
 import TagsIcon from "@/assets/icons/tags.svg";
@@ -100,11 +98,7 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
                 <h1 className="text-xl md:text-2xl font-bold whitespace-nowrap text-ellipsis overflow-hidden">
                   {blog.title}
                 </h1>
-                {user.isLogin && (
-                  <MenuTrigger menu={<BlogMenu blog={blog} reload={reload} />}>
-                    <TreeDotIcon height={24} width={24} />
-                  </MenuTrigger>
-                )}
+                {user.isLogin && <BlogMenu blog={blog} reload={reload} />}
               </div>
               <p
                 className={classNames(

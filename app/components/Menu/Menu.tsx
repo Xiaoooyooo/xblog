@@ -1,24 +1,14 @@
-import {
-  useState,
-  useMemo,
-  memo,
-  useRef,
-  useLayoutEffect,
-  useEffect,
-  PropsWithChildren,
-} from "react";
+import { useState, useRef, useLayoutEffect, PropsWithChildren } from "react";
 import { createPortal } from "react-dom";
 import classNames from "classnames";
-import { useMenuContext } from "./context";
 import { Transition } from "../Transition";
-// import { MenuItem } from "./MenuItem";
 import "./closeEvent";
 import domOffset from "@/utils/domOffset";
 
 type MenuProps = PropsWithChildren<{
   show: boolean;
   anchorEl?: HTMLElement | null;
-  onClose?: () => void;
+  onClosed?: () => void;
 }>;
 
 export default function Menu(props: MenuProps) {
@@ -26,7 +16,7 @@ export default function Menu(props: MenuProps) {
 }
 
 function MenuContent(props: MenuProps) {
-  const { show, children, onClose, anchorEl } = props;
+  const { show, children, onClosed, anchorEl } = props;
   const [position, setPosition] = useState({ left: 0, top: 0 });
   const menuElRef = useRef<HTMLDivElement>(null);
 
@@ -56,6 +46,7 @@ function MenuContent(props: MenuProps) {
       leaveActiveClassName="transition-all duration-200"
       leaveDoneClassName="opacity-0 scale-y-75"
       unmountOnHide
+      onExited={onClosed}
       ref={menuElRef}
     >
       <div

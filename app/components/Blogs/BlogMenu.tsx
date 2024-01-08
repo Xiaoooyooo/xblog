@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Blog } from "@/types";
 import { MenuItem } from "../Menu";
@@ -8,6 +8,9 @@ import LoadingIcon from "@/assets/icons/circle-loading.svg";
 import { useSelector } from "@/hooks/redux";
 import { useDeleteBlog } from "@/services/blog";
 import message from "../Message/message";
+import { MenuTrigger } from "../Menu";
+import ThreeDotIcon from "@/assets/icons/three-dot.svg";
+import classNames from "classnames";
 
 type BlogMenuProps = {
   blog: Blog;
@@ -16,6 +19,7 @@ type BlogMenuProps = {
 
 export default function BlogMenu(props: BlogMenuProps) {
   const { blog, reload } = props;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const { isLoading: isDeleting, fetchFn: deleteBlog } = useDeleteBlog();
@@ -34,7 +38,7 @@ export default function BlogMenu(props: BlogMenuProps) {
     });
   }, [blog.id, isDeleting, deleteBlog, reload]);
 
-  return (
+  const menu = (
     <>
       {user.id === blog.user.id && (
         <MenuItem
@@ -53,5 +57,23 @@ export default function BlogMenu(props: BlogMenuProps) {
         </MenuItem>
       )}
     </>
+  );
+
+  return (
+    <MenuTrigger
+      menu={menu}
+      onMenuOpen={() => setIsMenuOpen(true)}
+      onMenuClose={() => setIsMenuOpen(false)}
+    >
+      <div
+        className={classNames(
+          "p-1 rounded transition-all duration-200",
+          "md:hover:bg-[--menu-trigger-background-color]",
+          isMenuOpen && "bg-[--menu-trigger-background-color]",
+        )}
+      >
+        <ThreeDotIcon height={24} width={24} />
+      </div>
+    </MenuTrigger>
   );
 }
