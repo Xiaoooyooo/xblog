@@ -1,12 +1,13 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Blog } from "@/types";
 import { MenuItem } from "../Menu";
-import { deleteBlog } from "@/services/functions/blog";
 import EditIcon from "@/assets/icons/edit.svg";
 import TrashIcon from "@/assets/icons/trash.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
 import { useSelector } from "@/hooks/redux";
+import { useDeleteBlog } from "@/services/blog";
+import message from "../Message/message";
 
 type BlogMenuProps = {
   blog: Blog;
@@ -17,24 +18,21 @@ export default function BlogMenu(props: BlogMenuProps) {
   const { blog, reload } = props;
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const { isLoading: isDeleting, fetchFn: deleteBlog } = useDeleteBlog();
 
   const handleDelete = useCallback(() => {
     if (isDeleting) {
       return;
     }
-    setIsDeleting(true);
-    deleteBlog(blog.id, user.token)
-      .then((res) => {
-        if (res) {
-          // todo alert
-          reload();
-        }
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
-  }, [blog.id, user.token]);
+    deleteBlog(blog.id).then((res) => {
+      if (res.isSuccess) {
+        reload();
+      }
+      if (res.isError) {
+        message({ type: "error", message: "删除文章失败" });
+      }
+    });
+  }, [blog.id, isDeleting, deleteBlog, reload]);
 
   return (
     <>
