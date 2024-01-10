@@ -41,6 +41,8 @@
   --button-primary-hover-background-color: rgb(96, 165, 250);
   --button-primary-active-background-color: rgb(147, 197, 253);
   --button-primary-disabled-background-color: rgb(96, 165, 250);
+
+  --markdown-code-header-background-color: #dfe4e9;
 }
 
 @mixin dark {
@@ -78,6 +80,8 @@
   --error-text-color: #fff;
   --warning-background-color: rgb(255, 168, 38);
   --warning-text-color: #fff;
+
+  --markdown-code-header-background-color: #2e343d;
 }
 
 @media screen and (prefers-color-scheme: light) {

@@ -1,4 +1,4 @@
-import "./copy";
+import "./CodeAction/action";
 import getMarked from "@/utils/marked";
 
 type Heading = { text: string; level: number; raw: string };
@@ -22,7 +22,7 @@ export default class MarkdownParser {
         code(code, infostring, escaped) {
           return (
             "<pre style='position: relative'>" +
-            "<code-copy></code-copy>" +
+            `<code-action data-lan='${infostring}'></code-action>` +
             "<code class='hljs language-" +
             infostring +
             "'>" +
@@ -101,8 +101,5 @@ export default class MarkdownParser {
       }
     }
     return result;
-  }
-  private onParseHeading(heading: Heading) {
-    this.headings.push(heading);
   }
 }
