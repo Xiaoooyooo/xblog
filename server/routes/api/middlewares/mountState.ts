@@ -1,9 +1,16 @@
-import { IMiddleware } from "koa-router";
+import { Next } from "koa";
 import { prisma } from "~/database";
-import { AppState } from "~/types";
+import { AppContext } from "~/types";
 
-export default function mountState(): IMiddleware<AppState> {
-  return function (ctx, next) {
+declare module "koa" {
+  interface Request {
+    /* eslint-disable-next-line */
+    body?: any;
+  }
+}
+
+export default function mountState() {
+  return function (ctx: AppContext, next: Next) {
     ctx.state.body = ctx.request.body;
     ctx.state.database = prisma;
     return next();

@@ -1,6 +1,6 @@
-import { Middleware } from "koa";
+import { Next } from "koa";
 import { UnauthorizedError } from "~/errors";
-import { AppState, User } from "~/types";
+import { AppContext, User } from "~/types";
 import { verifyAccessToken } from "~/utils/jwt";
 import { normalizeUser } from "~/utils/normalize";
 
@@ -8,11 +8,15 @@ type AuthenticationMiddlewareOptions = {
   force?: boolean;
 };
 
+export type AuthState = {
+  user?: User;
+};
+
 export default function authentication(
   options: AuthenticationMiddlewareOptions,
-): Middleware<AppState & { user?: User }> {
+) {
   const { force } = options;
-  return async function (ctx, next) {
+  return async function (ctx: AppContext<AuthState>, next: Next) {
     const authorizationHeader = ctx.headers.authorization || "";
     const [schema, token] = authorizationHeader.split(" ");
     if (force) {

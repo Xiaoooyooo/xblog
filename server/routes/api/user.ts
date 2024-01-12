@@ -1,15 +1,14 @@
 import Router from "koa-router";
 import { BadRequestError, NotFoundError } from "~/errors";
 import { normalizeUser, normalizeProfile } from "~/utils/normalize";
+import authentication, { AuthState } from "./middlewares/authentication";
+import { AppContext } from "~/types";
 
-import { AppState } from "~/types";
-import authentication from "./middlewares/authentication";
-
-const user = new Router<AppState>({
+const user = new Router({
   prefix: "/user",
 });
 
-user.get("/profile", async (ctx) => {
+user.get("/profile", async (ctx: AppContext) => {
   const { id } = ctx.query;
   if (typeof id !== "string") {
     throw BadRequestError();
@@ -28,25 +27,29 @@ user.get("/profile", async (ctx) => {
   };
 });
 
-user.post("/profile/update", authentication({ force: true }), async (ctx) => {
-  const { introduction, resume } = ctx.state.body;
-  const isUpdateIntroduction = typeof introduction === "string";
-  const isUpdateResume = typeof resume === "string";
-  if (!isUpdateIntroduction && !isUpdateResume) {
-    throw BadRequestError();
-  }
-  const data =
-    isUpdateIntroduction && isUpdateResume
-      ? { introduction, resume }
-      : isUpdateIntroduction
-        ? { introduction }
-        : isUpdateResume
-          ? { resume }
-          : {};
-  const database = ctx.state.database;
-  const user = ctx.state.user!;
-  await database.userProfile.update({ where: { userId: user.id }, data });
-  ctx.body = true;
-});
+user.post(
+  "/profile/update",
+  authentication({ force: true }),
+  async (ctx: AppContext<AuthState>) => {
+    const { introduction, resume } = ctx.state.body;
+    const isUpdateIntroduction = typeof introduction === "string";
+    const isUpdateResume = typeof resume === "string";
+    if (!isUpdateIntroduction && !isUpdateResume) {
+      throw BadRequestError();
+    }
+    const data =
+      isUpdateIntroduction && isUpdateResume
+        ? { introduction, resume }
+        : isUpdateIntroduction
+          ? { introduction }
+          : isUpdateResume
+            ? { resume }
+            : {};
+    const database = ctx.state.database;
+    const user = ctx.state.user!;
+    await database.userProfile.update({ where: { userId: user.id }, data });
+    ctx.body = true;
+  },
+);
 
 export default user;

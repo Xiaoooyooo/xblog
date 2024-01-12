@@ -1,3 +1,4 @@
+import { ParameterizedContext, DefaultContext } from "koa";
 import { Database, Prisma } from "./database";
 
 export type { Prisma };
@@ -7,6 +8,11 @@ export type AppState = {
   // eslint-disable-next-line
   body: Record<string, any>;
 };
+
+/* eslint-disable-next-line @typescript-eslint/ban-types */
+export type AppContext<S = {}, C = DefaultContext> = ParameterizedContext<
+  AppState & S
+>;
 
 export type User = {
   id: string;

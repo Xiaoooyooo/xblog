@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import { AppState } from "~/types";
 import { hash } from "~/utils/encrypt";
 import { BadRequestError, UnauthorizedError, ForbiddenError } from "~/errors";
 import {
@@ -8,13 +7,14 @@ import {
   verifyRefreshToken,
 } from "~/utils/jwt";
 import { normalizeUser } from "~/utils/normalize";
-import env from "~/env";
+import siteconfig, { SiteConfigState } from "~/middlewares/siteconfig";
+import { AppContext } from "~/types";
 
-const auth = new Router<AppState>({
+const auth = new Router({
   prefix: "/auth",
 });
 
-auth.get("/", async (ctx) => {
+auth.get("/", async (ctx: AppContext) => {
   const refreshToken = ctx.cookies.get("refreshToken");
   if (!refreshToken) {
     ctx.body = { isLogin: false };
@@ -46,36 +46,44 @@ auth.get("/", async (ctx) => {
   };
 });
 
-auth.post("/register", async (ctx) => {
-  if (!env.allowNewUerRegister) throw ForbiddenError();
-  const { database, body } = ctx.state;
-  if (!body) throw BadRequestError();
-  const { username, password, displayName } = body;
-  if (!username) throw BadRequestError("username is needed");
-  if (!password) throw BadRequestError("password is needed");
+auth.post(
+  "/register",
+  siteconfig(),
+  async (ctx: AppContext<SiteConfigState>) => {
+    if (!ctx.state.siteconfig.allowRegister) {
+      throw ForbiddenError();
+    }
+    const { database, body } = ctx.state;
+    if (!body) throw BadRequestError();
+    const { username, password, displayName } = body;
+    if (!username) throw BadRequestError("username is needed");
+    if (!password) throw BadRequestError("password is needed");
 
-  const user = await database.user.findUnique({ where: { username } });
-  if (user) {
-    throw ForbiddenError("The username is already exists");
-  }
+    const user = await database.user.findUnique({ where: { username } });
+    if (user) {
+      throw ForbiddenError("The username is already exists");
+    }
 
-  const admin = await database.user.findFirst({ where: { isAdmin: true } });
-  const newUser = await database.user.create({
-    data: {
-      username,
-      password: hash(password),
-      displayName,
-      // create a empty profile
-      profile: { create: {} },
-      // set the first registered user to administrator by default
-      ...(admin ? {} : { isAdmin: true }),
-    },
-  });
+    const siteConfig = await database.siteConfig.get();
+    const newUser = await database.user.create({
+      data: {
+        username,
+        password: hash(password),
+        displayName,
+        // create a empty profile
+        profile: { create: {} },
+        // if owner does not exist, set this user as owner
+        ...(!siteConfig.owner
+          ? { SiteConfig: { connect: { id: siteConfig.id } } }
+          : {}),
+      },
+    });
 
-  ctx.body = normalizeUser(newUser);
-});
+    ctx.body = normalizeUser(newUser);
+  },
+);
 
-auth.post("/login", async (ctx) => {
+auth.post("/login", async (ctx: AppContext) => {
   const { database, body } = ctx.state;
   if (!body) throw BadRequestError();
   const { username, password } = body;
@@ -111,7 +119,7 @@ auth.post("/login", async (ctx) => {
   };
 });
 
-auth.post("/refresh", async (ctx) => {
+auth.post("/refresh", async (ctx: AppContext) => {
   const refreshToken = ctx.cookies.get("refreshToken");
   if (!refreshToken) throw UnauthorizedError();
   const { database } = ctx.state;
@@ -141,7 +149,7 @@ auth.post("/refresh", async (ctx) => {
   ctx.body = { token: accessToken };
 });
 
-auth.post("/logout", async (ctx) => {
+auth.post("/logout", async (ctx: AppContext) => {
   const refreshToken = ctx.cookies.get("refreshToken");
   if (!refreshToken) throw UnauthorizedError();
   const { database } = ctx.state;

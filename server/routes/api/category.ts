@@ -1,12 +1,12 @@
 import Router from "koa-router";
 import { BadRequestError, ForbiddenError, NotFoundError } from "~/errors";
-import { AppState, Prisma } from "~/types";
-import authentication from "./middlewares/authentication";
+import { AppContext, Prisma } from "~/types";
+import authentication, { AuthState } from "./middlewares/authentication";
 import { normalizeUser } from "~/utils/normalize";
 
-const category = new Router<AppState>({ prefix: "/category" });
+const category = new Router({ prefix: "/category" });
 
-category.get("/list", async (ctx) => {
+category.get("/list", async (ctx: AppContext) => {
   const { name, pageIndex, pageSize, documents } = ctx.query;
   if (name !== undefined && typeof name !== "string") {
     throw BadRequestError();
@@ -71,50 +71,58 @@ category.get("/list", async (ctx) => {
   };
 });
 
-category.get("/detail", authentication({ force: false }), async (ctx) => {
-  const { id } = ctx.query;
-  if (!id || typeof id !== "string") {
-    throw BadRequestError();
-  }
-  const { database } = ctx.state;
-  const category = await database.category.findUnique({
-    where: { id },
-    include: { createdBy: true },
-  });
-  if (!category) {
-    throw NotFoundError();
-  }
-  const { user } = ctx.state;
-  if (category.deletedAt !== null && (!user || !user.isAdmin)) {
-    throw ForbiddenError();
-  }
-  ctx.body = {
-    id: category.id,
-    name: category.name,
-    createdAt: category.createdAt,
-    createdBy: normalizeUser(category.createdBy),
-  };
-});
+category.get(
+  "/detail",
+  authentication({ force: false }),
+  async (ctx: AppContext<AuthState>) => {
+    const { id } = ctx.query;
+    if (!id || typeof id !== "string") {
+      throw BadRequestError();
+    }
+    const { database } = ctx.state;
+    const category = await database.category.findUnique({
+      where: { id },
+      include: { createdBy: true },
+    });
+    if (!category) {
+      throw NotFoundError();
+    }
+    const { user } = ctx.state;
+    if (category.deletedAt !== null && (!user || !user.isAdmin)) {
+      throw ForbiddenError();
+    }
+    ctx.body = {
+      id: category.id,
+      name: category.name,
+      createdAt: category.createdAt,
+      createdBy: normalizeUser(category.createdBy),
+    };
+  },
+);
 
-category.delete("/delete", authentication({ force: true }), async (ctx) => {
-  const { id } = ctx.query;
-  if (typeof id !== "string") {
-    throw BadRequestError();
-  }
-  const user = ctx.state.user!;
-  const { database } = ctx.state;
-  const category = await database.category.findUnique({
-    where: { id, deletedAt: null },
-    include: { createdBy: true },
-  });
-  if (!category) {
-    throw NotFoundError();
-  }
-  if (!user.isAdmin && category.createdBy.id !== user.id) {
-    throw ForbiddenError();
-  }
-  await database.category.delete({ where: { id } });
-  ctx.body = true;
-});
+category.delete(
+  "/delete",
+  authentication({ force: true }),
+  async (ctx: AppContext<AuthState>) => {
+    const { id } = ctx.query;
+    if (typeof id !== "string") {
+      throw BadRequestError();
+    }
+    const user = ctx.state.user!;
+    const { database } = ctx.state;
+    const category = await database.category.findUnique({
+      where: { id, deletedAt: null },
+      include: { createdBy: true },
+    });
+    if (!category) {
+      throw NotFoundError();
+    }
+    if (!user.isAdmin && category.createdBy.id !== user.id) {
+      throw ForbiddenError();
+    }
+    await database.category.delete({ where: { id } });
+    ctx.body = true;
+  },
+);
 
 export default category;
