@@ -9,6 +9,7 @@ import {
 import { normalizeUser } from "~/utils/normalize";
 import siteconfig, { SiteConfigState } from "~/middlewares/siteconfig";
 import { AppContext } from "~/types";
+import ROLE from "~/constants/role";
 
 const auth = new Router({
   prefix: "/auth",
@@ -64,7 +65,9 @@ auth.post(
       throw ForbiddenError("The username is already exists");
     }
 
-    const siteConfig = await database.siteConfig.get();
+    const superAdmin = await database.user.findFirst({
+      where: { role: ROLE.SUPERADMIN },
+    });
     const newUser = await database.user.create({
       data: {
         username,
@@ -72,10 +75,8 @@ auth.post(
         displayName,
         // create a empty profile
         profile: { create: {} },
-        // if owner does not exist, set this user as owner
-        ...(!siteConfig.owner
-          ? { SiteConfig: { connect: { id: siteConfig.id } } }
-          : {}),
+        // if the super administrator do not exits, set this user ad super administrator
+        role: superAdmin ? ROLE.USER : ROLE.SUPERADMIN,
       },
     });
 

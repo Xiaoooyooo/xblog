@@ -16,9 +16,9 @@ export type AppContext<S = {}, C = DefaultContext> = ParameterizedContext<
 
 export type User = {
   id: string;
-  isAdmin: boolean | null;
   username: string;
   displayName: string | null;
+  role: string;
 };
 
 export type Profile = {

@@ -3,13 +3,18 @@ import { UnauthorizedError } from "~/errors";
 import { AppContext, User } from "~/types";
 import { verifyAccessToken } from "~/utils/jwt";
 import { normalizeUser } from "~/utils/normalize";
+import ROLE from "~/constants/role";
 
 type AuthenticationMiddlewareOptions = {
   force?: boolean;
 };
 
 export type AuthState = {
-  user?: User;
+  user?: User & {
+    isUser: boolean;
+    isAdmin: boolean;
+    isSuperAdmin: boolean;
+  };
 };
 
 export default function authentication(
@@ -39,7 +44,12 @@ export default function authentication(
           throw UnauthorizedError();
         }
         if (user) {
-          ctx.state.user = normalizeUser(user);
+          ctx.state.user = {
+            ...normalizeUser(user),
+            isUser: user.role === ROLE.USER,
+            isAdmin: user.role === ROLE.ADMIN || user.role === ROLE.SUPERADMIN,
+            isSuperAdmin: user.role === ROLE.SUPERADMIN,
+          };
         }
       }
     }

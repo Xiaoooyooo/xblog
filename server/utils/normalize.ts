@@ -2,8 +2,8 @@ import { Blog, Category, Profile, User } from "~/types";
 
 /** Remove some unnecessary fields from user */
 export function normalizeUser<T extends User>(user: T): User {
-  const { id, isAdmin, displayName, username } = user;
-  return { id, isAdmin, displayName, username };
+  const { id, displayName, username, role } = user;
+  return { id, displayName, username, role };
 }
 
 /** Remove unnecessary fields from user's profile */
