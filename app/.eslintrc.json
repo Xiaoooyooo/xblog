@@ -1,5 +1,9 @@
 {
-  "extends": ["../.eslintrc", "plugin:react/recommended"],
+  "extends": [
+    "../.eslintrc",
+    "plugin:react-hooks/recommended",
+    "plugin:react/recommended"
+  ],
   "env": {
     "browser": true,
     "es2021": true,

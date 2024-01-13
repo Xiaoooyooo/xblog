@@ -11,6 +11,7 @@ import {
   Editor,
 } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
+import { withHistory } from "slate-history";
 // import Prism from "prismjs";
 // import "prismjs/components/prism-markdown";
 import renderElement from "./elements";
@@ -33,7 +34,7 @@ export default function SlateEditor(props: EditorProps) {
       .map((line) => ({ type: "paragraph", children: [{ text: line }] })),
   );
 
-  const [editor] = useState(withReact(createEditor()));
+  const [editor] = useState(withReact(withHistory(createEditor())));
 
   // const _handleDOMBeforeInput = useCallback(handleDOMBeforeInput(editor), [
   //   editor,

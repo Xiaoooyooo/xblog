@@ -15,12 +15,12 @@ model User {
   username    String       @unique
   displayName String?
   password    String
-  isAdmin     Boolean?
   createdAt   DateTime     @default(now())
   profile     UserProfile?
   tokens      UserToken[]
   documents   Document[]
   Category    Category[]
+  role        String
 }
 
 model UserToken {
@@ -32,10 +32,12 @@ model UserToken {
 }
 
 model UserProfile {
-  id      String @id @unique @default(uuid())
-  userId  String @unique
-  user    User   @relation(fields: [userId], references: [id])
-  content String
+  id           String  @id @unique @default(uuid())
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id])
+  avatar       String?
+  introduction String?
+  resume       String?
 }
 
 model Document {
@@ -45,6 +47,7 @@ model Document {
   userId     String
   user       User                    @relation(fields: [userId], references: [id])
   isDraft    Boolean                 @default(true)
+  views      Int                     @default(0)
   createdAt  DateTime                @default(now())
   updatedAt  DateTime                @updatedAt
   deletedAt  DateTime?
@@ -62,10 +65,16 @@ model Category {
 }
 
 model CategoriesOnDocuments {
-  document   Document @relation(fields: [documentId], references: [id])
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   documentId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId String
 
   @@id([documentId, categoryId])
+}
+
+model SiteConfig {
+  id            String  @id @default(uuid())
+  // whether allow new user register
+  allowRegister Boolean @default(true)
 }

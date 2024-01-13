@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import { AppState } from "~/types";
 import { hash } from "~/utils/encrypt";
 import { BadRequestError, UnauthorizedError, ForbiddenError } from "~/errors";
 import {
@@ -7,71 +6,94 @@ import {
   signAccessToken,
   verifyRefreshToken,
 } from "~/utils/jwt";
-import env from "~/env";
+import { normalizeUser } from "~/utils/normalize";
+import siteconfig, { SiteConfigState } from "~/middlewares/siteconfig";
+import { AppContext } from "~/types";
+import ROLE from "@@/constants/role";
 
-const auth = new Router<AppState>({
+const auth = new Router({
   prefix: "/auth",
 });
 
-auth.get("/", async (ctx) => {
+auth.get("/", async (ctx: AppContext) => {
   const refreshToken = ctx.cookies.get("refreshToken");
   if (!refreshToken) {
     ctx.body = { isLogin: false };
     return;
   }
   const { database } = ctx.state;
-  const record = await database.userToken.findFirst({
+  const token = await database.userToken.findFirst({
     where: { refreshToken },
-    include: { user: true },
+    include: { user: { include: { profile: true } } },
   });
-  if (!record) {
+  if (!token) {
+    ctx.cookies.set("refreshToken", "", { expires: new Date(0) });
     ctx.body = { isLogin: false };
     return;
   }
   const { isError } = await verifyRefreshToken(refreshToken);
   if (isError) {
-    await database.userToken.delete({ where: { id: record.id } });
+    await database.userToken.delete({ where: { id: token.id } });
+    ctx.cookies.set("refreshToken", "", { expires: new Date(0) });
     ctx.body = { isLogin: false };
     return;
   }
-  const accessToken = signAccessToken(record.user);
+  const accessToken = signAccessToken(token.user);
   ctx.body = {
-    id: record.user.id,
-    displayName: record.user.displayName,
-    username: record.user.username,
+    ...normalizeUser(token.user),
+    avatar: token.user.profile?.avatar,
     token: accessToken,
     isLogin: true,
   };
 });
 
-auth.post("/register", async (ctx) => {
-  if (!env.allowNewUerRegister) throw ForbiddenError();
-  const { database, body } = ctx.state;
-  if (!body) throw BadRequestError();
-  const { username, password, displayName } = body;
-  if (!username) throw BadRequestError("username is needed");
-  if (!password) throw BadRequestError("password is needed");
-  const user = await database.user.findUnique({ where: { username } });
-  if (user) {
-    throw ForbiddenError("The username is already exists");
-  }
-  const newUser = await database.user.create({
-    data: { username, password: hash(password), displayName },
-  });
-  ctx.body = {
-    id: newUser.id,
-    displayName: newUser.displayName,
-    username: newUser.username,
-  };
-});
+auth.post(
+  "/register",
+  siteconfig(),
+  async (ctx: AppContext<SiteConfigState>) => {
+    if (!ctx.state.siteconfig.allowRegister) {
+      throw ForbiddenError();
+    }
+    const { database, body } = ctx.state;
+    if (!body) throw BadRequestError();
+    const { username, password, displayName } = body;
+    if (!username) throw BadRequestError("username is needed");
+    if (!password) throw BadRequestError("password is needed");
 
-auth.post("/login", async (ctx) => {
+    const user = await database.user.findUnique({ where: { username } });
+    if (user) {
+      throw ForbiddenError("The username is already exists");
+    }
+
+    const superAdmin = await database.user.findFirst({
+      where: { role: ROLE.SUPERADMIN },
+    });
+    const newUser = await database.user.create({
+      data: {
+        username,
+        password: hash(password),
+        displayName,
+        // create a empty profile
+        profile: { create: {} },
+        // if the super administrator do not exits, set this user ad super administrator
+        role: superAdmin ? ROLE.USER : ROLE.SUPERADMIN,
+      },
+    });
+
+    ctx.body = normalizeUser(newUser);
+  },
+);
+
+auth.post("/login", async (ctx: AppContext) => {
   const { database, body } = ctx.state;
   if (!body) throw BadRequestError();
   const { username, password } = body;
   if (!username) throw BadRequestError("username is needed");
   if (!password) throw BadRequestError("password is needed");
-  const user = await database.user.findUnique({ where: { username } });
+  const user = await database.user.findUnique({
+    where: { username },
+    include: { profile: true },
+  });
   if (!user) throw UnauthorizedError("Wrong username or password");
   const _password = hash(password);
   if (_password !== user.password) {
@@ -88,16 +110,17 @@ auth.post("/login", async (ctx) => {
   ctx.cookies.set("refreshToken", refreshToken, {
     httpOnly: true,
     maxAge: 864000000, // 10 days
+    // only available for /api/auth
+    path: "/api/auth",
   });
   ctx.body = {
-    id: user.id,
-    displayName: user.displayName,
-    username: user.username,
+    ...normalizeUser(user),
+    avatar: user.profile?.avatar,
     token: accessToken,
   };
 });
 
-auth.post("/refresh", async (ctx) => {
+auth.post("/refresh", async (ctx: AppContext) => {
   const refreshToken = ctx.cookies.get("refreshToken");
   if (!refreshToken) throw UnauthorizedError();
   const { database } = ctx.state;
@@ -127,7 +150,7 @@ auth.post("/refresh", async (ctx) => {
   ctx.body = { token: accessToken };
 });
 
-auth.post("/logout", async (ctx) => {
+auth.post("/logout", async (ctx: AppContext) => {
   const refreshToken = ctx.cookies.get("refreshToken");
   if (!refreshToken) throw UnauthorizedError();
   const { database } = ctx.state;

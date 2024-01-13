@@ -1,48 +1,73 @@
+import { ReactNode, forwardRef, KeyboardEventHandler } from "react";
 import classNames from "classnames";
 type InputProps = {
-  type?: "text" | "password";
+  type?: "plain" | "text" | "password";
   value?: string;
   placeholder?: string;
   defaultValue?: string;
   onInput?: (value: string) => void;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
+  prefix?: ReactNode;
   className?: string;
+  inputClassName?: string;
 };
 
-export default function Input(props: InputProps) {
-  const {
-    type = "text",
-    value,
-    placeholder,
-    defaultValue,
-    onInput,
-    className,
-  } = props;
+export default forwardRef<HTMLInputElement, InputProps>(
+  function Input(props, ref) {
+    const {
+      type = "text",
+      value,
+      placeholder,
+      defaultValue,
+      onInput,
+      onKeyDown,
+      prefix,
+      className,
+      inputClassName,
+    } = props;
 
-  return (
-    <input
-      type={type}
-      value={value}
-      defaultValue={defaultValue}
-      placeholder={placeholder}
-      className={classNames(
-        "w-full",
-        "rounded",
-        "p-1",
-        "border-[1px]",
-        "border-[#ddd]",
-        "focus:border-blue-400",
-        "outline-2",
-        "outline",
-        "outline-offset-0",
-        "outline-transparent",
-        "focus:outline-blue-300",
-        "transition-all",
-        "duration-200",
-        className,
-      )}
-      onInput={
-        onInput && ((e) => onInput((e.target as HTMLInputElement).value))
-      }
-    />
-  );
-}
+    const isPlain = type === "plain";
+
+    return (
+      <div
+        className={classNames(
+          "flex rounded",
+          !isPlain && [
+            "border-[1px]",
+            "border-[#ddd]",
+            "focus-within:border-blue-400",
+            "outline outline-2",
+            "outline-offset-0",
+            "outline-transparent",
+            "focus-within:!outline-blue-300",
+            "transition-all",
+            "duration-200",
+          ],
+          className,
+        )}
+      >
+        {prefix && (
+          <div className="self-stretch flex items-center">{prefix}</div>
+        )}
+        <div className="flex-auto min-w-0">
+          <input
+            type={type}
+            value={value}
+            defaultValue={defaultValue}
+            placeholder={placeholder}
+            className={classNames(
+              "block w-full p-1 leading-none",
+              "border-none outline-none bg-transparent",
+              inputClassName,
+            )}
+            onInput={
+              onInput && ((e) => onInput((e.target as HTMLInputElement).value))
+            }
+            onKeyDown={onKeyDown}
+            ref={ref}
+          />
+        </div>
+      </div>
+    );
+  },
+);

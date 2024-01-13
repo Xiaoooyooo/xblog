@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type RequestOption = Omit<RequestInit, "url" | "body"> & {
-  data?: string | Record<string, unknown>;
-  search?: Record<string, string | number>;
+  data?: string | Record<string, unknown> | FormData;
+  search?: Record<string, any>;
+};
+
+export type ExtraOption = {
+  /** skip a refresh request while current request is failed with 401 */
+  noRefresh?: boolean;
 };
 
 // type Response<T = unknown> = {
@@ -19,11 +24,13 @@ export default class RequestHandler {
   private _requestWithFetch<T = unknown>(
     url: string,
     option: RequestOption = {},
-    extraOption: Record<string, any>,
+    extraOption: ExtraOption = {},
   ): Promise<T> {
     const { data, search, ...rest } = option;
     let body: BodyInit | null = null;
     if (typeof data === "string") {
+      body = data;
+    } else if (data instanceof FormData) {
       body = data;
     } else if (data) {
       body = JSON.stringify(data);
@@ -63,7 +70,7 @@ export default class RequestHandler {
   async request<T = any>(
     url: string,
     options: RequestOption = {},
-    extraOption: Record<string, any> = {},
+    extraOption: ExtraOption = {},
   ) {
     const len = this.interceptors.length;
     let promise: Promise<unknown> = this._requestWithFetch<T>(

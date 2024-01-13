@@ -1,6 +1,6 @@
 import store from "@/redux";
 import { setUserInfo } from "@/redux/actions/user";
-import RequestHandler, { RequestOption } from "@/utils/request";
+import RequestHandler, { RequestOption, ExtraOption } from "@/utils/request";
 
 const requestHandler = new RequestHandler();
 
@@ -13,10 +13,8 @@ type RequestError = {
   // eslint-disable-next-line
   error: any;
   // eslint-disable-next-line
-  extraOption: Record<string, any>;
+  extraOption: ExtraOption;
 };
-
-const request = requestHandler.request.bind(requestHandler);
 
 requestHandler.useInterceptor(
   // eslint-disable-next-line
@@ -26,20 +24,19 @@ requestHandler.useInterceptor(
   },
   async (err: RequestError) => {
     const { config, error, extraOption } = err;
-    __DEV__ && console.log({ error });
     if (
       typeof err !== "string" &&
       "status" in error &&
       error.status === 401 &&
-      !extraOption.refreshToken
+      !extraOption.noRefresh
     ) {
       return request<RefreshTokenResponse>(
         "/api/auth/refresh",
         {
           method: "post",
         },
-        // mark this request as a refresh token request
-        { refreshToken: true },
+        // skip another refresh request for this request
+        { noRefresh: true },
       ).then(({ token }) => {
         store.dispatch(setUserInfo({ token }));
         return request(config.url, {
@@ -50,10 +47,12 @@ requestHandler.useInterceptor(
           },
         });
       });
-    } else if (extraOption.refreshToken) {
-      location.href = "/";
     }
+    throw err;
   },
 );
+
+const request: typeof requestHandler.request = (...args) =>
+  requestHandler.request(...args);
 
 export default request;

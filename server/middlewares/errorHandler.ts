@@ -12,15 +12,13 @@ export default function errorHandler() {
       let _error: any;
       if (typeof err.status !== "number") {
         // native errors
-        _error = InternalServerError(err.message);
+        _error = InternalServerError();
       } else if (err instanceof Error) {
         // http-errors
         _error = err;
       } else {
         // unknown errors
-        _error = InternalServerError(
-          typeof err === "string" ? err : JSON.stringify(err),
-        );
+        _error = InternalServerError(typeof err === "string" ? err : undefined);
       }
       ctx.status = _error.status;
       const accept = ctx.accepts("json", "html");

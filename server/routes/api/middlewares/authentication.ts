@@ -1,22 +1,34 @@
-import { Middleware } from "koa";
+import { Next } from "koa";
 import { UnauthorizedError } from "~/errors";
-import { AppState, User } from "~/types";
+import { AppContext, User } from "~/types";
 import { verifyAccessToken } from "~/utils/jwt";
+import { normalizeUser } from "~/utils/normalize";
+import ROLE from "@@/constants/role";
 
 type AuthenticationMiddlewareOptions = {
   force?: boolean;
 };
 
+export type AuthState = {
+  user?: User & {
+    isUser: boolean;
+    isAdmin: boolean;
+    isSuperAdmin: boolean;
+  };
+};
+
 export default function authentication(
   options: AuthenticationMiddlewareOptions,
-): Middleware<AppState & { user?: User }> {
+) {
   const { force } = options;
-  return async function (ctx, next) {
+  return async function (ctx: AppContext<AuthState>, next: Next) {
     const authorizationHeader = ctx.headers.authorization || "";
     const [schema, token] = authorizationHeader.split(" ");
-    /** @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#bearer */
-    if (schema !== "Bearer") throw UnauthorizedError();
-    if (force && !token) throw UnauthorizedError();
+    if (force) {
+      /** @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#bearer */
+      if (schema !== "Bearer") throw UnauthorizedError();
+      if (!token) throw UnauthorizedError();
+    }
     if (token) {
       const result = await verifyAccessToken(token);
       if (force && result.isError) {
@@ -33,9 +45,10 @@ export default function authentication(
         }
         if (user) {
           ctx.state.user = {
-            id: user.id,
-            username: user.username,
-            isAdmin: user.isAdmin || false,
+            ...normalizeUser(user),
+            isUser: user.role === ROLE.USER,
+            isAdmin: user.role === ROLE.ADMIN || user.role === ROLE.SUPERADMIN,
+            isSuperAdmin: user.role === ROLE.SUPERADMIN,
           };
         }
       }

@@ -12,9 +12,10 @@ function Panel(props: PanelProps) {
   return (
     <div
       className={classNames(
-        "p-8",
+        "p-2",
+        "md:p-8",
         "relative",
-        "bg-white",
+        "bg-[--panel-background-color]",
         shadow && "shadow-xl",
         rounded && "rounded-lg",
         className,

@@ -11,23 +11,36 @@ export const init = createAsyncThunk<UserState>("user/init", () => {
 export const login = createAsyncThunk<
   UserState,
   { username: string; password: string }
->("user/login", (args, thunk) => {
-  /**
-   * only rejected error object matches following schema will be add to the final error object
-   * ```ts
-   * interface SerializedError {
-   *   name?: string
-   *   message?: string
-   *   stack?: string
-   *   code?: string
-   * }
-   * ```
-   * we expected a message filed here
-   */
-  return request("/api/auth/login", {
-    method: "post",
-    headers: { "content-type": "application/json" },
-    data: args,
-    signal: thunk.signal,
-  });
-});
+>(
+  "user/login",
+  (args, thunk) => {
+    return request(
+      "/api/auth/login",
+      {
+        method: "post",
+        headers: { "content-type": "application/json" },
+        data: args,
+        signal: thunk.signal,
+      },
+      { noRefresh: true },
+    );
+  },
+  {
+    /**
+     * only rejected error object matches following schema will be add to the final error object
+     * ```ts
+     * interface SerializedError {
+     *   name?: string
+     *   message?: string
+     *   stack?: string
+     *   code?: string
+     * }
+     * ```
+     * we expect a message filed here
+     */
+    serializeError(x) {
+      /* eslint-disable-next-line */
+      return (x as any).error;
+    },
+  },
+);

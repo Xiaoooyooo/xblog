@@ -3,21 +3,26 @@ import {
   useState,
   useLayoutEffect,
   useRef,
-  cloneElement,
   ReactElement,
+  createElement,
+  forwardRef,
+  useEffect,
 } from "react";
+import useFunctionRef from "@/hooks/useFunctionRef";
 
 type TransitionProps = {
   show: boolean;
   duration: number;
   children: ReactElement;
   unmountOnHide?: boolean;
+  transitionOnFirstMount?: boolean;
   beforeEnterClassName?: string;
   enterActiveClassName?: string;
   enterDoneClassName?: string;
   beforeLeaveClassName?: string;
   leaveActiveClassName?: string;
   leaveDoneClassName?: string;
+  onExited?: () => void;
 };
 
 type TransitionStage =
@@ -28,74 +33,91 @@ type TransitionStage =
   | "leave-active"
   | "leave-done";
 
-export default function Transition(props: TransitionProps) {
-  const {
-    show,
-    duration,
-    children,
-    unmountOnHide,
-    beforeEnterClassName,
-    enterActiveClassName,
-    enterDoneClassName,
-    beforeLeaveClassName,
-    leaveActiveClassName,
-    leaveDoneClassName,
-  } = props;
-  const [stage, setStage] = useState<TransitionStage>(
-    show ? "enter-done" : "leave-done",
-  );
-  const isMountRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
-  useLayoutEffect(() => {
-    if (!isMountRef.current) {
-      isMountRef.current = true;
-      return;
-    }
+export default forwardRef<HTMLElement, TransitionProps>(
+  function Transition(props, ref) {
+    const {
+      show,
+      duration,
+      children,
+      unmountOnHide,
+      transitionOnFirstMount,
+      beforeEnterClassName,
+      enterActiveClassName,
+      enterDoneClassName,
+      beforeLeaveClassName,
+      leaveActiveClassName,
+      leaveDoneClassName,
+      onExited,
+    } = props;
 
-    if (show && stage.startsWith("leave-")) {
-      if (stage === "leave-done") {
-        setStage("before-enter");
+    const [stage, setStage] = useState<TransitionStage>(() => {
+      if (transitionOnFirstMount) {
+        return show ? "leave-done" : "enter-done";
       }
-      requestAnimationFrame(() => {
-        setStage("enter-active");
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = undefined;
-        }
-        timerRef.current = setTimeout(() => {
-          setStage("enter-done");
-          timerRef.current = undefined;
-        }, duration);
-      });
-    } else if (!show && stage.startsWith("enter-")) {
-      if (stage === "enter-done") {
-        setStage("before-leave");
-      }
-      requestAnimationFrame(() => {
-        setStage("leave-active");
-        if (timerRef.current) {
-          clearTimeout(timerRef.current);
-          timerRef.current = undefined;
-        }
-        timerRef.current = setTimeout(() => {
-          setStage("leave-done");
-          timerRef.current = undefined;
-        }, duration);
-      });
-    }
-  }, [show, duration, stage]);
+      return show ? "enter-done" : "leave-done";
+    });
 
-  if (unmountOnHide && stage === "leave-done") return null;
-  return cloneElement(children, {
-    ...children.props,
-    className: classNames(
-      children.props.className,
-      stage === "before-enter" && beforeEnterClassName,
-      stage === "enter-active" && [enterActiveClassName, enterDoneClassName],
-      stage === "enter-done" && enterDoneClassName,
-      stage === "before-leave" && beforeLeaveClassName,
-      stage === "leave-active" && [leaveActiveClassName, leaveDoneClassName],
-      stage === "leave-done" && [leaveDoneClassName, "hidden"],
-    ),
-  });
-}
+    const onExitedRef = useFunctionRef(onExited);
+
+    const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+    useLayoutEffect(() => {
+      if (show && stage.startsWith("leave-")) {
+        if (stage === "leave-done") {
+          setStage("before-enter");
+        }
+        requestAnimationFrame(() => {
+          setStage("enter-active");
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = undefined;
+          }
+          timerRef.current = setTimeout(() => {
+            setStage("enter-done");
+            timerRef.current = undefined;
+          }, duration);
+        });
+      } else if (!show && stage.startsWith("enter-")) {
+        if (stage === "enter-done") {
+          setStage("before-leave");
+        }
+        requestAnimationFrame(() => {
+          setStage("leave-active");
+          if (timerRef.current) {
+            clearTimeout(timerRef.current);
+            timerRef.current = undefined;
+          }
+          timerRef.current = setTimeout(() => {
+            setStage("leave-done");
+            timerRef.current = undefined;
+          }, duration);
+        });
+      }
+    }, [show, stage, duration]);
+
+    useEffect(() => {
+      if (!show && stage === "leave-done") {
+        onExitedRef();
+      }
+    }, [show, stage]);
+
+    if (unmountOnHide && !show && stage === "leave-done") return null;
+
+    return createElement(children.type, {
+      ...children.props,
+      ref,
+      className: classNames(
+        children.props.className,
+        stage === "before-enter" && beforeEnterClassName,
+        stage === "enter-active" && [enterActiveClassName, enterDoneClassName],
+        stage === "enter-done" && enterDoneClassName,
+        stage === "before-leave" && beforeLeaveClassName,
+        stage === "leave-active" && [leaveActiveClassName, leaveDoneClassName],
+        stage === "leave-done" && [
+          leaveDoneClassName,
+          !unmountOnHide && !show && "hidden",
+        ],
+      ),
+    });
+  },
+);

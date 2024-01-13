@@ -1,17 +1,59 @@
-import { lazy, Suspense } from "react";
-import { createBrowserRouter } from "react-router-dom";
-
+import { lazy, Suspense, useEffect, useState } from "react";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  RouteObject,
+} from "react-router-dom";
+import { useSelector } from "@/hooks/redux";
+import { RootState } from "@/redux";
 import BaseLayout from "@/layouts";
 import Progress from "@/components/Progress";
-const Authentication = lazy(() => import("@/views/Authentication"));
-const HomeScene = lazy(() => import("@/views/Home"));
-const BlogScene = lazy(() => import("@/views/Blog"));
-const AboutScene = lazy(() => import("@/views/About"));
-const CreateScene = lazy(() => import("@/views/Create"));
-const EditScene = lazy(() => import("@/views/Edit"));
+import ROLE from "@@/constants/role";
 
-export default createBrowserRouter(
-  [
+const Authentication = lazy(() => import("@/views/Authentication"));
+const Home = lazy(() => import("@/views/Home"));
+const Blog = lazy(() => import("@/views/Blog"));
+const Create = lazy(() => import("@/views/Create"));
+const Edit = lazy(() => import("@/views/Edit"));
+const Category = lazy(() => import("@/views/Category"));
+const CategoryDetail = lazy(() => import("@/views/CategoryDetail"));
+const Profile = lazy(() => import("@/views/Profile"));
+const Admin = lazy(() => import("@/views/Admin"));
+
+function createRouter(user: RootState["user"]) {
+  const authenticatedRoutes: RouteObject[] = [
+    {
+      path: "blog/new",
+      element: <Create />,
+    },
+    {
+      path: "blog/:blogId/edit",
+      element: <Edit />,
+    },
+    {
+      path: "draft",
+      children: [
+        {
+          path: "",
+          index: true,
+          element: <Home isDraft />,
+        },
+        {
+          path: "page/:pageIndex",
+          element: <Home isDraft />,
+        },
+      ],
+    },
+  ];
+
+  const administratorRoutes: RouteObject[] = [
+    {
+      path: "admin",
+      element: <Admin />,
+    },
+  ];
+
+  const routes: RouteObject[] = [
     {
       element: (
         <Suspense fallback={<Progress />}>
@@ -21,34 +63,52 @@ export default createBrowserRouter(
       children: [
         {
           path: "",
-          index: true,
-          element: <HomeScene />,
-        },
-        {
-          path: "page/:pageIndex",
-          index: true,
-          element: <HomeScene />,
+          children: [
+            {
+              path: "",
+              index: true,
+              element: <Home />,
+            },
+            {
+              path: "page/:pageIndex",
+              element: <Home />,
+            },
+          ],
         },
         {
           path: "blog/:blogId",
-          element: <BlogScene />,
+          element: <Blog />,
         },
         {
-          path: "new",
-          element: <CreateScene />,
+          path: "category",
+          element: <Category />,
         },
         {
-          path: "edit/:blogId",
-          element: <EditScene />,
+          path: "category/page/:pageIndex",
+          element: <Category />,
         },
         {
-          path: "about",
-          element: <AboutScene />,
+          path: "category/:categoryId",
+          element: <CategoryDetail />,
         },
+        {
+          path: "category/:categoryId/page/:pageIndex",
+          element: <CategoryDetail />,
+        },
+        {
+          path: "user/:userId",
+          element: <Profile />,
+        },
+        // protected routes
+        ...(user.isLogin ? authenticatedRoutes : []),
+        // super administrator routes
+        ...(user.isLogin && user.role === ROLE.SUPERADMIN
+          ? administratorRoutes
+          : []),
       ],
     },
     {
-      path: "auth",
+      path: "auth/:authType",
       element: (
         <Suspense fallback={<p>loading...</p>}>
           <Authentication />
@@ -57,8 +117,19 @@ export default createBrowserRouter(
     },
     {
       path: "*",
-      element: <h2>Not Found</h2>,
+      element: user.fetching ? <Progress /> : <div>not found</div>,
     },
-  ],
-  { basename: "/" },
-);
+  ];
+  return createBrowserRouter(routes, { basename: "/" });
+}
+
+export default function Routes() {
+  const user = useSelector((state) => state.user);
+  const [router, setRouter] = useState(createRouter(user));
+
+  useEffect(() => {
+    setRouter(createRouter(user));
+  }, [user]);
+
+  return <RouterProvider router={router} />;
+}

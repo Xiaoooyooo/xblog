@@ -1,0 +1,115 @@
+@import "markdown";
+
+@mixin light {
+  @include markdown-light();
+  --background-color: #fff;
+  --text-color: #333;
+  --header-background-color: rgba(30, 33, 40, 0.8);
+  --header-text-color: #fff;
+  --header-text-hover-color: crimson;
+  --panel-background-color: #fff;
+  --list-item-hover-background-color: rgb(229, 231, 235);
+  --tooltip-background-color: #fff;
+  --tooltip-text-color: var(--text-color);
+  --tooltip-border-color: #e5e7eb;
+  --menu-trigger-background-color: #cbd5e1;
+  --menu-background-color: var(--background-color);
+  --menu-item-hover-background-color: rgb(209, 213, 219);
+  --menu-item-disabled-background-color: rgb(148, 163, 184);
+  --menu-text-color: var(--text-color);
+  --skeleton-background-color: #e7e7e7;
+  --scrollbar-background-color: #d8d8d8;
+  --pagination-active-text-color: rgb(0, 146, 190);
+  --tag-background-color: rgb(241, 245, 249);
+  --tag-border-color: rgb(203, 213, 225);
+  --select-background-color: var(--menu-background-color);
+  --select-item-hover-background-color: var(--menu-item-hover-background-color);
+  --select-item-disabled-background-color: var(
+    --menu-item-disabled-background-color
+  );
+  --select-item-selected-background-color: skyblue;
+  --message-background-color: #eee;
+  --success-background-color: rgb(0, 187, 0);
+  --success-text-color: #fff;
+  --error-background-color: rgb(255, 86, 86);
+  --error-text-color: #fff;
+  --warning-background-color: rgb(255, 168, 38);
+  --warning-text-color: #fff;
+  --modal-mask-background-color: rgba(150, 150, 150, 0.3);
+  --button-primary-background-color: rgb(59, 130, 246);
+  --button-primary-text-color: white;
+  --button-primary-hover-background-color: rgb(96, 165, 250);
+  --button-primary-active-background-color: rgb(147, 197, 253);
+  --button-primary-disabled-background-color: rgb(96, 165, 250);
+
+  --markdown-code-header-background-color: #dfe4e9;
+
+  // switch
+  --switch-background-color: #dfe4e9;
+  --switch-foreground-color: #fff;
+  --switch-active-background-color: #44be4f;
+}
+
+@mixin dark {
+  @include markdown-dark();
+  --background-color: #222f3d;
+  --text-color: #c9d1d9;
+  --header-background-color: rgba(30, 33, 40, 0.8);
+  --header-text-color: var(--text-color);
+  --header-text-hover-color: crimson;
+  --panel-background-color: #142941;
+  --list-item-hover-background-color: #253649;
+  --tooltip-background-color: #222f3d;
+  --tooltip-text-color: var(--text-color);
+  --tooltip-border-color: #252e38;
+  --menu-trigger-background-color: #303e4e;
+  --menu-background-color: #45576b;
+  --menu-item-hover-background-color: rgb(52, 138, 172);
+  --menu-item-disabled-background-color: rgb(148, 163, 184);
+  --menu-text-color: var(--text-color);
+  --skeleton-background-color: #3c4955;
+  --scrollbar-background-color: #c9d1d9;
+  --pagination-active-text-color: rgb(0, 139, 173);
+  --tag-background-color: #324355;
+  --tag-border-color: #4c5a68;
+  --select-background-color: var(--menu-background-color);
+  --select-item-hover-background-color: var(--menu-item-hover-background-color);
+  --select-item-disabled-background-color: var(
+    --menu-item-disabled-background-color
+  );
+  --select-item-selected-background-color: #416f8a;
+  --message-background-color: #eee;
+  --success-background-color: rgb(0, 187, 0);
+  --success-text-color: #fff;
+  --error-background-color: rgb(255, 86, 86);
+  --error-text-color: #fff;
+  --warning-background-color: rgb(255, 168, 38);
+  --warning-text-color: #fff;
+
+  --markdown-code-header-background-color: #2e343d;
+
+  // switch
+  --switch-background-color: #636363;
+  --switch-foreground-color: #bbbbbb;
+  --switch-active-background-color: #4e9f3d;
+}
+
+@media screen and (prefers-color-scheme: light) {
+  :root {
+    @include light();
+  }
+}
+
+.theme-light {
+  @include light();
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    @include dark();
+  }
+}
+
+.theme-dark {
+  @include dark();
+}

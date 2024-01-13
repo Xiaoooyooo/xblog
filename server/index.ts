@@ -1,4 +1,4 @@
-import "./env";
+import env from "./env";
 import * as http from "http";
 import { execSync } from "child_process";
 
@@ -12,10 +12,12 @@ function prismaMigration() {
 function main() {
   const server = http.createServer(app.callback());
 
-  server.listen(9999, () => {
+  server.listen(env.port, () => {
     console.log("server is running");
   });
 }
 
-prismaMigration();
+if (env.isProduction) {
+  prismaMigration();
+}
 main();

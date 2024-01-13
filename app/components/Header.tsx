@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
+import { Menu } from "./Menu";
+import ThemeSwitch from "./ThemeSwitch";
+import { useSelector } from "@/hooks/redux";
+import ROLE from "@@/constants/role";
 
 interface NavLink {
   name: string;
@@ -9,6 +13,7 @@ interface NavLink {
 }
 
 function Header() {
+  const user = useSelector((state) => state.user);
   const links: NavLink[] = [
     {
       name: "",
@@ -19,10 +24,18 @@ function Header() {
       path: "/",
     },
     {
-      name: "关于我",
-      path: "/about",
+      name: "分类",
+      path: "/category",
     },
   ];
+
+  if (user.isLogin && user.role === ROLE.SUPERADMIN) {
+    links.push({
+      name: "管理",
+      path: "/admin",
+    });
+  }
+
   const [isBackgroundTransparent, setBackgroundTransparent] = useState(
     window.scrollY <= 200,
   );
@@ -41,17 +54,18 @@ function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   const _links = links.map((el, index) => {
     return (
       <Link
         key={index}
         to={el.path}
         className={classNames(
+          "px-3 md:px-5",
           "leading-[--header-height]",
-          "px-5",
-          "decoration-[none]",
-          "text-white",
-          "hover:text-[crimson]",
+          "md:hover:text-[--header-text-hover-color]",
+          "transition-colors",
+          "duration-300",
         )}
       >
         {el.name}
@@ -62,7 +76,7 @@ function Header() {
     <header
       className={classNames(
         "h-[--header-height]",
-        "px-16",
+        "md:px-16",
         "backdrop-blur-sm",
         "fixed",
         "top-0",
@@ -70,12 +84,30 @@ function Header() {
         "z-[999]",
         "shadow",
         "transition-all",
-        !isBackgroundTransparent && "bg-[rgba(30,33,40,0.8)]",
+        "bg-[--header-background-color]",
+        "text-[--header-text-color]",
+        "flex",
+        // !isBackgroundTransparent && "bg-[rgba(30,33,40,0.8)]",
       )}
     >
-      <nav className={classNames("flex", "justify-end", "h-full")}>
-        {_links}
-      </nav>
+      <nav className="flex-auto flex justify-end h-full">{_links}</nav>
+      {user.isLogin && (
+        <Link to={{ pathname: `/user/${user.id}` }}>
+          <div className="h-full mx-5 flex gap-x-2 items-center">
+            {user.avatar && (
+              <div className="rounded-full overflow-hidden">
+                <img
+                  src={`/assets/avatar/${user.avatar}`}
+                  className="h-8 w-8"
+                />
+              </div>
+            )}
+            <div className="hidden md:block">{user.username}</div>
+          </div>
+        </Link>
+      )}
+      <div className="h-full w-[2px] py-4 bg-gray-500 bg-clip-content"></div>
+      <ThemeSwitch />
     </header>
   );
 }

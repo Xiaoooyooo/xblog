@@ -11,16 +11,19 @@ import classNames from "classnames";
 import { Transition } from "../Transition";
 import SelectItem, { SelectItemOption } from "./SelectItem";
 import SelectContext from "./SelectContext";
-import DeleteIcon from "@/assets/icons/delete.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
+import Input from "../Input";
+import Tag from "../Tag";
+import useFunctionRef from "@/hooks/useFunctionRef";
 
 type BaseSelectProps = {
   option: SelectItemOption[];
   readOnly?: boolean;
   placeholder?: string;
-  onDropDownVisibleChange?: (visible: boolean) => void;
+  onDropdownVisibleChange?: (visible: boolean) => void;
   loading?: boolean;
   children?: undefined;
+  onDropdownClosed?: () => void;
 };
 
 type CustomRenderChildrenProps = Omit<
@@ -63,15 +66,17 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
     placeholder,
     allowCreate,
     onInput,
-    onDropDownVisibleChange,
+    onDropdownVisibleChange,
     loading,
     onCreate,
     children,
+    onDropdownClosed,
   } = props;
   const [input, setInput] = useState("");
   const [isShowDropDown, setIsShowDropDown] = useState(false);
   const [createdOptions, setCreatedOptions] = useState<SelectItemOption[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const onDropdownVisibleChangeRef = useFunctionRef(onDropdownVisibleChange);
 
   const handleUnselect = useCallback(
     (v: SelectItemOption) => {
@@ -82,7 +87,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         onChange?.(value.filter((item) => item.value !== v.value));
       }
     },
-    [value],
+    [value, multiple, onChange],
   );
 
   const handleSelect = useCallback(
@@ -100,7 +105,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         onChange?.(v);
       }
     },
-    [multiple, value, allowCreate, createdOptions, handleUnselect],
+    [multiple, value, handleUnselect, onSelect, onChange],
   );
 
   const handleKeyDown = useCallback(
@@ -136,7 +141,7 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         onChange?.([...value, createdItem]);
       }
     },
-    [allowCreate, value, option, createdOptions, input, loading],
+    [allowCreate, value, createdOptions, input, loading, onChange, onCreate],
   );
 
   const handleFocus = useCallback((e: MouseEvent) => {
@@ -157,10 +162,10 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
 
   const selectContextValue = useMemo(() => {
     return { handleSelect, isSelected: _isSelected };
-  }, [value, handleSelect]);
+  }, [handleSelect, _isSelected]);
 
   useEffect(() => {
-    onDropDownVisibleChange?.(isShowDropDown);
+    onDropdownVisibleChangeRef(isShowDropDown);
   }, [isShowDropDown]);
 
   useEffect(() => {
@@ -177,36 +182,35 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
         <div
           className={classNames(
             "cursor-pointer border-2 border-transparent transition-all duration-300",
-            isShowDropDown && "border-sky-400",
+            isShowDropDown && "!border-sky-400",
           )}
         >
           {multiple &&
             value.map((v) => (
-              <div
+              <Tag
                 key={v.value}
-                className="inline-block ml-1 border bg-slate-100 border-slate-300 rounded-sm"
+                className="m-1"
+                deletable
+                onDelete={() => handleUnselect(v)}
               >
-                <div className="flex justify-center items-center">
-                  <span className="px-1">{v.label}</span>
-                  <span onClick={() => handleUnselect(v)}>
-                    <DeleteIcon height={18} width={18} />
-                  </span>
-                </div>
-              </div>
+                {v.label}
+              </Tag>
             ))}
-          <input
-            type="text"
-            className="cursor-pointer ml-1 p-1 border-none outline-none"
-            placeholder={placeholder}
-            ref={inputRef}
-            onKeyDown={handleKeyDown}
-            value={input}
-            onInput={(e) => {
-              const text = (e.target as HTMLInputElement).value;
-              onInput?.(text);
-              setInput(text);
-            }}
-          />
+          <div className="inline-block w-40">
+            <Input
+              type="plain"
+              className="cursor-pointer border-none outline-none"
+              inputClassName="cursor-pointer"
+              placeholder={placeholder}
+              ref={inputRef}
+              onKeyDown={handleKeyDown}
+              value={input}
+              onInput={(text) => {
+                onInput?.(text);
+                setInput(text);
+              }}
+            />
+          </div>
         </div>
         <Transition
           show={isShowDropDown}
@@ -217,8 +221,9 @@ export default function Select(props: SelectProps | MultipleSelectProps) {
           leaveActiveClassName="transition-all duration-200"
           leaveDoneClassName="opacity-0 scale-y-50"
           unmountOnHide
+          onExited={onDropdownClosed}
         >
-          <div className="absolute z-50 bg-white p-1 w-full rounded shadow-xl origin-top">
+          <div className="absolute z-50 bg-[--select-background-color] w-full rounded shadow-xl origin-top">
             {loading ? (
               <div className="p-4 relative">
                 <LoadingIcon

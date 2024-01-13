@@ -18,6 +18,7 @@ async function build() {
   await Promise.all([
     execAsync("yarn build:app"),
     execAsync("yarn build:server"),
+    execAsync("yarn build:shared"),
   ]);
   await execAsync("cp -r ./server/prisma ./build/server/");
   await execAsync("cp package.json ./build/");

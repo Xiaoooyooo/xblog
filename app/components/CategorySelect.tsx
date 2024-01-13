@@ -1,10 +1,12 @@
 import { useState, useCallback, useRef } from "react";
 import Select, { SelectItem, SelectItemOption } from "@/components/Select";
 import InfiniteScroll from "./InfiniteScroll";
-import { useGetCategories } from "@/services/category";
+import { getCategories } from "@/services/functions/categories";
 import debounce from "@/utils/debounce";
 import { Category } from "@/types";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
+
+export type { SelectItemOption };
 
 type CategorySelectProps = {
   categories: SelectItemOption[];
@@ -18,12 +20,6 @@ export default function CategorySelect(props: CategorySelectProps) {
   const [isContinueLoading, setIsContinueLoading] = useState(false);
   const [categoryList, setCategoryList] = useState<Category[]>([]);
   const searchKeywordsRef = useRef("");
-  const {
-    isLoading: isGetCateroiesLoading,
-    isSuccess: isGetCategoriesSuccess,
-    result: getCategoriesResult,
-    fetchFn: getCategoriesFn,
-  } = useGetCategories();
 
   const [categoryListPagination, setCategoryListPagination] = useState({
     index: 1,
@@ -31,6 +27,7 @@ export default function CategorySelect(props: CategorySelectProps) {
     end: false,
   });
 
+  const abortControllerRef = useRef<AbortController>();
   /**
    * @param {boolean} isContinue 是否是滚动继续加载
    */
@@ -46,22 +43,22 @@ export default function CategorySelect(props: CategorySelectProps) {
         setIsGetCategoriesLoading(true);
         setCategoryListPagination({ index: 1, size: 10, end: false });
       }
-      getCategoriesFn(search)
+      abortControllerRef.current = new AbortController();
+      getCategories(search, abortControllerRef.current.signal)
         .then((res) => {
-          if (res.isSuccess) {
-            const { list, index, size } = res.result;
-            if (isContinue) {
-              setCategoryList((p) => [...p, ...list]);
-              setCategoryListPagination((p) => ({ ...p, index }));
-              if (list.length < size) {
-                setCategoryListPagination((p) => ({ ...p, end: true }));
-              }
-            } else {
-              setCategoryList(list);
+          const { list, index, size } = res;
+          if (isContinue) {
+            setCategoryList((p) => [...p, ...list]);
+            setCategoryListPagination((p) => ({ ...p, index }));
+            if (list.length < size) {
+              setCategoryListPagination((p) => ({ ...p, end: true }));
             }
+          } else {
+            setCategoryList(list);
           }
         })
         .finally(() => {
+          abortControllerRef.current = undefined;
           if (isContinue) {
             setIsContinueLoading(false);
           } else {
@@ -89,16 +86,19 @@ export default function CategorySelect(props: CategorySelectProps) {
     });
   }, [categoryListPagination]);
 
-  const handleCategoryDropDownVisibleChange = useCallback(
-    (visible: boolean) => {
-      if (visible) {
-        if (categoryList.length === 0) {
-          getCategoryList(false, { name: "", pageIndex: 1, pageSize: 10 });
-        }
+  const handleCategoryDropDownVisibleChange = (visible: boolean) => {
+    if (visible) {
+      if (categoryList.length === 0) {
+        getCategoryList(false, { name: "", pageIndex: 1, pageSize: 10 });
       }
-    },
-    [categoryList],
-  );
+    }
+  };
+
+  const handleDropdownClosed = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+  }, []);
 
   const handleCreateCatecoryTag = useCallback((value: SelectItemOption) => {
     console.log("handleCreateCatecoryTag", { value });
@@ -112,8 +112,9 @@ export default function CategorySelect(props: CategorySelectProps) {
       onChange={onCategoriesChange}
       onSelect={(v) => console.log("select", v)}
       onInput={debouncedInputCallback}
-      onDropDownVisibleChange={handleCategoryDropDownVisibleChange}
+      onDropdownVisibleChange={handleCategoryDropDownVisibleChange}
       onCreate={handleCreateCatecoryTag}
+      onDropdownClosed={handleDropdownClosed}
       placeholder="选择或创建文章分类"
     >
       {categoryList.length === 0 && isGetCategoriesListLoading ? (

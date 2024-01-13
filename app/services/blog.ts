@@ -1,8 +1,9 @@
 import request from "./request";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import useFetchState from "./useFetchState";
 import { useSelector } from "@/hooks/redux";
-import { Blog } from "@/types";
+import { List, Blog } from "@/types";
+import { deleteBlog, getBlogList, GetBlogSearchOption } from "./functions/blog";
 
 type CreateBlogOption = {
   title: string;
@@ -15,9 +16,12 @@ type CreateBlogOption = {
 export function useCreateBlog() {
   const token = useSelector((state) => state.user.token);
 
-  const [state, fetchFn] = useFetchState<{ id: string }, CreateBlogOption>(
+  const { fetchState, fetchFn, abortHandler } = useFetchState<
+    { id: string },
+    CreateBlogOption
+  >(
     {
-      fetchFn: (data) =>
+      fetchFn: (data, signal) =>
         request("/api/blog/create", {
           method: "post",
           headers: {
@@ -25,22 +29,24 @@ export function useCreateBlog() {
             Authorization: `Bearer ${token}`,
           },
           data,
+          signal,
         }),
     },
     [token],
   );
-  return { ...state, fetchFn };
+
+  return { ...fetchState, fetchFn, abort: abortHandler };
 }
 
 export function useUpdateBlog() {
   const token = useSelector((state) => state.user.token);
 
-  const [state, fetchFn] = useFetchState<
+  const { fetchState, fetchFn, abortHandler } = useFetchState<
     { id: string },
     CreateBlogOption & { id: string }
   >(
     {
-      fetchFn: (data) =>
+      fetchFn: (data, signal) =>
         request("/api/blog/update", {
           method: "post",
           headers: {
@@ -48,45 +54,43 @@ export function useUpdateBlog() {
             Authorization: `Bearer ${token}`,
           },
           data,
+          signal,
         }),
     },
     [token],
   );
-  return { ...state, fetchFn };
+
+  return { ...fetchState, fetchFn, abort: abortHandler };
 }
 
-type FetchBlogListOption = {
-  index: number;
-  size: number;
-};
-
-export function useBlogList(pageIndex: number, pageSize: number) {
-  const [fetchState, fetchFn] = useFetchState<
-    BlogListResponse,
-    FetchBlogListOption
+export function useBlogList(options: GetBlogSearchOption) {
+  const token = useSelector((state) => state.user.token);
+  const { fetchState, fetchFn, abortHandler } = useFetchState<
+    List<Blog>,
+    GetBlogSearchOption
   >(
     {
-      fetchFn: (args) =>
-        request("/api/blog/list", {
-          method: "get",
-          headers: { "content-type": "application/json" },
-          search: args,
-        }),
+      fetchFn: (args, signal) => getBlogList(args, token, signal),
     },
-    [],
+    [token],
   );
 
   useEffect(() => {
-    fetchFn({ index: pageIndex, size: pageSize });
-  }, [pageIndex, pageSize]);
-  return {
-    ...fetchState,
-    reload: () => fetchFn({ index: pageIndex, size: pageSize }),
-  };
+    fetchFn(options);
+  }, [options]);
+
+  return useMemo(
+    () => ({
+      ...fetchState,
+      reload: () => fetchFn(options),
+      abort: abortHandler,
+    }),
+    [fetchState, options],
+  );
 }
 
 export function useBlogDetail(id?: string) {
-  const [fetchState, fetchFn] = useFetchState<Blog, string>(
+  const { fetchState, fetchFn, abortHandler } = useFetchState<Blog, string>(
     {
       fetchFn: (id) =>
         request("/api/blog/detail", {
@@ -101,5 +105,23 @@ export function useBlogDetail(id?: string) {
     id && fetchFn(id);
   }, [id]);
 
-  return { ...fetchState, reload: () => id && fetchFn(id) };
+  return useMemo(
+    () => ({
+      ...fetchState,
+      reload: () => id && fetchFn(id),
+      abort: abortHandler,
+    }),
+    [fetchState, id],
+  );
+}
+
+export function useDeleteBlog() {
+  const token = useSelector((state) => state.user.token);
+  const { fetchState, fetchFn, abortHandler } = useFetchState<boolean, string>(
+    {
+      fetchFn: (args, signal) => deleteBlog(args, token, signal),
+    },
+    [token],
+  );
+  return { ...fetchState, fetchFn, abort: abortHandler };
 }

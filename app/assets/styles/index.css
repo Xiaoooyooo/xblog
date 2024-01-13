@@ -2,10 +2,30 @@
   font-size: 16px;
 }
 
-html,
 body {
-  height: 100%;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: column;
 }
+
 #root {
   height: 100%;
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-color);
+}
+
+::-webkit-scrollbar-thumb {
+  width: 8px;
+  border-radius: 4px;
+  background-clip: content-box;
+  background-color: var(--scrollbar-background-color);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
 }

@@ -10,11 +10,11 @@ export default function ContentContainer(props: ContentContainerProps) {
   return (
     <div
       className={classNames(
-        "w-10/12",
+        "mx-4",
         "sm:w-[600px]",
         "md:w-[900px]",
         "lg:w-[1100px]",
-        "mx-auto",
+        "sm:mx-auto",
         className,
       )}
     >

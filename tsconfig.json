@@ -1,13 +1,21 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES5",
+    "module": "esnext",
+    "moduleResolution": "Node",
+    "target": "ES2015",
     "lib": ["ESNext"],
     "strict": true,
     "baseUrl": ".",
+    "jsx": "preserve",
     "paths": {
-      "~/*": ["server/*"]
+      "@/*": ["app/*"],
+      "~/*": ["server/*"],
+      "@@/*": ["shared/*"]
     },
-    "esModuleInterop": true
-  }
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false
+  },
+  "exclude": ["node_modules", "build"]
 }

@@ -1,48 +1,32 @@
 import Router from "koa-router";
-import fs from "fs";
 import path from "path";
-import mime from "mime";
-import { hash } from "~/utils/encrypt";
+import env from "~/env";
+import { isFileExists } from "~/utils/fs";
+import sendFile from "~/utils/sendFile";
 
 const assets = new Router({ prefix: "/assets" });
 
-const appPath = "../../app/assets";
+const assetsDir = path.join(__dirname, "../../app/assets");
+const avatarDir = path.resolve(process.cwd(), env.avatarUploadDir);
 
-assets.get("(.*)", async (ctx, next) => {
-  try {
-    const filename = ctx.path.replace(/^\/assets/, "");
-    const filepath = path.join(__dirname, appPath, filename);
-    const isExists = fs.existsSync(filepath);
-    if (!isExists) {
-      return next();
-    }
-    const filestats = fs.statSync(filepath);
-    if (!filestats.isFile()) {
-      return next();
-    }
-    const etag = ctx.headers["if-none-match"];
-    const { mtime } = filestats;
-    const _etag = hash(mtime.toISOString());
-    if (etag === _etag) {
-      ctx.status = 304;
-      return;
-    }
-    const mimeType = mime.getType(filepath);
-    let headers: Record<string, string> = {
-      etag: _etag,
-    };
-    if (mimeType) {
-      headers = {
-        ...headers,
-        "content-type": mimeType,
-      };
-    }
-    ctx.set(headers);
-    ctx.body = fs.createReadStream(filepath);
-  } catch (err) {
-    console.log(err);
+assets.get("/avatar/:filename", async (ctx, next) => {
+  const { filename } = ctx.params;
+  const avatarPath = path.join(avatarDir, filename);
+  const avatarStats = await isFileExists(avatarPath);
+  if (!avatarStats) {
     return next();
   }
+  sendFile({ context: ctx, filename: avatarPath, stats: avatarStats });
+});
+
+assets.get("(.*)", async (ctx, next) => {
+  const filename = ctx.path.replace(/^\/assets/, "");
+  const filepath = path.join(assetsDir, filename);
+  const filestats = await isFileExists(filepath);
+  if (!filestats) {
+    return next();
+  }
+  sendFile({ context: ctx, filename: filepath, stats: filestats });
 });
 
 export default assets;

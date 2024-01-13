@@ -10,7 +10,7 @@ export default function debounce<T extends (...args: any[]) => any>(
       timer = undefined;
     }
     timer = setTimeout(() => {
-      fn.call(this, args);
+      fn.call(this, ...args);
     }, timeout);
   } as T;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useMatch, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { Transition } from "../Transition";
@@ -6,10 +6,14 @@ import EditIcon from "@/assets/icons/edit.svg";
 import CreateIcon from "@/assets/icons/add.svg";
 import TrashIcon from "@/assets/icons/trash.svg";
 import LoadingIcon from "@/assets/icons/circle-loading.svg";
-import { deleteBlog } from "@/services/functions/blog";
+import DraftIcon from "@/assets/icons/draft.svg";
+import ToolItem from "./ToolItem";
+import { useDeleteBlog } from "@/services/blog";
+import message from "../Message/message";
 
 type ToolItem = {
   id: string;
+  tip: string;
   element: JSX.Element | ((isPending: boolean) => JSX.Element);
   onClick: (
     isPending: boolean,
@@ -25,67 +29,87 @@ type ToolProps = {
 export default function Tools(props: ToolProps) {
   const [isShowTools, setIsShowTools] = useState(false);
   const navigate = useNavigate();
-  const matchBlogDetailPage = useMatch("/blog/:id");
+  const matchBlogDetailPage = useMatch("/blog/:blogId");
+  // whether current pathname matches blog detail path
+  const isBlogDetailPage = useMemo(() => {
+    return matchBlogDetailPage && matchBlogDetailPage.params.blogId !== "new";
+  }, [matchBlogDetailPage]);
   const params = useParams();
 
-  const items = (
-    [
-      {
-        id: "new",
-        element: <CreateIcon className="h-7 w-7" />,
-        onClick: function () {
-          navigate({ pathname: "/new" });
+  const { isSuccess: isDeleteSuccess, fetchFn: deleteBlog } = useDeleteBlog();
+
+  const items = useMemo(() => {
+    return (
+      [
+        {
+          id: "new",
+          tip: "新建",
+          element: <CreateIcon className="h-5 w-5 md:h-7 md:w-7" />,
+          onClick: function () {
+            navigate({ pathname: "/blog/new" });
+          },
         },
-      },
-      {
-        id: "edit",
-        element: <EditIcon className="h-7 w-7" />,
-        onClick: function () {
-          __DEV__ && console.log("edit", params);
-          navigate({ pathname: `/edit/${params.blogId}` });
+        {
+          id: "edit",
+          tip: "编辑",
+          element: <EditIcon className="h-5 w-5 md:h-7 md:w-7" />,
+          onClick: function () {
+            navigate({ pathname: `/blog/${params.blogId}/edit` });
+          },
+          visible: isBlogDetailPage,
         },
-        visible: () => !!matchBlogDetailPage,
-      },
-      {
-        id: "delete",
-        element: (isPending) =>
-          isPending ? (
-            <LoadingIcon height={22} width={22} />
-          ) : (
-            <TrashIcon className="h-7 w-7" />
-          ),
-        onClick: function (isPending, setIsPending) {
-          __DEV__ && console.log("delete", params);
-          if (isPending) return;
-          setIsPending(true);
-          deleteBlog(params.blogId!)
-            .then((res) => {
-              if (res) {
-                setIsShowTools(false);
-                setTimeout(() => {
-                  navigate({ pathname: "/" });
-                }, 100);
-              } else {
-                __DEV__ && console.log("delete failed", res);
-              }
-            })
-            .finally(() => {
-              setIsPending(false);
-            });
-          return false;
+        {
+          id: "delete",
+          tip: "删除",
+          element: (isPending) =>
+            isPending ? (
+              <LoadingIcon className="h-5 w-5 md:h-7 md:w-7" />
+            ) : (
+              <TrashIcon className="h-5 w-5 md:h-7 md:w-7" />
+            ),
+          onClick: function (isPending, setIsPending) {
+            if (isPending) return;
+            setIsPending(true);
+            deleteBlog(params.blogId!)
+              .then((res) => {
+                if (res) {
+                  setIsShowTools(false);
+                } else {
+                  message({ type: "error", message: "删除失败，请稍后再试" });
+                }
+              })
+              .finally(() => {
+                setIsPending(false);
+              });
+            return false;
+          },
+          visible: isBlogDetailPage,
         },
-        visible: () => !!matchBlogDetailPage,
-      },
-    ] as ToolItem[]
-  ).filter((item) => {
-    if (typeof item.visible === "undefined") {
-      return true;
+        {
+          id: "draft",
+          tip: "草稿",
+          element: <DraftIcon className="h-5 w-5 md:h-7 md:w-7" />,
+          onClick: function () {
+            navigate({ pathname: "/draft" });
+          },
+        },
+      ] as ToolItem[]
+    ).filter((item) => {
+      if (typeof item.visible === "undefined") {
+        return true;
+      }
+      if (typeof item.visible === "function") {
+        return item.visible();
+      }
+      return item.visible;
+    });
+  }, [navigate, params, isBlogDetailPage]);
+
+  useEffect(() => {
+    if (isDeleteSuccess) {
+      navigate({ pathname: "/" }, { replace: true });
     }
-    if (typeof item.visible === "function") {
-      return item.visible();
-    }
-    return item.visible;
-  });
+  }, [isDeleteSuccess]);
 
   useEffect(() => {
     function onDocumentClick(e: MouseEvent) {
@@ -99,7 +123,12 @@ export default function Tools(props: ToolProps) {
   }, []);
 
   return (
-    <div id="tools" className="fixed right-[60px] bottom-[60px]">
+    <div
+      id="tools"
+      className={classNames(
+        "fixed z-50 right-[20px] bottom-[80px] md:right-[60px] md:bottom-[130px]",
+      )}
+    >
       <div>
         <ToolButton
           onClick={() => setIsShowTools(!isShowTools)}
@@ -108,7 +137,7 @@ export default function Tools(props: ToolProps) {
       </div>
 
       <div className="absolute bottom-full">
-        {items.map(({ id, element, onClick }) => (
+        {items.map(({ id, element, onClick, tip }) => (
           <Transition
             key={id}
             show={isShowTools}
@@ -122,10 +151,11 @@ export default function Tools(props: ToolProps) {
             unmountOnHide
           >
             <ToolItem
+              tip={tip}
               element={element}
               onClick={(...args) => {
                 const isClose = onClick?.(...args);
-                if (typeof isClose !== "undefined" && isClose !== false) {
+                if (typeof isClose === "undefined" || isClose) {
                   setIsShowTools(false);
                 }
               }}
@@ -148,56 +178,36 @@ function ToolButton(props: ToolButtonProps) {
     <button
       onClick={onClick}
       className={classNames(
-        "rounded-full shadow-lg h-[50px] w-[50px] leading-[50px] text-center cursor-pointer",
+        "bg-[--background-color]",
+        "h-9 w-9 md:h-[50px] md:w-[50px]",
+        "rounded-full shadow-lg leading-[50px] text-center cursor-pointer",
         "hover:shadow-xl transition-all duration-200",
-        "flex items-center justify-center flex-col gap-y-[6px]",
+        "relative",
       )}
     >
       <span
         className={classNames(
-          "block h-1 w-3/5 bg-gray-800 rounded-sm transition-all duration-200 origin-right",
-          open && ["-rotate-[42deg]", "-translate-x-1"],
+          "absolute top-1/2 left-[20%] h-[3px] w-3/5 md:h-1",
+          "bg-[--text-color] rounded-sm transition-transform duration-200",
+          "origin-center -translate-y-2 md:-translate-y-[10px]",
+          open && "-rotate-[45deg] !translate-y-0",
         )}
       ></span>
       <span
         className={classNames(
-          "block h-1 w-3/5 bg-gray-800 rounded-sm transition-all duration-200",
-          open && ["translate-x-full", "opacity-0"],
+          "absolute top-1/2 left-[20%] h-[3px] w-3/5 md:h-1",
+          "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-all duration-200",
+          open && "translate-x-full opacity-0",
         )}
       ></span>
       <span
         className={classNames(
-          "block h-1 w-3/5 bg-gray-800 rounded-sm transition-all duration-200 origin-right",
-          open && ["rotate-[42deg]", "-translate-x-1"],
+          "absolute top-1/2 left-[20%] h-[3px] w-3/5 md:h-1",
+          "block h-1 w-3/5 bg-[--text-color] rounded-sm transition-transform duration-200",
+          "origin-center translate-y-2 md:translate-y-[10px]",
+          open && "rotate-[45deg] !translate-y-0",
         )}
       ></span>
     </button>
   );
 }
-
-type ToolItemProps = {
-  element: JSX.Element | ((isActionPending: boolean) => JSX.Element);
-  onClick: (
-    isActionPending: boolean,
-    setIsActionPending: (value: boolean) => void,
-  ) => void;
-  className?: string;
-};
-
-const ToolItem = memo(function ToolItem(props: ToolItemProps) {
-  const { element, onClick, className } = props;
-  const [isActionPending, setIsActionPending] = useState(false);
-  return (
-    <div
-      onClick={() => onClick(isActionPending, setIsActionPending)}
-      className={classNames(
-        "h-[50px] w-[50px] rounded-full shadow-lg mb-3 cursor-pointer",
-        className,
-      )}
-    >
-      <button className="h-full w-full flex justify-center items-center pointer-events-none">
-        {typeof element === "function" ? element(isActionPending) : element}
-      </button>
-    </div>
-  );
-});
