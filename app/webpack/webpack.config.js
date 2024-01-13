@@ -23,6 +23,7 @@ const config = {
     extensions: [".js", ".ts", ".tsx"],
     alias: {
       "@": path.resolve(cwd, "app"),
+      "@@": path.resolve(cwd, "shared"),
     },
   },
   module: {

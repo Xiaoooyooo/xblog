@@ -9,7 +9,8 @@
     "jsx": "preserve",
     "paths": {
       "@/*": ["app/*"],
-      "~/*": ["server/*"]
+      "~/*": ["server/*"],
+      "@@/*": ["shared/*"]
     },
     "noEmit": true,
     "esModuleInterop": true,
