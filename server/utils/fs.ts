@@ -65,6 +65,8 @@ export function moveFile(source: string, destination: string) {
 }
 
 export async function removeFile(filename: string) {
+  const isExists = await isFileExists(filename);
+  if (!isExists) return;
   return new Promise<void>((resolve, reject) => {
     fs.unlink(filename, (err) => {
       if (err) {
