@@ -1,4 +1,4 @@
-enum ROLE {
+const enum ROLE {
   USER = "USER",
   ADMIN = "ADMIN",
   SUPERADMIN = "SUPER_ADMIN",

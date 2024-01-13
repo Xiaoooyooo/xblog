@@ -3,7 +3,7 @@ import { UnauthorizedError } from "~/errors";
 import { AppContext, User } from "~/types";
 import { verifyAccessToken } from "~/utils/jwt";
 import { normalizeUser } from "~/utils/normalize";
-import ROLE from "~/constants/role";
+import ROLE from "@@/constants/role";
 
 type AuthenticationMiddlewareOptions = {
   force?: boolean;

@@ -9,7 +9,7 @@ import {
 import { normalizeUser } from "~/utils/normalize";
 import siteconfig, { SiteConfigState } from "~/middlewares/siteconfig";
 import { AppContext } from "~/types";
-import ROLE from "~/constants/role";
+import ROLE from "@@/constants/role";
 
 const auth = new Router({
   prefix: "/auth",
