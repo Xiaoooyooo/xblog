@@ -1,3 +1,4 @@
+import { SiteConfig } from "@/types";
 import { Blog, Category, Profile, User } from "~/types";
 
 /** Remove some unnecessary fields from user */
@@ -22,4 +23,11 @@ export function normalizeBlog<T extends Blog>(blog: T): Blog {
 export function normalizeCategory<T extends Category>(category: T): Category {
   const { id, name } = category;
   return { id, name };
+}
+
+export function normalizeSiteConfig<T extends SiteConfig>(
+  siteconfig: T,
+): SiteConfig {
+  const { allowRegister } = siteconfig;
+  return { allowRegister };
 }

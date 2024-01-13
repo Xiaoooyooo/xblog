@@ -16,6 +16,7 @@ const initialUserState: UserState = {
   avatar: "",
   isLogin: false,
   fetching: false,
+  role: undefined,
 };
 
 const user = createReducer(initialUserState, (builder) => {
@@ -27,6 +28,7 @@ const user = createReducer(initialUserState, (builder) => {
       payload.username && (state.username = payload.username);
       payload.avatar && (state.avatar = payload.avatar);
       payload.token && (state.token = payload.token);
+      payload.role && (state.role = payload.role);
       payload.isLogin && (state.isLogin = payload.isLogin);
     })
     .addCase(init.pending, (state) => {
@@ -42,6 +44,7 @@ const user = createReducer(initialUserState, (builder) => {
         state.displayName = action.payload.displayName;
         state.avatar = action.payload.avatar;
         state.token = action.payload.token;
+        state.role = action.payload.role;
         state.isLogin = true;
       }
       state.fetching = false;
@@ -52,6 +55,7 @@ const user = createReducer(initialUserState, (builder) => {
       state.displayName = action.payload.displayName;
       state.avatar = action.payload.avatar;
       state.token = action.payload.token;
+      state.role = action.payload.role;
       state.isLogin = true;
     });
 });

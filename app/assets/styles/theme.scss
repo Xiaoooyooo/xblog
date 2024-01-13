@@ -43,6 +43,11 @@
   --button-primary-disabled-background-color: rgb(96, 165, 250);
 
   --markdown-code-header-background-color: #dfe4e9;
+
+  // switch
+  --switch-background-color: #dfe4e9;
+  --switch-foreground-color: #fff;
+  --switch-active-background-color: #44be4f;
 }
 
 @mixin dark {
@@ -82,6 +87,11 @@
   --warning-text-color: #fff;
 
   --markdown-code-header-background-color: #2e343d;
+
+  // switch
+  --switch-background-color: #636363;
+  --switch-foreground-color: #bbbbbb;
+  --switch-active-background-color: #4e9f3d;
 }
 
 @media screen and (prefers-color-scheme: light) {

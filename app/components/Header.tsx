@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { Menu } from "./Menu";
 import ThemeSwitch from "./ThemeSwitch";
 import { useSelector } from "@/hooks/redux";
+import ROLE from "@@/constants/role";
 
 interface NavLink {
   name: string;
@@ -27,6 +28,14 @@ function Header() {
       path: "/category",
     },
   ];
+
+  if (user.isLogin && user.role === ROLE.SUPERADMIN) {
+    links.push({
+      name: "管理",
+      path: "/admin",
+    });
+  }
+
   const [isBackgroundTransparent, setBackgroundTransparent] = useState(
     window.scrollY <= 200,
   );

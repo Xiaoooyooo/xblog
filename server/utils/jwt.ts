@@ -51,7 +51,6 @@ export function decode(token: string) {
 }
 
 export function signRefreshToken(user: TokenPayload) {
-  console.log({ env });
   return sign(
     { id: user.id, username: user.username },
     env.refreshTokenSecret,

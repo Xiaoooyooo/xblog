@@ -1,8 +1,11 @@
+import ROLE from "@@/constants/role";
+
 export type User = {
   id: string;
   username: string;
   displayName: string;
   avatar: string;
+  role: ROLE | undefined;
 };
 
 export type UserProfile = {
@@ -38,4 +41,8 @@ export type List<T = unknown> = {
   size: number;
   total: number;
   list: T[];
+};
+
+export type SiteConfig = {
+  allowRegister: boolean;
 };
