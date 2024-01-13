@@ -3,6 +3,8 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const isProd = process.env.NODE_ENV === "production";
 const cwd = process.cwd();
@@ -123,6 +125,7 @@ const config = {
     }),
     new webpack.DefinePlugin({
       __DEV__: !isProd,
+      __BEIAN__: JSON.stringify(process.env.BEIAN),
     }),
   ],
 };
