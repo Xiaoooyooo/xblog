@@ -3,6 +3,7 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -119,13 +120,17 @@ const config = {
       filename: `assets/css/${isProd ? "[contenthash]" : "[name]"}.css`,
     }),
     new HtmlPlugin({
-      title: "React",
+      title: "~ 路漫漫其修远兮 ~",
       template: path.resolve(cwd, "app/public/index.html"),
       filename: "index.html",
     }),
     new webpack.DefinePlugin({
       __DEV__: !isProd,
       __BEIAN__: JSON.stringify(process.env.BEIAN),
+    }),
+    new CopyPlugin({
+      // copy favicon
+      patterns: [{ from: path.resolve(cwd, "app/public/favicon.svg") }],
     }),
   ],
 };
