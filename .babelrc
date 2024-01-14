@@ -11,7 +11,18 @@
     ],
     "@babel/typescript"
   ],
-  "plugins": ["tsconfig-paths-module-resolver"],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["."],
+        "alias": {
+          "~": "./server",
+          "@@": "./shared"
+        }
+      }
+    ]
+  ],
   "env": {
     "production": {
       "ignore": ["*.d.ts"]
