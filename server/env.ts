@@ -15,6 +15,10 @@ class Environment {
   public accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "";
   /** user avatar storage directory, relative to `CWD` */
   public avatarUploadDir = process.env.AVATAR_UPLOAD_DIR || "./upload/avatar";
+  public hostname = process.env.HOSTNAME;
+  /** ssl certificate */
+  public sslCertificatePath = process.env.SSL_CERTIFICATE_PATH;
+  public sslCertificateKeyPath = process.env.SSL_CERTIFICATE_KEY_PATH;
 }
 
 const env = new Environment();
