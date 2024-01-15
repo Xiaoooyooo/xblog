@@ -4,12 +4,12 @@ import env from "~/env";
 import { isFileExists } from "~/utils/fs";
 import sendFile from "~/utils/sendFile";
 
-const assets = new Router({ prefix: "/assets" });
+const assets = new Router();
 
-const assetsDir = path.join(__dirname, "../../app/assets");
+const assetsDir = path.join(__dirname, "../../app");
 const avatarDir = path.resolve(process.cwd(), env.avatarUploadDir);
 
-assets.get("/avatar/:filename", async (ctx, next) => {
+assets.get("/assets/avatar/:filename", async (ctx, next) => {
   const { filename } = ctx.params;
   const avatarPath = path.join(avatarDir, filename);
   const avatarStats = await isFileExists(avatarPath);
@@ -20,13 +20,12 @@ assets.get("/avatar/:filename", async (ctx, next) => {
 });
 
 assets.get("(.*)", async (ctx, next) => {
-  const filename = ctx.path.replace(/^\/assets/, "");
-  const filepath = path.join(assetsDir, filename);
-  const filestats = await isFileExists(filepath);
+  const filename = path.join(assetsDir, ctx.path);
+  const filestats = await isFileExists(filename);
   if (!filestats) {
     return next();
   }
-  sendFile({ context: ctx, filename: filepath, stats: filestats });
+  sendFile({ context: ctx, filename, stats: filestats });
 });
 
 export default assets;
