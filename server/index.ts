@@ -27,7 +27,7 @@ async function main() {
     http
       .createServer((req, res) => {
         res.statusCode = 301;
-        res.setHeader("location", `https://${env.hostname}`);
+        res.setHeader("location", `https://${env.hostname}${req.url}`);
         res.end();
       })
       .listen(80);
