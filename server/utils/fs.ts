@@ -77,17 +77,21 @@ export async function removeFile(filename: string) {
   });
 }
 
+export function readFile(filename: string) {
+  return new Promise<string>((resolve, reject) => {
+    fs.readFile(filename, { encoding: "utf8" }, (err, data) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(data);
+    });
+  });
+}
+
 export async function tryToReadFile(filename: string) {
   const isExists = await isFileExists(filename);
   if (!isExists) {
     return null;
   }
-  return new Promise<null | string>((resolve) => {
-    fs.readFile(filename, { encoding: "utf8" }, (err, data) => {
-      if (err) {
-        return resolve(null);
-      }
-      resolve(data);
-    });
-  });
+  return readFile(filename);
 }

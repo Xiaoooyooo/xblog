@@ -19,6 +19,8 @@ class Environment {
   /** ssl certificate */
   public sslCertificatePath = process.env.SSL_CERTIFICATE_PATH;
   public sslCertificateKeyPath = process.env.SSL_CERTIFICATE_KEY_PATH;
+  /** 国内备案号 */
+  public BEIAN = process.env.BEIAN || "";
 }
 
 const env = new Environment();
