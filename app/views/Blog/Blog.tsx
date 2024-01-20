@@ -71,9 +71,12 @@ const BlogScence = () => {
       <ContentContainer className="pt-8">
         {isLoading ? (
           <div className="flex gap-x-5">
-            <div className="flex-auto mr-[240px]">
-              <Skeleton />
-            </div>
+            <Skeleton className="flex-auto" animated />
+            <Skeleton
+              className="hidden md:block basis-[240px]"
+              animated
+              rows={3}
+            />
           </div>
         ) : isError ? (
           <div className="text-center">

@@ -4,10 +4,11 @@ import SkeletonItem from "./SkeletonItem";
 type SkeletonProps = {
   rows?: number;
   animated?: boolean;
+  className?: string;
 };
 
 export default function Skeleton(props: SkeletonProps) {
-  const { rows = 8, animated } = props;
+  const { rows = 8, animated, className } = props;
   const items = useMemo(() => {
     const list = [];
     for (let i = 0; i < rows; i++) {
@@ -21,5 +22,5 @@ export default function Skeleton(props: SkeletonProps) {
     }
     return list;
   }, [rows, animated]);
-  return <div>{items}</div>;
+  return <div className={className}>{items}</div>;
 }
