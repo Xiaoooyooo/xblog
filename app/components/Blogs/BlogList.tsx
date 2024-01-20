@@ -148,7 +148,7 @@ function BlogList(props: BaseBlogListProps & ReloadHandler) {
                   <span className="flex-none">
                     <TagsIcon />
                   </span>
-                  <div className="min-w-0 overflow-hidden text-ellipsis">
+                  <div className="min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">
                     {blog.categories.map((category) => (
                       <CategoryTag
                         key={category.id}
