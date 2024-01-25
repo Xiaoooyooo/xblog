@@ -118,7 +118,7 @@ const config = {
       filename: `assets/css/${isProd ? "[contenthash]" : "[name]"}.css`,
     }),
     new HtmlPlugin({
-      title: "~ 路漫漫其修远兮 ~",
+      title: "夜如何其 ~",
       template: path.resolve(cwd, "app/public/index.html"),
       filename: "index.html",
     }),
