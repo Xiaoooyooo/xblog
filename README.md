@@ -32,10 +32,16 @@ A project for managing blog posts.
 
 6. start dev frontend
 
+   run:
+
    ```bash
    yarn watch:app
-   # or
+   ```
+
+   then open url `http://127.0.0.1:{port}` (port is defined in `.env` file) in browser. or run:
+
+   ```bash
    yarn start:app
    ```
 
-7. open url `http://127.0.0.1:{port}` in browser if you are running `watch:app` in previous step, otherwise open url `http://127.0.0.1:8888`, port is defined in `.env` file
+   then open `http://127.0.0.1:8888` in browser.
