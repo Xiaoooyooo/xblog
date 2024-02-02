@@ -20,10 +20,15 @@
     "start": "node server/index.js"
   },
   "dependencies": {
+    "@codemirror/lang-markdown": "^6.2.4",
+    "@codemirror/language": "^6.10.0",
+    "@codemirror/language-data": "^6.4.0",
+    "@lezer/highlight": "^1.2.0",
     "@prisma/client": "^5.5.2",
     "@reduxjs/toolkit": "^1.9.7",
     "axios": "^1.6.0",
     "classnames": "^2.3.2",
+    "codemirror": "^6.0.1",
     "core-js": "^3.33.2",
     "dotenv": "^16.3.1",
     "formidable": "^3.5.1",

@@ -53,7 +53,7 @@ export default function CreateScene() {
     <ContentContainer className="pt-8 flex-auto flex flex-col">
       <BlogEditor
         action="create"
-        text={text}
+        initialText=""
         onContentChange={setText}
         categories={categories}
         onCategoriesChange={setCategories}

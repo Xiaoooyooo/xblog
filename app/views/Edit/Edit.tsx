@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
@@ -8,6 +8,7 @@ import getBlogTitle from "@/utils/getBlogTitle";
 
 export default function EditScence() {
   const [text, setText] = useState("");
+  const initialTextRef = useRef("");
   const [categories, setCategories] = useState<
     { label: string; value: string; isCreated?: boolean }[]
   >([]);
@@ -58,6 +59,7 @@ export default function EditScence() {
   useEffect(() => {
     if (isGetDetailSuccess && blogDetailResult) {
       setText(blogDetailResult.content);
+      initialTextRef.current = blogDetailResult.content;
       setCategories(
         blogDetailResult.categories.map((item) => ({
           label: item.name,
@@ -81,7 +83,7 @@ export default function EditScence() {
       <BlogEditor
         action="edit"
         idEditDraft={blogDetailResult?.isDraft}
-        text={text}
+        initialText={initialTextRef.current}
         onContentChange={setText}
         categories={categories}
         onCategoriesChange={setCategories}

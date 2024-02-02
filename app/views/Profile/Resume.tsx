@@ -4,7 +4,7 @@ import Skeleton from "@/components/Skeleton";
 import Markdown from "@/components/Markdown/Markdown";
 import Button from "@/components/Button";
 import { UserWithProfile } from "@/types";
-import Editor from "@/components/Editor";
+import CodemirrorEditor from "@/components/CodemirrorEditor";
 import { FetchState } from "@/services";
 import { updateUserProfile } from "@/services/functions/user";
 
@@ -74,8 +74,8 @@ export default function Resume(props: ResumeProps) {
           )}
           {profile.isSuccess ? (
             isEdit ? (
-              <Editor
-                initialText={resume}
+              <CodemirrorEditor
+                initialText={resume || ""}
                 onChange={(text) => (editTextRef.current = text)}
               />
             ) : resume ? (

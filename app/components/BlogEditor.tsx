@@ -1,14 +1,13 @@
 import { useCallback, useState } from "react";
 import Button from "./Button";
 import CategorySelect, { SelectItemOption as Category } from "./CategorySelect";
-import Editor from "./Editor";
-import Input from "./Input";
+import CodemirrorEditor from "./CodemirrorEditor";
 import classNames from "classnames";
 
 type BlogEditorProps = {
   action: "create" | "edit";
   idEditDraft?: boolean;
-  text: string;
+  initialText: string;
   onContentChange: (value: string) => void;
   categories: Category[];
   onCategoriesChange: (value: Category[]) => void;
@@ -20,7 +19,7 @@ export default function BlogEditor(props: BlogEditorProps) {
   const {
     action,
     idEditDraft,
-    text,
+    initialText,
     onContentChange,
     categories,
     onCategoriesChange,
@@ -76,11 +75,7 @@ export default function BlogEditor(props: BlogEditorProps) {
           )}
         </div>
       </div>
-      <Editor
-        initialText={text}
-        onChange={onContentChange}
-        className="flex-auto"
-      />
+      <CodemirrorEditor initialText={initialText} onChange={onContentChange} />
     </>
   );
 }
