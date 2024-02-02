@@ -8,9 +8,7 @@ import classNames from "classnames";
 type BlogEditorProps = {
   action: "create" | "edit";
   idEditDraft?: boolean;
-  title: string;
   text: string;
-  onTitleChange: (value: string) => void;
   onContentChange: (value: string) => void;
   categories: Category[];
   onCategoriesChange: (value: Category[]) => void;
@@ -22,9 +20,7 @@ export default function BlogEditor(props: BlogEditorProps) {
   const {
     action,
     idEditDraft,
-    title,
     text,
-    onTitleChange,
     onContentChange,
     categories,
     onCategoriesChange,
@@ -57,31 +53,29 @@ export default function BlogEditor(props: BlogEditorProps) {
 
   return (
     <>
-      <div className="flex gap-x-4 justify-end py-1 z-10 sticky top-[--header-height]">
-        <Button loading={isSaving} onClick={() => handleSave()}>
-          {action === "create" ? "保存为草稿" : "保存"}
-        </Button>
-        {(action === "create" || idEditDraft) && (
-          <Button loading={isPublishing} onClick={() => handlePublish()}>
-            发布
-          </Button>
-        )}
-      </div>
-      <CategorySelect
-        categories={categories}
-        onCategoriesChange={onCategoriesChange}
-      />
-      <Input
-        value={title}
-        type="plain"
-        onInput={onTitleChange}
-        placeholder="输入标题"
+      <div
         className={classNames(
-          "text-xl md:text-4xl",
-          "mt-2 mb-8 outline-none border-none font-bold",
+          "flex items-center gap-x-4 py-2 z-10 sticky",
+          "top-[--header-height] backdrop-blur-sm",
         )}
-        inputClassName="!p-0"
-      />
+      >
+        <div className="flex-auto min-w-0">
+          <CategorySelect
+            categories={categories}
+            onCategoriesChange={onCategoriesChange}
+          />
+        </div>
+        <div className="flex-none flex gap-x-2">
+          <Button loading={isSaving} onClick={() => handleSave()}>
+            {action === "create" ? "保存为草稿" : "保存"}
+          </Button>
+          {(action === "create" || idEditDraft) && (
+            <Button loading={isPublishing} onClick={() => handlePublish()}>
+              发布
+            </Button>
+          )}
+        </div>
+      </div>
       <Editor
         initialText={text}
         onChange={onContentChange}

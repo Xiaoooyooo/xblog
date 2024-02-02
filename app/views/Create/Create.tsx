@@ -4,9 +4,9 @@ import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
 import { useCreateBlog } from "@/services/blog";
 import message from "@/components/Message/message";
+import getBlogTitle from "@/utils/getBlogTitle";
 
 export default function CreateScene() {
-  const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [categories, setCategories] = useState<
     { label: string; value: string; isCreated?: boolean }[]
@@ -25,6 +25,11 @@ export default function CreateScene() {
           categoriesId.push(item.value);
         }
       });
+      const title = getBlogTitle(text);
+      if (!title) {
+        message({ type: "error", message: "title is Required!" });
+        return;
+      }
       return fetchFn({
         title,
         content: text,
@@ -37,7 +42,7 @@ export default function CreateScene() {
         }
       });
     },
-    [fetchFn, text, title, categories],
+    [fetchFn, text, categories],
   );
 
   if (isSuccess) {
@@ -48,9 +53,7 @@ export default function CreateScene() {
     <ContentContainer className="pt-8 flex-auto flex flex-col">
       <BlogEditor
         action="create"
-        title={title}
         text={text}
-        onTitleChange={setTitle}
         onContentChange={setText}
         categories={categories}
         onCategoriesChange={setCategories}

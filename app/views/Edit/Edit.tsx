@@ -4,9 +4,9 @@ import BlogEditor from "@/components/BlogEditor";
 import ContentContainer from "@/components/ContentContainer";
 import { useBlogDetail, useUpdateBlog } from "@/services/blog";
 import message from "@/components/Message/message";
+import getBlogTitle from "@/utils/getBlogTitle";
 
 export default function EditScence() {
-  const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [categories, setCategories] = useState<
     { label: string; value: string; isCreated?: boolean }[]
@@ -34,6 +34,11 @@ export default function EditScence() {
           categoriesId.push(item.value);
         }
       });
+      const title = getBlogTitle(text);
+      if (!title) {
+        message({ type: "error", message: "title is Required!" });
+        return;
+      }
       return updateBlogFn({
         title,
         content: text,
@@ -47,12 +52,11 @@ export default function EditScence() {
         }
       });
     },
-    [updateBlogFn, text, title, categories, blogId],
+    [updateBlogFn, text, categories, blogId],
   );
 
   useEffect(() => {
     if (isGetDetailSuccess && blogDetailResult) {
-      setTitle(blogDetailResult.title);
       setText(blogDetailResult.content);
       setCategories(
         blogDetailResult.categories.map((item) => ({
@@ -77,9 +81,7 @@ export default function EditScence() {
       <BlogEditor
         action="edit"
         idEditDraft={blogDetailResult?.isDraft}
-        title={title}
         text={text}
-        onTitleChange={setTitle}
         onContentChange={setText}
         categories={categories}
         onCategoriesChange={setCategories}
