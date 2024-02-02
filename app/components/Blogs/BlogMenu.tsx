@@ -43,7 +43,7 @@ export default function BlogMenu(props: BlogMenuProps) {
       {user.id === blog.user.id && (
         <MenuItem
           icon={<EditIcon />}
-          onClick={() => navigate({ pathname: `blog/${blog.id}/edit` })}
+          onClick={() => navigate({ pathname: `/blog/${blog.id}/edit` })}
         >
           编辑
         </MenuItem>
